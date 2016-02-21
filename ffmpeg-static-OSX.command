@@ -1,8 +1,11 @@
 ## adam | 2014-16
 ## Download && Build Last FFmpeg Static 
+## Require Xcode CLI, Git, cmake, hg, pkg-config
+## If ffmpeg could not found x265, brew install x265
 clear
 tput bold ; echo "adam | 2014-16" ; tput sgr0
 tput bold ; echo "Download && Build Last FFmpeg Static" ; tput sgr0
+
 
 ## CHECK CONFIG
 
@@ -13,6 +16,7 @@ cd
 else
 xcode-select --install
 fi
+
 
 # Homebrew Check
 tput bold ; echo "" ; echo "=-> Homebrew Check" ; tput sgr0
@@ -43,10 +47,7 @@ brew uninstall faac
 brew uninstall yasm
 brew uninstall pkg-config
 
-
-## VARIABLES & RAMDISK
-
-# made Ramdisk
+# Made Ramdisk
 tput bold ; echo "" ; echo "=-> made Ramdisk" ; tput sgr0
 DISK_ID=$(hdid -nomount ram://3000000)
 newfs_hfs -v Ramdisk ${DISK_ID}
@@ -61,13 +62,8 @@ export PATH=${TARGET}/bin:$PATH
 mkdir ${TARGET}
 mkdir ${CMPL}
 
-
-# Exit on Error
+## Exit on Error
 set -o errexit
-
-
-
-## BUILDS BEGIN
 
 ## pkg-config
 LastVersion=`wget 'https://pkg-config.freedesktop.org/releases/' -O- -q | egrep -o 'pkg-config-[0-9\.]+\.tar.gz' | tail -1`
@@ -117,13 +113,14 @@ cd faad2-2.7
 make -j 8 && make install
 
 ## speex
-LastVersion=`wget 'http://downloads.xiph.org/releases/speex/' -O- -q | egrep -o 'speexdsp-1.2rc[0-9\.]+\.tar.gz' | tail -1`
-tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0
-cd ${CMPL}
-wget 'http://downloads.xiph.org/releases/speex/'${LastVersion}
-tar -zxvf speex*
-cd speex*
-./configure --prefix=${TARGET} --disable-shared --enable-static && make -j 8 && make #install
+#LastVersion=`wget 'http://downloads.xiph.org/releases/speex/' -O- -q | egrep -o 'speexdsp-1.2rc[0-9\.]+\.tar.gz' | tail -1`
+#tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0
+#cd ${CMPL}
+#wget 'http://downloads.xiph.org/releases/speex/'${LastVersion}
+#tar -zxvf speex*
+#cd speex*
+#./configure --prefix=${TARGET} --disable-shared --enable-static 
+#make -j 8 && make install
 
 ## ogg
 LastVersion=`wget 'http://downloads.xiph.org/releases/ogg/' -O- -q | egrep -o 'libogg-[0-9\.]+\.tar.gz' | tail -1`
@@ -313,12 +310,11 @@ export CFLAGS="-I${TARGET}/include -framework CoreFoundation -framework Carbon"
  --enable-hardcoded-tables --disable-asm --enable-pthreads --enable-opengl --enable-opencl --enable-postproc --enable-runtime-cpudetect --arch=x86_64 \
  --disable-ffplay --disable-ffserver --disable-ffprobe --disable-doc \
  --enable-libmp3lame --enable-libfaac --enable-libfdk-aac \
- --enable-libopus --enable-libspeex --enable-libvorbis --enable-libtheora  \
+ --enable-libopus --enable-libvorbis --enable-libtheora  \
  --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
  --enable-libxvid --enable-libx264 --enable-libx265 --enable-libvpx \
  --enable-avfilter --enable-filters --enable-libass --enable-fontconfig --enable-libfreetype \
  --enable-bzlib --enable-zlib && make -j 8 && make install
-
 
 ## mplayer
 #tput bold ; echo "" ; echo "=-> mplayer" ; tput sgr0
