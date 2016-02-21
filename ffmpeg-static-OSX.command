@@ -1,13 +1,9 @@
 ## adam | 2014-16
 ## Download && Build Last FFmpeg Static 
-## Require Xcode CLI, Git, cmake, hg, pkg-config
-## If ffmpeg could not found x265, brew install x265
+
 clear
 tput bold ; echo "adam | 2014-16" ; tput sgr0
 tput bold ; echo "Download && Build Last FFmpeg Static" ; tput sgr0
-
-
-## CHECK CONFIG
 
 # Check Xcode CLI (10.9)
 tput bold ; echo "" ; echo "=-> Xcode CLI Check" ; tput sgr0
@@ -16,7 +12,6 @@ cd
 else
 xcode-select --install
 fi
-
 
 # Homebrew Check
 tput bold ; echo "" ; echo "=-> Homebrew Check" ; tput sgr0
