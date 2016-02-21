@@ -1,1 +1,0 @@
-# ffmpeg-static-OSX
