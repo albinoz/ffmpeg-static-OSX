@@ -1,5 +1,6 @@
 ## adam | 2014-16
-## Download && Build Last FFmpeg Static 
+## Download && Build Last FFmpeg Static
+## Require RootLess from 10.11
 
 clear
 tput bold ; echo "adam | 2014-16" ; tput sgr0
@@ -324,8 +325,6 @@ export CFLAGS="-I${TARGET}/include -framework CoreFoundation -framework Carbon"
 ## Check Static
 tput bold ; echo "" ; echo "=-> Check Static ffmpeg" ; tput sgr0
 otool -L /Volumes/Ramdisk/sw/bin/ffmpeg
-
-## Check Static
 #tput bold ; echo "" ; echo "=-> Check Static mplayer" ; tput sgr0
 #otool -L /Volumes/Ramdisk/sw/bin/mplayer
 
