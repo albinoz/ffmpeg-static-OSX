@@ -33,6 +33,7 @@ brew install hg
 brew install autoconf
 brew install automake
 brew install libtool
+brew install ant
 #brew install openal-soft
 
 brew uninstall ffmpeg
@@ -96,8 +97,9 @@ wget 'http://kcat.strangesoft.net/openal-releases/'${LastVersion}
 tar xjpf openal-soft-*
 cd openal-soft*
 #cmake -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED=NO .
-cmake -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC -DENABLE_SHARED=NO .
-make -j 8 && make install
+#cmake -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC -DENABLE_SHARED=NO .
+cmake -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC .
+make -j 2 && make install
 
 ## faad
 tput bold ; echo "" ; echo "=-> faad" ; tput sgr0
@@ -117,6 +119,17 @@ make -j 8 && make install
 #cd speex*
 #./configure --prefix=${TARGET} --disable-shared --enable-static 
 #make -j 8 && make install
+
+
+## opus - Replace speex
+LastVersion=`wget 'http://downloads.xiph.org/releases/opus/' -O- -q | egrep -o 'opus-1.1[0-9\.]+\.tar.gz' | tail -1`
+tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0
+cd ${CMPL}
+wget 'http://downloads.xiph.org/releases/opus/'${LastVersion}
+tar -zxvf opus-*
+cd opus-*
+./configure --prefix=${TARGET} --disable-shared --enable-static 
+make -j 8 && make install
 
 ## ogg
 LastVersion=`wget 'http://downloads.xiph.org/releases/ogg/' -O- -q | egrep -o 'libogg-[0-9\.]+\.tar.gz' | tail -1`
@@ -145,16 +158,6 @@ wget 'http://downloads.xiph.org/releases/vorbis/'${LastVersion}
 tar -zxvf libvorbis-*
 cd libvorbis-*
 ./configure --prefix=${TARGET} --with-ogg-libraries=${TARGET}/lib --with-ogg-includes=/Volumes/Ramdisk/sw/include/ --enable-static --disable-shared && make -j 8 && make install
-
-## opus
-LastVersion=`wget 'http://downloads.xiph.org/releases/opus/' -O- -q | egrep -o 'opus-1.1[0-9\.]+\.tar.gz' | tail -1`
-tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0
-cd ${CMPL}
-wget 'http://downloads.xiph.org/releases/opus/'${LastVersion}
-tar -zxvf opus-*
-cd opus-*
-./configure --prefix=${TARGET} --disable-shared --enable-static 
-make -j 8 && make install
 
 ## lame
 tput bold ; echo "" ; echo "=-> lame git" ; tput sgr0
@@ -237,7 +240,7 @@ perl -p -i -e "s#^INSTALL_ROOT.*#INSTALL_ROOT = $TARGET#g" Makefile
 perl -p -i -e "s#_ROOT\)/inc#_ROOT\)/include#g" Makefile
 sed "/GSM_INSTALL_INC/s/include/include\/gsm/g" Makefile > Makefile.new
 mv Makefile.new Makefile
-make -j 2 && make install
+make -j 8 && make install
 
 ## freetype
 LastVersion=`wget 'http://download.savannah.gnu.org/releases/freetype/' -O- -q | egrep -o 'freetype-2.6.[0-9\.]+\.tar.gz' | tail -1`
@@ -293,24 +296,40 @@ cd bzip2-1.0.6
 make
 make install PREFIX=${TARGET}
  
+## bluray - Require JAVA-SDK & ANT
+JAVAV=`ls /Library/Java/JavaVirtualMachines/ | tail -1`
+export JAVA_HOME="/Library/Java/JavaVirtualMachines/$JAVAV/Contents/Home"
+export PATH=${TARGET}/bin:$PATH
+export LDFLAGS="-L${TARGET}/lib -framework CoreFoundation -framework Carbon"
+export CPPFLAGS="-I${TARGET}/include"
+export LIBXML2_CFLAGS="-I/usr/local/opt/libxml2/include"
+export LIBXML2_LIBS="-L/usr/local/opt/libxml2/lib"
+tput bold ; echo "" ; echo "=-> libbluray" ; tput sgr0
+cd ${CMPL}
+git clone http://git.videolan.org/git/libbluray.git
+cd libblura*
+./bootstrap
+./configure --prefix=${TARGET} --disable-shared --disable-dependency-tracking --build x86_64 --disable-doxygen-dot --without-libxml2 --without-fontconfig --without-freetype --disable-udf
+cp -vpfr /Volumes/Ramdisk/compile/libblura*/jni/darwin/jni_md.h /Volumes/Ramdisk/compile/libblura*/jni
+make && make install
 
 ## ffmpeg
 tput bold ; echo "" ; echo "=-> ffmpeg" ; tput sgr0
 cd ${CMPL}
 git clone git://source.ffmpeg.org/ffmpeg.git
 cd ffmpeg
-export LDFLAGS="-L${TARGET}/lib -framework CoreFoundation -framework Carbon"
-export CFLAGS="-I${TARGET}/include -framework CoreFoundation -framework Carbon"
+export LDFLAGS="-L${TARGET}/lib -Wl,-framework,OpenAL -framework CoreFoundation -framework Carbon"
+export CFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL -framework CoreFoundation -framework Carbon"
 ./configure --extra-version=adam-`date +"%m-%d-%y"` \
  --pkg_config='pkg-config --static' --prefix=${TARGET} --extra-cflags=-march=native --as=yasm --enable-nonfree --enable-gpl --enable-version3 \
- --enable-hardcoded-tables --disable-asm --enable-pthreads --enable-opengl --enable-opencl --enable-postproc --enable-runtime-cpudetect --arch=x86_64 \
+ --enable-hardcoded-tables --enable-pthreads --enable-opengl --enable-opencl --enable-postproc --enable-runtime-cpudetect --arch=x86_64 \
  --disable-ffplay --disable-ffserver --disable-ffprobe --disable-doc \
- --enable-libmp3lame --enable-libfaac --enable-libfdk-aac \
- --enable-libopus --enable-libvorbis --enable-libtheora  \
+ --enable-openal --enable-libmp3lame --enable-libfaac --enable-libfdk-aac \
+ --enable-libopus --enable-libvorbis --enable-libtheora \
  --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
  --enable-libxvid --enable-libx264 --enable-libx265 --enable-libvpx \
  --enable-avfilter --enable-filters --enable-libass --enable-fontconfig --enable-libfreetype \
- --enable-bzlib --enable-zlib && make -j 8 && make install
+ --enable-libbluray --enable-bzlib --enable-zlib && make -j 8 && make install
 
 ## mplayer
 #tput bold ; echo "" ; echo "=-> mplayer" ; tput sgr0
