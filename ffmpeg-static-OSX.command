@@ -34,6 +34,9 @@ brew install autoconf
 brew install automake
 brew install libtool
 brew install ant
+brew tap caskroom/cask
+brew install brew-cask
+brew cask install java
 
 brew uninstall ffmpeg
 brew uninstall lame
@@ -288,8 +291,6 @@ export JAVA_HOME="/Library/Java/JavaVirtualMachines/$JAVAV/Contents/Home"
 export PATH=${TARGET}/bin:$PATH
 export LDFLAGS="-L${TARGET}/lib -framework CoreFoundation -framework Carbon"
 export CPPFLAGS="-I${TARGET}/include"
-#export LIBXML2_CFLAGS="-I/usr/local/opt/libxml2/include"
-#export LIBXML2_LIBS="-L/usr/local/opt/libxml2/lib"
 tput bold ; echo "" ; echo "=-> libbluray" ; tput sgr0
 cd ${CMPL}
 git clone http://git.videolan.org/git/libbluray.git
