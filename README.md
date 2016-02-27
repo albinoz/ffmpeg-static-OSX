@@ -8,7 +8,7 @@
 https://support.apple.com/kb/DL1572?locale=fr_FR&viewlocale=fr_FR
 
 ###### =-> Open /Applications/Utilities/Terminal.app
-chmod 755 ~/Path\ to /ffmpeg-static-OSX.command
+chmod 755 '~/Path to/ffmpeg-static-OSX.command'
 
 ###### =-> Build Lastest ffmpeg by double click on ffmpeg-static-OSX.command
 
