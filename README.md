@@ -2,7 +2,7 @@
 Try run OSX ffmpeg-static-OSX Build'
 
 -- libbluray Request
--- Download & Install Java OSX
+-- Download & Install Apple Java :
 https://support.apple.com/kb/DL1572?locale=fr_FR&viewlocale=fr_FR
 
 -- Open /Applications/Utilities/Terminal.app
