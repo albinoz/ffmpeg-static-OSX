@@ -1,5 +1,5 @@
 ## ffmpeg-static-OSX
-##### Build static ffmpeg on OS X
+#### Build static ffmpeg on OS X
 
 
 ###### Request 
