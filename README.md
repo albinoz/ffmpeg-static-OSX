@@ -1,6 +1,6 @@
 # ffmpeg-static-OSX
 ### Build ffmpeg in static on OS X
-###### --pkg_config='pkg-config --static' --prefix=${TARGET} --extra-cflags=-march=native --as=yasm --enable-nonfree --enable-gpl --enable-version3 \
+--pkg_config='pkg-config --static' --prefix=${TARGET} --extra-cflags=-march=native --as=yasm --enable-nonfree --enable-gpl --enable-version3 \
  --enable-hardcoded-tables --enable-pthreads --enable-opengl --enable-opencl --enable-postproc --enable-runtime-cpudetect --arch=x86_64 \
  --disable-ffplay --disable-ffserver --disable-ffprobe --disable-doc \
  --enable-openal --enable-libmp3lame --enable-libfaac --enable-libfdk-aac \
