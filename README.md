@@ -1,10 +1,7 @@
 ## ffmpeg-static-OSX
-### Build static ffmpeg on OS X
-##### Xcode cli
-##### Homebrew
-##### Java
+#### Build static ffmpeg on OS X
 
-### How Use ffmpeg-static-OSX.command
+##### =-> Request Apple Xcode
 
 ##### =-> Request Rootless from OS X 10.11 (For HomeBrew Install)
 https://www.quora.com/How-do-I-turn-off-the-rootless-in-OS-X-El-Capitan-10-11
