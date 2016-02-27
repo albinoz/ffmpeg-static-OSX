@@ -1,8 +1,8 @@
 # ffmpeg-static-OSX
-## Build ffmpeg in static with many codecs on OS X
+### Build ffmpeg in static on OS X
+#### libbluray
 
-
-Try run OSX ffmpeg-static-OSX.command
+### Try run OSX ffmpeg-static-OSX.command
 
 -- Download & Install Apple Java for libbluray Build :
 https://support.apple.com/kb/DL1572?locale=fr_FR&viewlocale=fr_FR
