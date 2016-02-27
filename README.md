@@ -14,7 +14,7 @@ https://support.apple.com/kb/DL1572?locale=fr_FR&viewlocale=fr_FR
 
 ###### How Use :
 ## 
-##### =-> Open /Applications/Utilities/Terminal.app
+##### =-> Open & Paste in /Applications/Utilities/Terminal.app
 chmod +x '~/Desktop/ffmpeg-static-OSX-master/ffmpeg-static-OSX.command'
 
 ##### =-> Build Lastest ffmpeg by double click on ffmpeg-static-OSX.command
