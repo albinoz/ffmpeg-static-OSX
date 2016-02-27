@@ -1,14 +1,7 @@
 # ffmpeg-static-OSX
 ### Build ffmpeg in static on OS X
---pkg_config='pkg-config --static' --prefix=${TARGET} --extra-cflags=-march=native --as=yasm --enable-nonfree --enable-gpl --enable-version3 \
- --enable-hardcoded-tables --enable-pthreads --enable-opengl --enable-opencl --enable-postproc --enable-runtime-cpudetect --arch=x86_64 \
- --disable-ffplay --disable-ffserver --disable-ffprobe --disable-doc \
- --enable-openal --enable-libmp3lame --enable-libfaac --enable-libfdk-aac \
- --enable-libopus --enable-libvorbis --enable-libtheora \
- --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
- --enable-libxvid --enable-libx264 --enable-libx265 --enable-libvpx \
- --enable-avfilter --enable-filters --enable-libass --enable-fontconfig --enable-libfreetype \
- --enable-libbluray --enable-bzlib --enable-zlib && make -j $THREADS && make install
+--pkg_config='pkg-config --static'
+--as=yasm --enable-nonfree --enable-gpl --enable-version3 --enable-hardcoded-tables --enable-pthreads --enable-opengl --enable-opencl --enable-postproc --enable-runtime-cpudetect --arch=x86_64 --disable-ffplay --disable-ffserver --disable-ffprobe --disable-doc --enable-openal --enable-libmp3lame --enable-libfaac --enable-libfdk-aac --enable-libopus --enable-libvorbis --enable-libtheora --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm --enable-libxvid --enable-libx264 --enable-libx265 --enable-libvpx --enable-avfilter --enable-filters --enable-libass --enable-fontconfig --enable-libfreetype --enable-libbluray --enable-bzlib --enable-zlib
 
 ### Try run OSX ffmpeg-static-OSX.command
 
