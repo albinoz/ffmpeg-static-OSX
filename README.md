@@ -1,5 +1,5 @@
 ## ffmpeg-static
-###### - Build Static OSX 10.9 < 10.11 ffmpeg
+###### - Build Static OsX 10.9 < 10.11 ffmpeg
 ###### - Double-Click to Build
 ###### - Check Last Version of Sources
 
