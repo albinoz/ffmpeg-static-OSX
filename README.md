@@ -3,7 +3,7 @@
 ##### - Simple Double-Click to Build
 ##### - Check Last Version of Sources
 
-## * Request :
+## Request :
 
 ##### =-> Apple Xcode (For Link Some OS X binaries)
 https://developer.apple.com/xcode/
@@ -11,7 +11,7 @@ https://developer.apple.com/xcode/
 ##### =-> Rootless from OS X 10.11 (For HomeBrew Install)
 https://www.quora.com/How-do-I-turn-off-the-rootless-in-OS-X-El-Capitan-10-11
 
-## * How Use :
+## How Use :
 
 ##### =-> Download :
 ```
