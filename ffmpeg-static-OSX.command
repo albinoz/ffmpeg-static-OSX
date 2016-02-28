@@ -266,8 +266,8 @@ tar xzpf fontconfig-*
 cd fontconfig-*
 ./configure --prefix=${TARGET} --with-add-fonts=/Library/Fonts,~/Library/Fonts --disable-shared --enable-static && make -j $THREADS && make install
 
-## libass git
-tput bold ; echo "" ; echo "=-> libass git" ; tput sgr0
+## libass
+tput bold ; echo "" ; echo "=-> libass" ; tput sgr0
 cd ${CMPL}
 wget "https://github.com/libass/libass/releases/download/0.13.2/libass-0.13.2.tar.gz"
 #git clone https://github.com/libass/libass.git
@@ -342,7 +342,7 @@ cd ffmpeg
 ## Check Static and Report Error
 tput bold ; echo "" ; echo "=-> Check Static ffmpeg" ; tput sgr0
 otool -L /Volumes/Ramdisk/sw/bin/ffmpeg | grep -v : > /tmp/Static
-if cat /tmp/Static | grep -v "/System/" | grep -v "/usr";  then tput bold ; echo "" ; echo "x-> Error Bad Link Found " ; tput sgr0 ; else otool -L /Volumes/Ramdisk/sw/bin/ffmpeg ; tput bold ; echo "" ; echo "=-> ffmpeg Builded Succefully" ; cp /Volumes/Ramdisk/sw/bin/ffmpeg ~/Desktop/ffmpeg ; tput sgr0 ; fi
+if cat /tmp/Static | grep -v "/System/" | grep -v "/usr";  then tput bold ; echo "" ; echo "x-> Error Bad Link Found " ; tput sgr0 ; else otool -L /Volumes/Ramdisk/sw/bin/ffmpeg ; tput bold ; echo "" ; echo "=-> ffmpeg Builded Succefully" ; ; tput sgr0 ; cp /Volumes/Ramdisk/sw/bin/ffmpeg ~/Desktop/ffmpeg  ; fi
 #tput bold ; echo "" ; echo "=-> Check Static mplayer" ; tput sgr0
 #otool -L /Volumes/Ramdisk/sw/bin/mplayer
 
