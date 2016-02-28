@@ -64,6 +64,7 @@ chmod +x ~/Desktop/ffmpeg-static-OSX-master/ffmpeg-static-OSX.command
 /usr/lib/libiconv.2.dylib (compatibility version 7.0.0, current version 7.0.0)
 /System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics (compatibility version 64.0.0, current version 600.0.0)
 /usr/lib/liblzma.5.dylib (compatibility version 6.0.0, current version 6.3.0)
-/System/Library/Frameworks/CoreServices.framework/Versions/A/CoreServices (compatibility version 1.0.0, current version 728.6.0)	/System/Library/Frameworks/CoreText.framework/Versions/A/CoreText (compatibility version 1.0.0, current version 1.0.0)
+/System/Library/Frameworks/CoreServices.framework/Versions/A/CoreServices (compatibility version 1.0.0, current version 728.6.0)
+/System/Library/Frameworks/CoreText.framework/Versions/A/CoreText (compatibility version 1.0.0, current version 1.0.0)
 /usr/lib/libobjc.A.dylib (compatibility version 1.0.0, current version 228.0.0)
 ```
