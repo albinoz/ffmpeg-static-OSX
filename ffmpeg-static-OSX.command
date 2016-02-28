@@ -34,8 +34,6 @@ brew install automake
 brew install libtool
 brew install ant
 
-if ls /Library/Java/JavaVirtualMachines/ ; then echo "Java is Installed" ; else brew tap caskroom/cask ; brew install brew-cask ;  brew cask install --force java ; fi
-
 brew uninstall ffmpeg
 brew uninstall lame
 brew uninstall x264
@@ -45,6 +43,10 @@ brew uninstall vpx
 brew uninstall faac
 brew uninstall yasm
 brew uninstall pkg-config
+
+# JAVA Check
+tput bold ; echo "" ; echo "=-> JAVA Check" ; tput sgr0
+if ls /Library/Java/JavaVirtualMachines/ ; then echo "Java is Installed" ; else brew tap caskroom/cask ; brew install brew-cask ;  brew cask install --force java ; fi
 
 # Made Ramdisk
 tput bold ; echo "" ; echo "=-> made Ramdisk" ; tput sgr0
