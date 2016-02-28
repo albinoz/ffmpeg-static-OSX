@@ -6,7 +6,7 @@ clear
 tput bold ; echo "adam | 2014-16" ; tput sgr0
 tput bold ; echo "Download && Build Last FFmpeg Static" ; tput sgr0
 
-# Check Xcode CLI (10.9)
+# Check Xcode CLI (10.9 minimum)
 tput bold ; echo "" ; echo "=-> Xcode CLI Check" ; tput sgr0
 if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version ; then
 cd
@@ -54,12 +54,18 @@ DISK_ID=$(hdid -nomount ram://3000000)
 newfs_hfs -v Ramdisk ${DISK_ID}
 diskutil mount ${DISK_ID}
 
-# Variables
+# Builder
 export CC=clang
+# Paths
 TARGET="/Volumes/Ramdisk/sw"
 CMPL="/Volumes/Ramdisk/compile"
 TEMPPATH=`echo $PATH | sed 's|:/opt||g'`
 export PATH=${TARGET}/bin:$TEMPPATH
+# Flags
+export LDFLAGS="-L${TARGET}/lib -Wl,-framework,OpenAL -framework CoreFoundation -framework Carbon"
+export CPPFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL"
+export CFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL -framework CoreFoundation -framework Carbon"
+# CPU(s)
 THREADS=`sysctl -n hw.ncpu`
 
 mkdir ${TARGET}
@@ -75,7 +81,6 @@ cd ${CMPL} || exit 1
 wget 'https://pkg-config.freedesktop.org/releases/'${LastVersion}
 tar -zxvf pkg-config-*
 cd pkg-config-*
-export LDFLAGS="-framework CoreFoundation -framework Carbon"
 ./configure --prefix=${TARGET} --with-pc-path=${TARGET}/lib/pkgconfig --with-internal-glib && make -j $THREADS && make install
 
 ## Yasm
@@ -135,7 +140,6 @@ cd libogg-*
 
 ## Theora - Require autoconf automake libtool
 tput bold ; echo "" ; echo "=-> theora git" ; tput sgr0
-#brew install autoconf automake libtool
 cd ${CMPL}
 git clone https://git.xiph.org/theora.git
 cd theora
@@ -262,10 +266,9 @@ tar xzpf fontconfig-*
 cd fontconfig-*
 ./configure --prefix=${TARGET} --with-add-fonts=/Library/Fonts,~/Library/Fonts --disable-shared --enable-static && make -j $THREADS && make install
 
-## libass
-tput bold ; echo "" ; echo "=-> libass" ; tput sgr0
+## libass git
+tput bold ; echo "" ; echo "=-> libass git" ; tput sgr0
 cd ${CMPL}
-#wget "https://github.com/libass/libass/releases/download/0.13.1/libass-0.13.1.tar.gz"
 wget "https://github.com/libass/libass/releases/download/0.13.2/libass-0.13.2.tar.gz"
 #git clone https://github.com/libass/libass.git
 tar -zxvf libas*
@@ -273,16 +276,13 @@ cd libas*
 ./configure --prefix=${TARGET} --disable-shared --enable-static && make -j $THREADS && make install
 
 ## zlib
-export LDFLAGS="-L${TARGET}/sw/lib"
-export  CFLAGS="-I${TARGET}/sw/include"
 tput bold ; echo "" ; echo "=-> zlib" ; tput sgr0
 cd ${CMPL}
 wget "http://zlib.net/zlib-1.2.8.tar.gz"
 tar -zxvf zlib-1.2.8.tar.gz
 cd zlib*
 ./configure --prefix=${TARGET} && make -j $THREADS && make install
-#rm ${TARGET}/lib/libz*dylib
-#rm ${TARGET}/lib/libz.so*
+rm ${TARGET}/lib/libz*dylib
 
 ## libpng git
 tput bold ; echo "" ; echo "=-> libpng git" ; tput sgr0
@@ -304,8 +304,6 @@ make -j $THREADS && make install PREFIX=${TARGET}
 ## bluray - Require JAVA-SDK & ANT
 JAVAV=`ls /Library/Java/JavaVirtualMachines/ | tail -1`
 export JAVA_HOME="/Library/Java/JavaVirtualMachines/$JAVAV/Contents/Home"
-export LDFLAGS="-L${TARGET}/lib -framework CoreFoundation -framework Carbon"
-export CPPFLAGS="-I${TARGET}/include"
 tput bold ; echo "" ; echo "=-> libbluray git" ; tput sgr0
 cd ${CMPL}
 git clone http://git.videolan.org/git/libbluray.git
@@ -320,12 +318,11 @@ tput bold ; echo "" ; echo "=-> ffmpeg" ; tput sgr0
 cd ${CMPL}
 git clone git://source.ffmpeg.org/ffmpeg.git
 cd ffmpeg
-export LDFLAGS="-L${TARGET}/lib -Wl,-framework,OpenAL -framework CoreFoundation -framework Carbon"
-export CFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL -framework CoreFoundation -framework Carbon"
 ./configure --extra-version=adam-`date +"%m-%d-%y"` \
- --pkg_config='pkg-config --static' --prefix=${TARGET} --extra-cflags=-march=native --as=yasm --enable-nonfree --enable-gpl --enable-version3 \
- --enable-hardcoded-tables --enable-pthreads --enable-opengl --enable-opencl --enable-postproc --enable-runtime-cpudetect --arch=x86_64 \
- --disable-ffplay --disable-ffserver --disable-ffprobe --disable-doc \
+ --pkg_config='pkg-config --static' --prefix=${TARGET} \
+ --extra-cflags=-march=native --as=yasm --enable-nonfree --enable-gpl --enable-version3 \
+ --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect --arch=x86_64 \
+ --enable-opengl --enable-opencl --disable-ffplay --disable-ffserver --disable-ffprobe --disable-doc \
  --enable-openal --enable-libmp3lame --enable-libfaac --enable-libfdk-aac \
  --enable-libopus --enable-libvorbis --enable-libtheora \
  --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
@@ -342,16 +339,12 @@ export CFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL -framework CoreFoundati
 #./configure --prefix=${TARGET} --extra-cflags="-I${TARGET}/include/" --extra-ldflags="-L${TARGET}/lib"
 #make -j $THREADS && make install
 
-
-## Check Static
+## Check Static and Report Error
 tput bold ; echo "" ; echo "=-> Check Static ffmpeg" ; tput sgr0
-otool -L /Volumes/Ramdisk/sw/bin/ffmpeg
+otool -L /Volumes/Ramdisk/sw/bin/ffmpeg | grep -v : > /tmp/Static
+if cat /tmp/Static | grep -v "/System/" | grep -v "/usr";  then tput bold ; echo "" ; echo "x-> Error Bad Link Found " ; tput sgr0 ; else otool -L /Volumes/Ramdisk/sw/bin/ffmpeg ; tput bold ; echo "" ; echo "=-> ffmpeg Builded Succefully" ; cp /Volumes/Ramdisk/sw/bin/ffmpeg ~/Desktop/ffmpeg ; tput sgr0 ; fi
 #tput bold ; echo "" ; echo "=-> Check Static mplayer" ; tput sgr0
 #otool -L /Volumes/Ramdisk/sw/bin/mplayer
-
-## Copy FFmpeg to Desktop
-cp /Volumes/Ramdisk/sw/bin/ffmpeg ~/Desktop/ffmpeg
-#cp /Volumes/Ramdisk/sw/bin/mplayer ~/Desktop/mplayer
 
 ## End Time
 Time="$(echo 'obase=60;'$SECONDS | bc | sed 's/ /:/g' | cut -c 2-)"
