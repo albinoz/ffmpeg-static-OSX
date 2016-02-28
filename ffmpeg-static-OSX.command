@@ -293,7 +293,6 @@ cd libpng
 ./configure --prefix=${TARGET} --enable-static --disable-shared
 make -j $THREADS && make install
 
-
 ## bzip
 tput bold ; echo "" ; echo "=-> bzip" ; tput sgr0
 cd ${CMPL}
@@ -329,7 +328,8 @@ cd ffmpeg
  --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
  --enable-libxvid --enable-libx264 --enable-libx265 --enable-libvpx \
  --enable-avfilter --enable-filters --enable-libass --enable-fontconfig --enable-libfreetype \
- --enable-libbluray --enable-bzlib --enable-zlib && make -j $THREADS && make install
+ --enable-libbluray --enable-bzlib --enable-zlib
+ make -j $THREADS && make install
 
 ## mplayer
 #tput bold ; echo "" ; echo "=-> mplayer" ; tput sgr0
@@ -343,7 +343,7 @@ cd ffmpeg
 ## Check Static and Report Error
 tput bold ; echo "" ; echo "=-> Check Static ffmpeg" ; tput sgr0
 otool -L /Volumes/Ramdisk/sw/bin/ffmpeg | grep -v : > /tmp/Static
-if cat /tmp/Static | grep -v "/System/" | grep -v "/usr";  then tput bold ; echo "" ; echo "x-> Error Bad Link Found " ; tput sgr0 ; else otool -L /Volumes/Ramdisk/sw/bin/ffmpeg ; tput bold ; echo "" ; echo "=-> ffmpeg Builded Succefully" ; tput sgr0 ; cp /Volumes/Ramdisk/sw/bin/ffmpeg ~/Desktop/ffmpeg  ; fi
+if cat /tmp/Static | grep -v "/System/" | grep -v "/usr";  then tput bold ; echo "" ; echo "x-> Error Bad Link Found " ; tput sgr0 ; else otool -L /Volumes/Ramdisk/sw/bin/ffmpeg ; tput bold ; echo "" ; echo "=-> Static ffmpeg Builded Succefully" ; tput sgr0 ; cp /Volumes/Ramdisk/sw/bin/ffmpeg ~/Desktop/ffmpeg  ; fi
 #tput bold ; echo "" ; echo "=-> Check Static mplayer" ; tput sgr0
 #otool -L /Volumes/Ramdisk/sw/bin/mplayer
 
