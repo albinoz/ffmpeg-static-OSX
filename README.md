@@ -31,6 +31,9 @@ chmod +x ~/Desktop/ffmpeg-static-OSX-master/ffmpeg-static-OSX.command
 ##### =-> On Successfully Build :
 `ffmpeg static binary be copied on Desktop`
 
+##### =-> On Error Build :
+`Please Report with log`
+
 ##### =-> Include :
 ```
 ./configure --extra-version=adam-`date +"%m-%d-%y"` \
