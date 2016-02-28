@@ -30,8 +30,8 @@ chmod +x ~/Desktop/ffmpeg-static-OSX-master/ffmpeg-static-OSX.command
 ```
 ## Result :
 
-##### =-> On Succefully Build :
-ffmpeg will be copied on your desktop
+##### =-> On Successfully Build :
+`ffmpeg will be copied on your desktop`
 
 ##### =-> Include :
 ```
