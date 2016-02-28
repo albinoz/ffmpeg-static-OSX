@@ -265,20 +265,33 @@ cd fontconfig-*
 ## libass
 tput bold ; echo "" ; echo "=-> libass" ; tput sgr0
 cd ${CMPL}
-wget "https://github.com/libass/libass/releases/download/0.13.1/libass-0.13.1.tar.gz"
-tar -zxvf libass-*
-cd libass-*
+#wget "https://github.com/libass/libass/releases/download/0.13.1/libass-0.13.1.tar.gz"
+wget "https://github.com/libass/libass/releases/download/0.13.2/libass-0.13.2.tar.gz"
+#git clone https://github.com/libass/libass.git
+tar -zxvf libas*
+cd libas*
 ./configure --prefix=${TARGET} --disable-shared --enable-static && make -j $THREADS && make install
 
 ## zlib
+export LDFLAGS="-L${TARGET}/sw/lib"
+export  CFLAGS="-I${TARGET}/sw/include"
 tput bold ; echo "" ; echo "=-> zlib" ; tput sgr0
 cd ${CMPL}
 wget "http://zlib.net/zlib-1.2.8.tar.gz"
 tar -zxvf zlib-1.2.8.tar.gz
 cd zlib*
 ./configure --prefix=${TARGET} && make -j $THREADS && make install
-rm ${TARGET}/lib/libz*dylib
+#rm ${TARGET}/lib/libz*dylib
 #rm ${TARGET}/lib/libz.so*
+
+## libpng git
+tput bold ; echo "" ; echo "=-> libpng git" ; tput sgr0
+cd ${CMPL}
+git clone https://github.com/glennrp/libpng.git
+cd libpng
+./autogen.sh
+./configure --prefix=${TARGET} --enable-static --disable-shared
+make -j $THREADS && make install
 
 ## bzip
 tput bold ; echo "" ; echo "=-> bzip" ; tput sgr0
@@ -293,7 +306,7 @@ JAVAV=`ls /Library/Java/JavaVirtualMachines/ | tail -1`
 export JAVA_HOME="/Library/Java/JavaVirtualMachines/$JAVAV/Contents/Home"
 export LDFLAGS="-L${TARGET}/lib -framework CoreFoundation -framework Carbon"
 export CPPFLAGS="-I${TARGET}/include"
-tput bold ; echo "" ; echo "=-> libbluray" ; tput sgr0
+tput bold ; echo "" ; echo "=-> libbluray git" ; tput sgr0
 cd ${CMPL}
 git clone http://git.videolan.org/git/libbluray.git
 cd libblura*
