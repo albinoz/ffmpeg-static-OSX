@@ -1,5 +1,5 @@
 ## ffmpeg-static-OSX
-###### - Build OS X static ffmpeg
+###### - Build Static OS X ffmpeg
 ###### - Simple Double-Click to Build
 ###### - Check Last Version of Sources
 
