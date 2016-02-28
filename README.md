@@ -6,11 +6,11 @@
 ## Request :
 
 ##### =-> Apple Xcode
-###### For Link Some OS X binaries
+####### For Link Some OS X binaries
 https://developer.apple.com/xcode/download/
 
 ##### =-> Rootless from OS X 10.11
-###### For HomeBrew Installs
+####### For HomeBrew Installs
 https://www.quora.com/How-do-I-turn-off-the-rootless-in-OS-X-El-Capitan-10-11
 
 ## How Use :
