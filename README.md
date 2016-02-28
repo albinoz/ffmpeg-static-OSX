@@ -32,7 +32,8 @@ chmod +x ~/Desktop/ffmpeg-static-OSX-master/ffmpeg-static-OSX.command
 `ffmpeg static binary be copied on Desktop`
 
 ##### x-> On Error Build :
-`Please Report with log`
+`Please Report with log to`
+https://github.com/albinoz/ffmpeg-static-OSX/issues
 
 ##### =-> Include :
 ```
