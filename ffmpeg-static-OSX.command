@@ -34,7 +34,7 @@ brew install automake
 brew install libtool
 brew install ant
 
-if ls /Library/Java/JavaVirtualMachines/ ; then echo "Java $JAVAV is Installed" ; else brew tap caskroom/cask ; brew install brew-cask ;  brew cask install --force java ; fi
+if ls /Library/Java/JavaVirtualMachines/ ; then echo "Java is Installed" ; else brew tap caskroom/cask ; brew install brew-cask ;  brew cask install --force java ; fi
 
 brew uninstall ffmpeg
 brew uninstall lame
