@@ -25,7 +25,6 @@ brew doctor
 
 # Homebrew Static Config
 tput bold ; echo "" ; echo "=-> Homebrew Satic Config" ; tput sgr0
-brew install x265
 brew install git
 brew install wget
 brew install cmake
@@ -41,7 +40,9 @@ brew cask install java
 brew uninstall ffmpeg
 brew uninstall lame
 brew uninstall x264
+brew uninstall x265
 brew uninstall xvid
+brew uninstall vpx
 brew uninstall faac
 brew uninstall yasm
 brew uninstall pkg-config
@@ -56,7 +57,8 @@ diskutil mount ${DISK_ID}
 export CC=clang
 TARGET="/Volumes/Ramdisk/sw"
 CMPL="/Volumes/Ramdisk/compile"
-export PATH=${TARGET}/bin:$PATH
+TEMPPATH=`echo $PATH | sed 's|:/opt||g'`
+export PATH=${TARGET}/bin:$TEMPPATH
 THREADS=`sysctl -n hw.ncpu`
 
 mkdir ${TARGET}
@@ -288,7 +290,6 @@ make -j $THREADS && make install PREFIX=${TARGET}
 ## bluray - Require JAVA-SDK & ANT
 JAVAV=`ls /Library/Java/JavaVirtualMachines/ | tail -1`
 export JAVA_HOME="/Library/Java/JavaVirtualMachines/$JAVAV/Contents/Home"
-export PATH=${TARGET}/bin:$PATH
 export LDFLAGS="-L${TARGET}/lib -framework CoreFoundation -framework Carbon"
 export CPPFLAGS="-I${TARGET}/include"
 tput bold ; echo "" ; echo "=-> libbluray" ; tput sgr0
