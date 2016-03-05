@@ -7,17 +7,17 @@ clear
 tput bold ; echo "adam | 2014-16" ; tput sgr0
 tput bold ; echo "Download && Build Last FFmpeg Static" ; tput sgr0
 
+# Check Xcode
+tput bold ; echo "" ; echo "=-> Xcode Check" ; tput sgr0
+if ls /Applications/ | grep 'Xcode' ; then echo "Xcode is Installed" ; else echo "Please Install Xcode" ; /usr/bin/open https://developer.apple.com/xcode/download/ ; exit ; fi
+
 # Check Xcode CLI (10.9 minimum)
 tput bold ; echo "" ; echo "=-> Xcode CLI Check" ; tput sgr0
-if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version ; then
-cd
-else
-xcode-select --install
-fi
+if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version ; then echo "Xcode-CLI is Installed" ; else echo "Please Install Xcode-CLI" ; xcode-select --install ; exit ; fi
 
 # Homebrew Check
 tput bold ; echo "" ; echo "=-> Homebrew Check" ; tput sgr0
-if ls /usr/local/bin/brew ; then echo "HomeBrew is Installed" ; else /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" ; fi
+if ls /usr/local/bin/brew ; then echo "HomeBrew is Installed" ; else echo "Installing HomeBrew" ; /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" ; fi
 
 # Homebrew Update
 tput bold ; echo "" ; echo "=-> Homebrew Update" ; tput sgr0
@@ -25,7 +25,7 @@ brew update
 brew doctor
 
 # Homebrew Static Config
-tput bold ; echo "" ; echo "=-> Homebrew Satic Config" ; tput sgr0
+tput bold ; echo "" ; echo "=-> Homebrew Static Config" ; tput sgr0
 brew install git
 brew install wget
 brew install cmake
