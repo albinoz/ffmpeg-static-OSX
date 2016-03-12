@@ -1,7 +1,11 @@
-## adam | 2014-16
-## Download && Build Last Static ffmpeg
-## Require RootLess from 10.11
-## 10.9 < 10.11
+# adam | 2014-16
+# Download && Build Last Static ffmpeg
+# Require RootLess from 10.11
+# 10.9 < 10.11
+
+# Colors Terminal
+export CLICOLOR=1
+export LSCOLORS=GxFxCxDxBxegedabagaced
 
 clear
 tput bold ; echo "adam | 2014-16" ; tput sgr0
@@ -71,7 +75,7 @@ THREADS=`sysctl -n hw.ncpu`
 mkdir ${TARGET}
 mkdir ${CMPL}
 
-## Exit on Error
+# Exit on Error
 set -o errexit
 
 ## pkg-config
