@@ -3,10 +3,6 @@
 # Require RootLess from 10.11
 # 10.9 < 10.11
 
-# Colors Terminal
-export CLICOLOR=1
-export LSCOLORS=GxFxCxDxBxegedabagaced
-
 clear
 tput bold ; echo "adam | 2014-16" ; tput sgr0
 tput bold ; echo "Download && Build Last FFmpeg Static" ; tput sgr0
@@ -29,24 +25,8 @@ brew update ; brew upgrade --all ; brew cleanup ; brew prune ; brew doctor
 
 # Homebrew Static Config
 tput bold ; echo "" ; echo "=-> Homebrew Static Config" ; tput sgr0
-brew install git
-brew install wget
-brew install cmake
-brew install hg
-brew install autoconf
-brew install automake
-brew install libtool
-brew install ant
-
-brew uninstall ffmpeg
-brew uninstall lame
-brew uninstall x264
-brew uninstall x265
-brew uninstall xvid
-brew uninstall vpx
-brew uninstall faac
-brew uninstall yasm
-brew uninstall pkg-config
+brew install git wget cmake hg autoconf automake libtool ant
+brew uninstall ffmpeg lame x264 x265 xvid vpx faac yasm pkg-config
 
 # JAVA Check
 tput bold ; echo "" ; echo "=-> JAVA Check" ; tput sgr0
