@@ -21,8 +21,7 @@ if ls /usr/local/bin/brew ; then echo "HomeBrew is Installed" ; else echo "Insta
 
 # Homebrew Update
 tput bold ; echo "" ; echo "=-> Homebrew Update" ; tput sgr0
-brew update
-brew doctor
+brew update ; brew upgrade --all ; brew cleanup ; brew prune ; brew doctor
 
 # Homebrew Static Config
 tput bold ; echo "" ; echo "=-> Homebrew Static Config" ; tput sgr0
