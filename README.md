@@ -1,7 +1,6 @@
-## ffmpeg-static
+## FFmpeg Static Builder OS X
 ###### - Build Static OsX 10.9 < 10.11 ffmpeg
-###### - Double-Click to Build
-###### - Check Last Version of Sources
+###### - Last Build Of x264 x265 vp10 libfdk ffmpeg…
 
 ## Request :
 
