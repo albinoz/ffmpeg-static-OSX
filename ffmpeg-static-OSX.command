@@ -26,7 +26,15 @@ brew update ; brew upgrade --all ; brew cleanup ; brew prune ; brew doctor
 # Homebrew Static Config
 tput bold ; echo "" ; echo "=-> Homebrew Static Config" ; tput sgr0
 brew install git wget cmake hg autoconf automake libtool ant
-brew uninstall ffmpeg lame x264 x265 xvid vpx faac yasm pkg-config
+brew uninstall ffmpeg
+brew uninstall lame
+brew uninstall x264
+brew uninstall x265
+brew uninstall xvid
+brew uninstall vpx
+brew uninstall faac
+brew uninstall yasm
+brew uninstall pkg-config
 
 # JAVA Check
 tput bold ; echo "" ; echo "=-> JAVA Check" ; tput sgr0
@@ -43,8 +51,7 @@ export CC=clang
 # Paths
 TARGET="/Volumes/Ramdisk/sw"
 CMPL="/Volumes/Ramdisk/compile"
-TEMPPATH=`echo $PATH | sed 's|:/opt||g'`
-export PATH=${TARGET}/bin:$TEMPPATH
+export PATH=${TARGET}/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 # Flags
 export LDFLAGS="-L${TARGET}/lib -Wl,-framework,OpenAL -framework CoreFoundation -framework Carbon"
 export CPPFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL"
