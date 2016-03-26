@@ -66,7 +66,7 @@ mkdir ${CMPL}
 set -o errexit
 
 ## pkg-config
-LastVersion=`wget 'https://pkg-config.freedesktop.org/releases/' -O- -q | egrep -o 'pkg-config-[0-9\.]+\.tar.gz' | tail -1`
+LastVersion=`wget 'https://pkg-config.freedesktop.org/releases/' -O- -q | egrep -o 'pkg-config-0.29[0-9\.]+\.tar.gz' | tail -1`
 tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0
 cd ${CMPL} || exit 1
 wget 'https://pkg-config.freedesktop.org/releases/'${LastVersion}
