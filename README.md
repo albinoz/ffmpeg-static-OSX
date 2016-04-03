@@ -1,5 +1,5 @@
 ## FFmpeg Static Builder OS X
-###### - Include Last Builds (git) of x264 | x265 | vp10 | XviD | libfdk | ffmpeg…
+###### - Include Last Builds (git) of x264 | x265 | vp10 | libfdk | FFmpeg…
 
 ## Request :
 
