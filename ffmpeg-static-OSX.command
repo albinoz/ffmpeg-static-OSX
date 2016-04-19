@@ -35,6 +35,7 @@ brew uninstall vpx
 brew uninstall faac
 brew uninstall yasm
 brew uninstall pkg-config
+brew uninstall libpng
 
 # JAVA Check
 tput bold ; echo "" ; echo "=-> JAVA Check" ; tput sgr0
