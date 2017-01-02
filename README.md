@@ -6,9 +6,6 @@
 ##### =-> Apple Xcode
 https://developer.apple.com/xcode/download/
 
-##### =-> Rootless from OS X 10.11
-https://www.quora.com/How-do-I-turn-off-the-rootless-in-OS-X-El-Capitan-10-11
-
 ## How Use :
 
 ##### =-> Download :
