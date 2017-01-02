@@ -1,5 +1,5 @@
 ## FFmpeg Static Builder OS X
-###### - Include Last Builds (git) of x264 | x265 | vp10 | libfdk | FFmpeg…
+###### - Include Last Builds (git) of x264 | x265 | libfdk | FFmpeg…
 
 ## Request :
 
@@ -37,10 +37,10 @@ https://github.com/albinoz/ffmpeg-static-OSX/issues
 ```
 ./configure --extra-version=adam-`date +"%m-%d-%y"` \
  --pkg_config='pkg-config --static' --prefix=${TARGET} \
- --extra-cflags=-march=native --as=yasm --enable-nonfree --enable-gpl --enable-version3 \
+ --extra-cflags=-march=native --as=yasm --enable-nonfree --enable-gpl --enable-version3  \
  --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect --arch=x86_64 \
  --enable-opengl --enable-opencl --disable-ffplay --disable-ffserver --disable-ffprobe --disable-doc \
- --enable-openal --enable-libmp3lame --enable-libfaac --enable-libfdk-aac \
+ --enable-openal --enable-libmp3lame --enable-libfdk-aac \
  --enable-libopus --enable-libvorbis --enable-libtheora \
  --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
  --enable-libxvid --enable-libx264 --enable-libx265 --enable-libvpx \
