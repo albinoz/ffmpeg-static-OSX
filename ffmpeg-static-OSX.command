@@ -24,7 +24,7 @@ brew update ; brew upgrade ; brew cleanup ; brew prune ; brew doctor
 
 # Homebrew Static Config
 tput bold ; echo "" ; echo "=-> Homebrew Static Config" ; tput sgr0
-brew install git wget cmake hg autoconf automake libtool ant
+brew install git wget cmake hg autoconf automake libtool ant nasm
 brew uninstall ffmpeg
 brew uninstall lame
 brew uninstall x264
@@ -38,8 +38,8 @@ brew uninstall pkg-config
 brew uninstall --ignore-dependencies libpng
 
 # JAVA Check
-tput bold ; echo "" ; echo "=-> JAVA Check" ; tput sgr0
-if ls /Library/Java/JavaVirtualMachines/jdk1.8* ; then echo "Java is Installed" ; else brew tap caskroom/cask ; brew install brew-cask ;  brew cask install --force java ; fi
+#tput bold ; echo "" ; echo "=-> JAVA Check" ; tput sgr0
+#if ls /Library/Java/JavaVirtualMachines/jdk1.8* ; then echo "Java is Installed" ; else brew tap caskroom/cask ; brew install brew-cask ;  brew cask install --force java ; fi
 
 # Eject Ramdisk
 tput bold ; echo "" ; echo "=-> eject Ramdisk" ; tput sgr0
@@ -169,10 +169,10 @@ cd faac*
 make -j $THREADS && make install
 
 ##+ fdk-aac
-LastVersion=`wget 'http://heanet.dl.sourceforge.net/project/opencore-amr/fdk-aac/' -O- -q | egrep -o 'fdk-aac-[0-9\.]+\.tar.gz' | tail -1`
+LastVersion=`wget 'https://kent.dl.sourceforge.net/project/opencore-amr/fdk-aac/' -O- -q | egrep -o 'fdk-aac-[0-9\.]+\.tar.gz' | tail -1`
 tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0
 cd ${CMPL}
-wget 'http://heanet.dl.sourceforge.net/project/opencore-amr/fdk-aac/'${LastVersion}
+wget https://sourceforge.net/projects/opencore-amr/files/fdk-aac/${LastVersion}/download/ -O ${LastVersion}
 tar -zxvf fdk-aac-*
 cd fdk*
 ./configure --prefix=${TARGET} --enable-static --enable-shared=no && make -j $THREADS && make install
@@ -209,7 +209,7 @@ tput bold ; echo "" ; echo "=-> x264 git" ; tput sgr0
 cd ${CMPL}
 git clone git://git.videolan.org/x264.git
 cd x264
-./configure --prefix=${TARGET} --enable-static && make -j $THREADS && make install && make install-lib-static
+./configure --prefix=${TARGET} --enable-static && make -j $THREADS && make install && make install
 
 ## x265 - require hg & cmake
 tput bold ; echo "" ; echo "=-> x265 hg" ; tput sgr0
@@ -263,12 +263,13 @@ cd fontconfig-*
 ./configure --prefix=${TARGET} --with-add-fonts=/Library/Fonts,~/Library/Fonts --disable-shared --enable-static && make -j $THREADS && make install
 
 ## libass
-tput bold ; echo "" ; echo "=-> libass" ; tput sgr0
+tput bold ; echo "" ; echo "=-> libass git" ; tput sgr0
 cd ${CMPL}
-wget "https://github.com/libass/libass/releases/download/0.13.2/libass-0.13.2.tar.gz"
 #git clone https://github.com/libass/libass.git
+wget "https://github.com/libass/libass/releases/download/0.13.7/libass-0.13.7.tar.gz"
 tar -zxvf libas*
 cd libas*
+#./autogen.sh
 ./configure --prefix=${TARGET} --disable-shared --enable-static && make -j $THREADS && make install
 
 ## libpng git
@@ -287,18 +288,27 @@ wget "http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz"
 tar xzpf bzip2*
 cd bzip2-1.0.6
 make -j $THREADS && make install PREFIX=${TARGET}
- 
-## bluray - Require JAVA-SDK & ANT
-JAVAV=`ls /Library/Java/JavaVirtualMachines/ | tail -1`
-export JAVA_HOME="/Library/Java/JavaVirtualMachines/$JAVAV/Contents/Home"
-tput bold ; echo "" ; echo "=-> libbluray git" ; tput sgr0
-cd ${CMPL}
-git clone http://git.videolan.org/git/libbluray.git
-cd libblura*
-./bootstrap
-./configure --prefix=${TARGET} --disable-shared --disable-dependency-tracking --build x86_64 --disable-doxygen-dot --without-libxml2 --without-fontconfig --without-freetype --disable-udf
-cp -vpfr /Volumes/Ramdisk/compile/libblura*/jni/darwin/jni_md.h /Volumes/Ramdisk/compile/libblura*/jni
-make -j $THREADS && make install
+
+## libudfread - bluray required ?
+#tput bold ; echo "" ; echo "=-> libudfread git" ; tput sgr0
+#cd ${CMPL}
+#git clone https://github.com/vlc-mirror/libudfread.git
+#cd libud*
+#./bootstrap
+#./configure --prefix=${TARGET} --disable-shared
+#make -j $THREADS && make install
+
+## bluray - Require JAVA-SDK & ANT & libudfread
+#JAVAV=`ls /Library/Java/JavaVirtualMachines/ | tail -1`
+#export JAVA_HOME="/Library/Java/JavaVirtualMachines/$JAVAV/Contents/Home"
+#tput bold ; echo "" ; echo "=-> libbluray git" ; tput sgr0
+#cd ${CMPL}
+#git clone http://git.videolan.org/git/libbluray.git
+#cd libblura*
+#./bootstrap
+#./configure --prefix=${TARGET} --disable-shared --disable-dependency-tracking --build x86_64 --disable-doxygen-dot --without-libxml2 --without-fontconfig --without-freetype --disable-udf
+#cp -vpfr /Volumes/Ramdisk/compile/libblura*/jni/darwin/jni_md.h /Volumes/Ramdisk/compile/libblura*/jni
+#make -j $THREADS && make install
 
 ## ffmpeg
 tput bold ; echo "" ; echo "=-> ffmpeg" ; tput sgr0
@@ -307,7 +317,7 @@ git clone git://source.ffmpeg.org/ffmpeg.git
 cd ffmpeg
 ./configure --extra-version=adam-`date +"%m-%d-%y"` \
  --pkg_config='pkg-config --static' --prefix=${TARGET} \
- --extra-cflags=-march=native --as=yasm --enable-nonfree --enable-gpl --enable-version3  \
+ --extra-cflags=-march=native --as=yasm --enable-nonfree --enable-gpl --enable-version3 \
  --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect --arch=x86_64 \
  --enable-opengl --enable-opencl --disable-ffplay --disable-ffserver --disable-ffprobe --disable-doc \
  --enable-openal --enable-libmp3lame --enable-libfdk-aac \
@@ -315,7 +325,7 @@ cd ffmpeg
  --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
  --enable-libxvid --enable-libx264 --enable-libx265 --enable-libvpx \
  --enable-avfilter --enable-filters --enable-libass --enable-fontconfig --enable-libfreetype \
- --enable-libbluray --enable-bzlib --enable-zlib --disable-sdl
+ --enable-bzlib --enable-zlib --disable-sdl
  make -j $THREADS && make install
 
 ## mplayer
