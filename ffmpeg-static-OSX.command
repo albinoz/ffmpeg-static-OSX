@@ -311,10 +311,12 @@ make -j $THREADS && make install PREFIX=${TARGET}
 #make -j $THREADS && make install
 
 ## ffmpeg
-tput bold ; echo "" ; echo "=-> ffmpeg" ; tput sgr0
+LastVersion=`wget 'https://www.ffmpeg.org/releases/' -O- -q | egrep -o 'ffmpeg-[0-9\.]+\.[0-9\.]+\.[0-9\.]+\.tar.gz' | tail -1`
+tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0
 cd ${CMPL}
-git clone git://source.ffmpeg.org/ffmpeg.git
-cd ffmpeg
+wget "https://www.ffmpeg.org/releases/"${LastVersion}
+tar xzpf ffmpeg*
+cd ffmpe*
 ./configure --extra-version=adam-`date +"%m-%d-%y"` \
  --pkg_config='pkg-config --static' --prefix=${TARGET} \
  --extra-cflags=-march=native --as=yasm --enable-nonfree --enable-gpl --enable-version3 \
