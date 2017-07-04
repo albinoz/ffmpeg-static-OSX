@@ -1,5 +1,5 @@
 ## FFmpeg Static Builder OS X
-###### - Include Last Builds of x264 | x265 | libfdk | FFmpeg…
+###### - Include Last Version of x264 | x265 | libfdk | FFmpeg…
 
 ## Request :
 
