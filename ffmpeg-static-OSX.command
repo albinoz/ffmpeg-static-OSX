@@ -38,8 +38,8 @@ brew uninstall pkg-config
 brew uninstall --ignore-dependencies libpng
 
 # JAVA Check
-#tput bold ; echo "" ; echo "=-> JAVA Check" ; tput sgr0
-#if ls /Library/Java/JavaVirtualMachines/jdk1.8* ; then echo "Java is Installed" ; else brew tap caskroom/cask ; brew install brew-cask ;  brew cask install --force java ; fi
+tput bold ; echo "" ; echo "=-> JAVA Check" ; tput sgr0
+if ls /Library/Java/JavaVirtualMachines/jdk1.8* ; then echo "Java is Installed" ; else brew tap caskroom/cask ; brew install brew-cask ;  brew cask install --force java ; fi
 
 # Eject Ramdisk
 tput bold ; echo "" ; echo "=-> eject Ramdisk" ; tput sgr0
@@ -190,9 +190,18 @@ make -j $THREADS && make install
 ## libvpx
 tput bold ; echo "" ; echo "=-> vpx git" ; tput sgr0
 cd ${CMPL}
-git clone https://github.com/webmproject/libvpx.git
+#git clone https://github.com/webmproject/libvpx.git
+git clone https://chromium.googlesource.com/webm/libvpx
 cd libvp*
-./configure --prefix=${TARGET} --enable-postproc --enable-vp9-postproc --enable-multi-res-encoding --enable-unit-tests --disable-shared && make -j $THREADS && make install
+./configure --prefix=${TARGET} --enable-vp8 --enable-postproc --enable-vp9-postproc --enable-vp9-highbitdepth --disable-examples --disable-docs --enable-multi-res-encoding --enable-unit-tests --disable-shared && make -j $THREADS && make install
+
+## VP10 - AV1
+tput bold ; echo "" ; echo "=-> vp10 - av1 git" ; tput sgr0
+cd ${CMPL}
+mkdir nextgenv2 && cd nextgenv2
+curl -O https://chromium.googlesource.com/webm/libvpx/+archive/refs/heads/nextgenv2.tar.gz
+tar -zxvf nextgenv2.tar.gz
+./configure --prefix=${TARGET} --enable-postproc --disable-examples --disable-docs --enable-multi-res-encoding --enable-experimental --enable-unit-tests --disable-shared && make -j $THREADS && make install
 
 ## xvid
 tput bold ; echo "" ; echo "=-> xvid" ; tput sgr0
@@ -202,7 +211,7 @@ tar -zxvf xvidcore-1.3.4.tar.gz
 cd xvidcore
 cd build/generic
 ./configure --prefix=${TARGET} --disable-shared --enable-static && make -j $THREADS && make install
-rm ${TARGET}/lib/libxvidcore.4.dylib
+sleep 1 && rm ${TARGET}/lib/libxvidcore.4.dylib
 
 ## x264
 tput bold ; echo "" ; echo "=-> x264 git" ; tput sgr0
@@ -289,26 +298,27 @@ tar xzpf bzip2*
 cd bzip2-1.0.6
 make -j $THREADS && make install PREFIX=${TARGET}
 
-## libudfread - bluray required ?
-#tput bold ; echo "" ; echo "=-> libudfread git" ; tput sgr0
-#cd ${CMPL}
-#git clone https://github.com/vlc-mirror/libudfread.git
-#cd libud*
-#./bootstrap
-#./configure --prefix=${TARGET} --disable-shared
-#make -j $THREADS && make install
+## libudfread
+tput bold ; echo "" ; echo "=-> libudfread git" ; tput sgr0
+cd ${CMPL}
+git clone https://github.com/vlc-mirror/libudfread.git
+cd libud*
+./bootstrap
+./configure --prefix=${TARGET} --disable-shared --enable-static
+make -j $THREADS && make install
 
 ## bluray - Require JAVA-SDK & ANT & libudfread
-#JAVAV=`ls /Library/Java/JavaVirtualMachines/ | tail -1`
-#export JAVA_HOME="/Library/Java/JavaVirtualMachines/$JAVAV/Contents/Home"
-#tput bold ; echo "" ; echo "=-> libbluray git" ; tput sgr0
-#cd ${CMPL}
-#git clone http://git.videolan.org/git/libbluray.git
-#cd libblura*
-#./bootstrap
-#./configure --prefix=${TARGET} --disable-shared --disable-dependency-tracking --build x86_64 --disable-doxygen-dot --without-libxml2 --without-fontconfig --without-freetype --disable-udf
-#cp -vpfr /Volumes/Ramdisk/compile/libblura*/jni/darwin/jni_md.h /Volumes/Ramdisk/compile/libblura*/jni
-#make -j $THREADS && make install
+JAVAV=`ls /Library/Java/JavaVirtualMachines/ | tail -1`
+export JAVA_HOME="/Library/Java/JavaVirtualMachines/$JAVAV/Contents/Home"
+tput bold ; echo "" ; echo "=-> libbluray git" ; tput sgr0
+cd ${CMPL}
+git clone http://git.videolan.org/git/libbluray.git
+cd libblura*
+cp -r /Volumes/Ramdisk/compile/libudfread/src /Volumes/Ramdisk/compile/libbluray/contrib/libudfread/src
+./bootstrap
+./configure --prefix=${TARGET} --disable-shared --disable-dependency-tracking --build x86_64 --disable-doxygen-dot --without-libxml2 --without-fontconfig --without-freetype --disable-udf
+cp -vpfr /Volumes/Ramdisk/compile/libblura*/jni/darwin/jni_md.h /Volumes/Ramdisk/compile/libblura*/jni
+make -j $THREADS && make install
 
 ## ffmpeg
 LastVersion=`wget 'https://www.ffmpeg.org/releases/' -O- -q | egrep -o 'ffmpeg-[0-9\.]+\.[0-9\.]+\.[0-9\.]+\.tar.gz' | tail -1`
@@ -327,7 +337,7 @@ cd ffmpe*
  --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
  --enable-libxvid --enable-libx264 --enable-libx265 --enable-libvpx \
  --enable-avfilter --enable-filters --enable-libass --enable-fontconfig --enable-libfreetype \
- --enable-bzlib --enable-zlib --disable-sdl
+ --enable-libbluray --enable-bzlib --enable-zlib --disable-sdl
  make -j $THREADS && make install
 
 ## mplayer
