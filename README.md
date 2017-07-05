@@ -1,5 +1,5 @@
 ## FFmpeg Static Builder OS X
-###### - Include Last Version of x264 | x265 | libfdk | FFmpeg…
+###### - Include Last Version of x264 | x265 | libfdk | vpx | FFmpeg…
 
 ## Request :
 
@@ -42,6 +42,6 @@ https://github.com/albinoz/ffmpeg-static-OSX/issues
  --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
  --enable-libxvid --enable-libx264 --enable-libx265 --enable-libvpx \
  --enable-avfilter --enable-filters --enable-libass --enable-fontconfig --enable-libfreetype \
- --enable-bzlib --enable-zlib --disable-sdl
+ --enable-libbluray --enable-bzlib --enable-zlib --disable-sdl
 ```
 
