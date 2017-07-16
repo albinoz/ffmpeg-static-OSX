@@ -1,9 +1,9 @@
-# adam | 2014-17
+# adam | 2014-17-07
 # Download && Build Last Static ffmpeg
 # 10.9 < 10.12
 
 clear
-tput bold ; echo "adam | 2014-16" ; tput sgr0
+tput bold ; echo "adam | 2014-17" ; tput sgr0
 tput bold ; echo "Download && Build Last FFmpeg Static" ; tput sgr0
 
 # Check Xcode
@@ -220,14 +220,38 @@ git clone git://git.videolan.org/x264.git
 cd x264
 ./configure --prefix=${TARGET} --enable-static && make -j $THREADS && make install && make install
 
-## x265 - require hg & cmake
-tput bold ; echo "" ; echo "=-> x265 hg" ; tput sgr0
+## x265 8-10-12bit - require hg & cmake
+tput bold ; echo "" ; echo "=-> x265 8-10-12bit hg" ; tput sgr0
 cd ${CMPL}
 hg clone https://bitbucket.org/multicoreware/x265
-cd x265
-cd source
-cmake -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED=NO .
-make -j $THREADS && make install
+cd x265/source/
+
+mkdir -p 8bit 10bit 12bit
+
+cd 12bit
+cmake ../../../x265/source -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DHIGH_BIT_DEPTH=ON -DEXPORT_C_API=OFF -DENABLE_SHARED=OFF -DENABLE_CLI=OFF -DMAIN12=ON
+make -j $THREADS ${MAKEFLAGS}
+
+cd ../10bit
+cmake ../../../x265/source -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DHIGH_BIT_DEPTH=ON -DEXPORT_C_API=OFF -DENABLE_SHARED=OFF -DENABLE_CLI=OFF
+make -j $THREADS ${MAKEFLAGS}
+
+cd ../8bit
+ln -sf ../10bit/libx265.a libx265_main10.a
+ln -sf ../12bit/libx265.a libx265_main12.a
+cmake ../../../x265/source -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED=NO -DEXTRA_LIB="x265_main10.a;x265_main12.a" -DEXTRA_LINK_FLAGS=-L. -DLINKED_10BIT=ON -DLINKED_12BIT=ON
+make -j $THREADS ${MAKEFLAGS}
+
+# rename the 8bit library, then combine all three into libx265.a
+mv libx265.a libx265_main.a
+
+uname=`uname`
+
+# Mac/BSD libtool
+libtool -static -o libx265.a libx265_main.a libx265_main10.a libx265_main12.a 2>/dev/null
+
+#cmake -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED=NO .
+make install
 
 ## gsm
 tput bold ; echo "" ; echo "=-> gsm" ; tput sgr0
@@ -272,7 +296,7 @@ cd fontconfig-*
 ./configure --prefix=${TARGET} --with-add-fonts=/Library/Fonts,~/Library/Fonts --disable-shared --enable-static && make -j $THREADS && make install
 
 ## libass
-tput bold ; echo "" ; echo "=-> libass git" ; tput sgr0
+tput bold ; echo "" ; echo "=-> libass" ; tput sgr0
 cd ${CMPL}
 #git clone https://github.com/libass/libass.git
 wget "https://github.com/libass/libass/releases/download/0.13.7/libass-0.13.7.tar.gz"
@@ -316,7 +340,7 @@ git clone http://git.videolan.org/git/libbluray.git
 cd libblura*
 cp -r /Volumes/Ramdisk/compile/libudfread/src /Volumes/Ramdisk/compile/libbluray/contrib/libudfread/src
 ./bootstrap
-./configure --prefix=${TARGET} --disable-shared --disable-dependency-tracking --build x86_64 --disable-doxygen-dot --without-libxml2 --without-fontconfig --without-freetype --disable-udf
+./configure --prefix=${TARGET} --disable-shared --disable-dependency-tracking --build x86_64 --disable-doxygen-dot --without-libxml2 --without-freetype --disable-udf
 cp -vpfr /Volumes/Ramdisk/compile/libblura*/jni/darwin/jni_md.h /Volumes/Ramdisk/compile/libblura*/jni
 make -j $THREADS && make install
 
@@ -352,7 +376,7 @@ cd ffmpe*
 ## Check Static and Report Error
 tput bold ; echo "" ; echo "=-> Check Static ffmpeg" ; tput sgr0
 otool -L /Volumes/Ramdisk/sw/bin/ffmpeg | grep -v : > /tmp/Static
-if cat /tmp/Static | grep  "opt" | grep  "usr/local" ;  then tput bold ; echo "" ; echo "x-> Error Bad Link Found " ; tput sgr0 ; else otool -L /Volumes/Ramdisk/sw/bin/ffmpeg ; tput bold ; echo "" ; echo "=-> Static ffmpeg Builded Succefully" ; tput sgr0 ; cp /Volumes/Ramdisk/sw/bin/ffmpeg ~/Desktop/ffmpeg  ; fi
+if cat /tmp/Static | grep  "opt" | grep  "usr/local"  | grep "@" ;  then tput bold ; echo "" ; echo "x-> Error Bad Link Found " ; tput sgr0 ; else otool -L /Volumes/Ramdisk/sw/bin/ffmpeg ; tput bold ; echo "" ; echo "=-> Static ffmpeg Builded Succefully" ; tput sgr0 ; cp /Volumes/Ramdisk/sw/bin/ffmpeg ~/Desktop/ffmpeg  ; fi
 #tput bold ; echo "" ; echo "=-> Check Static mplayer" ; tput sgr0
 #otool -L /Volumes/Ramdisk/sw/bin/mplayer
 
