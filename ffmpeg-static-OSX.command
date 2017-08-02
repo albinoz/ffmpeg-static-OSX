@@ -1,6 +1,6 @@
-# adam | 2014-17-07
-# Download && Build Last Static ffmpeg
-# 10.9 < 10.12
+# adam | 2014 < 2017-08
+# OS X | 10.9 < 10.13
+# Auto Download && Build Last Static ffmpeg 64bits
 
 clear
 tput bold ; echo "adam | 2014-17" ; tput sgr0
@@ -39,7 +39,7 @@ brew uninstall --ignore-dependencies libpng
 
 # JAVA Check
 tput bold ; echo "" ; echo "=-> JAVA Check" ; tput sgr0
-if ls /Library/Java/JavaVirtualMachines/jdk1.8* ; then echo "Java is Installed" ; else brew tap caskroom/cask ; brew install brew-cask ;  brew cask install --force java ; fi
+if ls /Library/Java/JavaVirtualMachines/jdk1.8* ; then echo "Java is Installed" ; else brew tap caskroom/cask ; brew install brew-cask ; brew cask install --force java ; fi
 
 # Eject Ramdisk
 tput bold ; echo "" ; echo "=-> eject Ramdisk" ; tput sgr0
@@ -159,7 +159,7 @@ git clone https://github.com/rbrito/lame.git
 cd lam*
 ./configure --prefix=${TARGET} --disable-shared --enable-static && make -j $THREADS && make install
 
-##+ faac
+##+ faac !! Must be updated
 tput bold ; echo "" ; echo "=-> faac" ; tput sgr0
 cd ${CMPL}
 curl -O http://freefr.dl.sourceforge.net/project/faac/faac-src/faac-1.28/faac-1.28.tar.gz
@@ -190,18 +190,10 @@ make -j $THREADS && make install
 ## libvpx
 tput bold ; echo "" ; echo "=-> vpx git" ; tput sgr0
 cd ${CMPL}
-#git clone https://github.com/webmproject/libvpx.git
-git clone https://chromium.googlesource.com/webm/libvpx
+#git clone https://chromium.googlesource.com/webm/libvpx
+git clone https://github.com/webmproject/libvpx.git
 cd libvp*
 ./configure --prefix=${TARGET} --enable-vp8 --enable-postproc --enable-vp9-postproc --enable-vp9-highbitdepth --disable-examples --disable-docs --enable-multi-res-encoding --enable-unit-tests --disable-shared && make -j $THREADS && make install
-
-## VP10 - AV1
-tput bold ; echo "" ; echo "=-> vp10 - av1 git" ; tput sgr0
-cd ${CMPL}
-mkdir nextgenv2 && cd nextgenv2
-curl -O https://chromium.googlesource.com/webm/libvpx/+archive/refs/heads/nextgenv2.tar.gz
-tar -zxvf nextgenv2.tar.gz
-./configure --prefix=${TARGET} --enable-postproc --disable-examples --disable-docs --enable-multi-res-encoding --enable-experimental --enable-unit-tests --disable-shared && make -j $THREADS && make install
 
 ## xvid
 tput bold ; echo "" ; echo "=-> xvid" ; tput sgr0
@@ -211,7 +203,7 @@ tar -zxvf xvidcore-1.3.4.tar.gz
 cd xvidcore
 cd build/generic
 ./configure --prefix=${TARGET} --disable-shared --enable-static && make -j $THREADS && make install
-sleep 1 && rm ${TARGET}/lib/libxvidcore.4.dylib
+#sleep 2 && rm ${TARGET}/lib/libxvidcore.4.dylib
 
 ## x264
 tput bold ; echo "" ; echo "=-> x264 git" ; tput sgr0
@@ -244,13 +236,8 @@ make -j $THREADS ${MAKEFLAGS}
 
 # rename the 8bit library, then combine all three into libx265.a
 mv libx265.a libx265_main.a
-
-uname=`uname`
-
 # Mac/BSD libtool
 libtool -static -o libx265.a libx265_main.a libx265_main10.a libx265_main12.a 2>/dev/null
-
-#cmake -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED=NO .
 make install
 
 ## gsm
@@ -351,17 +338,21 @@ cd ${CMPL}
 wget "https://www.ffmpeg.org/releases/"${LastVersion}
 tar xzpf ffmpeg*
 cd ffmpe*
-./configure --extra-version=adam-`date +"%m-%d-%y"` \
- --pkg_config='pkg-config --static' --prefix=${TARGET} \
- --extra-cflags=-march=native --as=yasm --enable-nonfree --enable-gpl --enable-version3 \
- --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect --arch=x86_64 \
- --enable-opengl --enable-opencl --disable-ffplay --disable-ffserver --disable-ffprobe --disable-doc \
- --enable-openal --enable-libmp3lame --enable-libfdk-aac \
- --enable-libopus --enable-libvorbis --enable-libtheora \
+./configure --extra-version=adam-`date +"%m-%d-%y"` --arch=x86_64 \
+ --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect \
+ --pkg_config='pkg-config --static' --as=yasm --enable-nonfree --enable-gpl --enable-version3 --prefix=${TARGET} \
+ --disable-ffplay --disable-ffserver --disable-ffprobe --disable-sdl --disable-debug --disable-doc \
+ --enable-libopus --enable-libvorbis --enable-libtheora --enable-libmp3lame --enable-libfdk-aac \
  --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
  --enable-libxvid --enable-libx264 --enable-libx265 --enable-libvpx \
  --enable-avfilter --enable-filters --enable-libass --enable-fontconfig --enable-libfreetype \
- --enable-libbluray --enable-bzlib --enable-zlib --disable-sdl
+ --enable-libbluray --enable-bzlib --enable-zlib \
+ --enable-opengl --enable-opencl --enable-openal
+
+## Fix Illegall Instruction 4 By Remove "--extra-cflags=-march=native" on Core2Duo
+## Fix CLOCK_GETTIME on OS Before 10.12 & iOS 10
+ sed -i -- 's/HAVE_CLOCK_GETTIME 1/HAVE_CLOCK_GETTIME 0/g' config.h
+
  make -j $THREADS && make install
 
 ## mplayer
@@ -376,7 +367,7 @@ cd ffmpe*
 ## Check Static and Report Error
 tput bold ; echo "" ; echo "=-> Check Static ffmpeg" ; tput sgr0
 otool -L /Volumes/Ramdisk/sw/bin/ffmpeg | grep -v : > /tmp/Static
-if cat /tmp/Static | grep  "opt" | grep  "usr/local"  | grep "@" ;  then tput bold ; echo "" ; echo "x-> Error Bad Link Found " ; tput sgr0 ; else otool -L /Volumes/Ramdisk/sw/bin/ffmpeg ; tput bold ; echo "" ; echo "=-> Static ffmpeg Builded Succefully" ; tput sgr0 ; cp /Volumes/Ramdisk/sw/bin/ffmpeg ~/Desktop/ffmpeg  ; fi
+if cat /tmp/Static | grep "opt" | grep "usr/local" | grep "@" ; then tput bold ; echo "" ; echo "x-> Error Bad Link Found " ; tput sgr0 ; else otool -L /Volumes/Ramdisk/sw/bin/ffmpeg ; tput bold ; echo "" ; echo "=-> Static ffmpeg Builded Succefully" ; tput sgr0 ; cp /Volumes/Ramdisk/sw/bin/ffmpeg ~/Desktop/ffmpeg ; fi
 #tput bold ; echo "" ; echo "=-> Check Static mplayer" ; tput sgr0
 #otool -L /Volumes/Ramdisk/sw/bin/mplayer
 
