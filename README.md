@@ -1,4 +1,4 @@
-## FFmpeg Static Builder OS X
+## FFmpeg Static Builder OS X 64bits
 ###### - Include Last Version of x264 | x265 | libfdk | vpx | FFmpeg…
 
 ## Request :
@@ -32,16 +32,15 @@ https://github.com/albinoz/ffmpeg-static-OSX/issues
 
 ##### =-> Include :
 ```
-./configure --extra-version=adam-`date +"%m-%d-%y"` \
- --pkg_config='pkg-config --static' --prefix=${TARGET} \
- --extra-cflags=-march=native --as=yasm --enable-nonfree --enable-gpl --enable-version3  \
- --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect --arch=x86_64 \
- --enable-opengl --enable-opencl --disable-ffplay --disable-ffserver --disable-ffprobe --disable-doc \
- --enable-openal --enable-libmp3lame --enable-libfdk-aac \
- --enable-libopus --enable-libvorbis --enable-libtheora \
+./configure --extra-version=adam-`date +"%m-%d-%y"` --arch=x86_64 \
+ --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect \
+ --pkg_config='pkg-config --static' --as=yasm --enable-nonfree --enable-gpl --enable-version3 --prefix=${TARGET} \
+ --disable-ffplay --disable-ffserver --disable-ffprobe --disable-sdl --disable-debug --disable-doc \
+ --enable-libopus --enable-libvorbis --enable-libtheora --enable-libmp3lame --enable-libfdk-aac \
  --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
  --enable-libxvid --enable-libx264 --enable-libx265 --enable-libvpx \
  --enable-avfilter --enable-filters --enable-libass --enable-fontconfig --enable-libfreetype \
- --enable-libbluray --enable-bzlib --enable-zlib --disable-sdl
+ --enable-libbluray --enable-bzlib --enable-zlib \
+ --enable-opengl --enable-opencl --enable-openal
 ```
 
