@@ -159,15 +159,6 @@ git clone https://github.com/rbrito/lame.git
 cd lam*
 ./configure --prefix=${TARGET} --disable-shared --enable-static && make -j $THREADS && make install
 
-##+ faac !! Must be updated
-tput bold ; echo "" ; echo "=-> faac" ; tput sgr0
-cd ${CMPL}
-curl -O http://freefr.dl.sourceforge.net/project/faac/faac-src/faac-1.28/faac-1.28.tar.gz
-tar -zxvf faac-1.28.tar.gz
-cd faac*
-./configure --prefix=${TARGET} --disable-shared --enable-static
-make -j $THREADS && make install
-
 ##+ fdk-aac
 LastVersion=`wget 'https://kent.dl.sourceforge.net/project/opencore-amr/fdk-aac/' -O- -q | egrep -o 'fdk-aac-[0-9\.]+\.tar.gz' | tail -1`
 tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0
@@ -190,16 +181,16 @@ make -j $THREADS && make install
 ## libvpx
 tput bold ; echo "" ; echo "=-> vpx git" ; tput sgr0
 cd ${CMPL}
-#git clone https://chromium.googlesource.com/webm/libvpx
 git clone https://github.com/webmproject/libvpx.git
 cd libvp*
 ./configure --prefix=${TARGET} --enable-vp8 --enable-postproc --enable-vp9-postproc --enable-vp9-highbitdepth --disable-examples --disable-docs --enable-multi-res-encoding --enable-unit-tests --disable-shared && make -j $THREADS && make install
 
 ## xvid
-tput bold ; echo "" ; echo "=-> xvid" ; tput sgr0
+LastVersion=`wget 'https://labs.xvid.com/source/' -O- -q | egrep -o 'xvidcore-[0-9\.]+\.tar.gz' | tail -1`
+tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0
 cd ${CMPL}
-curl -O http://downloads.xvid.org/downloads/xvidcore-1.3.4.tar.gz
-tar -zxvf xvidcore-1.3.4.tar.gz
+curl -O http://downloads.xvid.org/downloads/${LastVersion}
+tar -zxvf xvidcore-*
 cd xvidcore
 cd build/generic
 ./configure --prefix=${TARGET} --disable-shared --enable-static && make -j $THREADS && make install
@@ -241,10 +232,12 @@ libtool -static -o libx265.a libx265_main.a libx265_main10.a libx265_main12.a 2>
 make install
 
 ## gsm
-tput bold ; echo "" ; echo "=-> gsm" ; tput sgr0
+LastVersion=`wget 'libgsm.sourcearchive.com' -O- -q | egrep -o '1.0.[0-9\.]+\-[0-9\.]+' | tail -1`
+LastVersion2=`wget 'libgsm.sourcearchive.com' -O- -q | egrep -o '1.0.[0-9\.]+' | tail -1`
+tput bold ; echo "" ; echo "=-> libgsm "${LastVersion} ; tput sgr0
 cd ${CMPL}
-curl -O http://libgsm.sourcearchive.com/downloads/1.0.13-4/libgsm_1.0.13.orig.tar.gz
-tar -zxvf libgsm_1.0.13.orig.tar.gz
+wget 'http://libgsm.sourcearchive.com/downloads/'${LastVersion}'/libgsm_'${LastVersion2}'.orig.tar.gz'
+tar -zxvf libgsm_*
 cd gsm-*
 mkdir -p ${TARGET}/man/man3
 mkdir -p ${TARGET}/man/man1
