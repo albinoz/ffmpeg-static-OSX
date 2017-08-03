@@ -107,13 +107,13 @@ cmake -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC .
 make -j $THREADS && make install
 
 ## faad
-tput bold ; echo "" ; echo "=-> faad" ; tput sgr0
-cd ${CMPL}
-wget "http://downloads.sourceforge.net/faac/faad2-2.7.tar.gz"
-tar -zxvf faad2-2.7.tar.gz
-cd faad2-2.7
-./configure --prefix=${TARGET} --disable-shared --enable-static
-make -j $THREADS && make install
+#tput bold ; echo "" ; echo "=-> faad" ; tput sgr0
+#cd ${CMPL}
+#wget "http://downloads.sourceforge.net/faac/faad2-2.7.tar.gz"
+#tar -zxvf faad2-2.7.tar.gz
+#cd faad2-2.7
+#./configure --prefix=${TARGET} --disable-shared --enable-static
+#make -j $THREADS && make install
 
 ## opus - Replace speex
 LastVersion=`wget 'http://downloads.xiph.org/releases/opus/' -O- -q | egrep -o 'opus-1.1[0-9\.]+\.tar.gz' | tail -1`
@@ -158,6 +158,15 @@ cd ${CMPL}
 git clone https://github.com/rbrito/lame.git
 cd lam*
 ./configure --prefix=${TARGET} --disable-shared --enable-static && make -j $THREADS && make install
+
+## TwoLame - optimised MPEG Audio Layer 2
+LastVersion=`wget 'http://www.twolame.org' -O- -q | egrep -o 'twolame-[0-9\.]+\.tar.gz' | tail -1`
+tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0
+cd ${CMPL}
+wget 'http://downloads.sourceforge.net/twolame/'${LastVersion}
+tar -zxvf twolame-*
+cd twolame-*
+./configure --prefix=${TARGET} --enable-static --enable-shared=no && make -j $THREADS && make install
 
 ##+ fdk-aac
 LastVersion=`wget 'https://kent.dl.sourceforge.net/project/opencore-amr/fdk-aac/' -O- -q | egrep -o 'fdk-aac-[0-9\.]+\.tar.gz' | tail -1`
@@ -336,7 +345,7 @@ cd ffmpe*
  --pkg_config='pkg-config --static' --as=yasm --enable-nonfree --enable-gpl --enable-version3 --prefix=${TARGET} \
  --disable-ffplay --disable-ffserver --disable-ffprobe --disable-sdl --disable-debug --disable-doc \
  --enable-libopus --enable-libvorbis --enable-libtheora --enable-libmp3lame --enable-libfdk-aac \
- --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
+ --enable-libtwolame --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
  --enable-libxvid --enable-libx264 --enable-libx265 --enable-libvpx \
  --enable-avfilter --enable-filters --enable-libass --enable-fontconfig --enable-libfreetype \
  --enable-libbluray --enable-bzlib --enable-zlib \
