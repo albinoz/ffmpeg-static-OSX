@@ -106,15 +106,6 @@ cd openal-soft*
 cmake -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC .
 make -j $THREADS && make install
 
-## faad
-#tput bold ; echo "" ; echo "=-> faad" ; tput sgr0
-#cd ${CMPL}
-#wget "http://downloads.sourceforge.net/faac/faad2-2.7.tar.gz"
-#tar -zxvf faad2-2.7.tar.gz
-#cd faad2-2.7
-#./configure --prefix=${TARGET} --disable-shared --enable-static
-#make -j $THREADS && make install
-
 ## opus - Replace speex
 LastVersion=`wget 'http://downloads.xiph.org/releases/opus/' -O- -q | egrep -o 'opus-1.1[0-9\.]+\.tar.gz' | tail -1`
 tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0
