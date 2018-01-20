@@ -1,9 +1,9 @@
 ## FFmpeg Static Builder OS X 64bits
-###### =-> Include Last Version of x264 | x265 | libfdk | FFmpeg…
+#### Include Last Versions of x264 | x265 | libfdk | FFmpeg…
 
 ## Request :
 
-#### Mac OsX 10.10 < 10.13
+##### =-> Mac OsX 10.10 < 10.13
 
 ##### =-> Apple Xcode
 https://developer.apple.com/xcode/download/
