@@ -1,26 +1,30 @@
-# adam | 2014 < 2018-01
-# OS X | 10.9 < 10.13
+# adam | 2014 < 2018-01-20
+# OS X | 10.10 < 10.13
 # Auto Download && Build Last Static ffmpeg 64bits
 
 clear
 tput bold ; echo "adam | 2014-18" ; tput sgr0
-tput bold ; echo "Download && Build Last FFmpeg Static" ; tput sgr0
+tput bold ; echo "Download && Build Last Static FFmpeg" ; tput sgr0
 
 # Check Xcode App
 tput bold ; echo "" ; echo "=-> Check Xcode App" ; tput sgr0 ; sleep 3
-if ls /Applications/ | grep 'Xcode' ; then echo "Xcode App is Installed" ; else echo "Please Install Xcode" ; /usr/bin/open https://developer.apple.com/xcode/ ; exit ; fi
+if ls /Applications/ | grep 'Xcode' ; then echo "Xcode App is Installed" ; else echo "Install Xcode App Requirement !" ; /usr/bin/open https://developer.apple.com/xcode/ ; exit ; fi
+
+# Check Xcode Licence & CLI
+tput bold ; echo "" ; echo "=-> Check Xcode Licence & CLI" ; tput sgr0 ; sleep 3
+if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version ; then echo "Xcode CLI is Installed" ; else echo "Xcode CLI Requirement !" ; sudo xcodebuild -license ; xcode-select --install ; exit ; fi
 
 # Check Homebrew Install
 tput bold ; echo "" ; echo "=-> Check Homebrew Install" ; tput sgr0 ; sleep 3
 if ls /usr/local/bin/brew ; then echo "HomeBrew is Installed" ; else echo "Installing HomeBrew" ; /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" ; fi
 
-# Check Xcode CLI (10.9 minimum)
-tput bold ; echo "" ; echo "=-> Check Xcode CLI" ; tput sgr0 ; sleep 3
-if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version ; then echo "Xcode-CLI is Installed" ; else echo "Please Install Xcode-CLI" ; xcode-select --install ; exit ; fi
+# Check JAVA ( Force JAVA v1.8 for libbluray )
+tput bold ; echo "" ; echo "=-> Check JAVA v1.8" ; tput sgr0 ; sleep 3
+if ls /Library/Java/JavaVirtualMachines/jdk1.8* ; then echo "Java 1.8 is Installed" ; else brew tap caskroom/versions ; brew cask install --force java8 ; fi
 
 # Check Homebrew Update
 tput bold ; echo "" ; echo "=-> Check Homebrew Update" ; tput sgr0 ; sleep 3
-brew update ; brew upgrade ; brew cleanup ; brew prune ; brew doctor
+brew update ; brew upgrade ; brew cleanup ; brew prune
 
 # Check Homebrew Static Config
 tput bold ; echo "" ; echo "=-> Check Homebrew Static Config" ; tput sgr0 ; sleep 3
@@ -37,10 +41,6 @@ brew uninstall pcre
 brew uninstall pkg-config
 brew uninstall --ignore-dependencies libpng
 
-# Check JAVA
-tput bold ; echo "" ; echo "=-> Check JAVA" ; tput sgr0 ; sleep 3
-if ls /Library/Java/JavaVirtualMachines/jdk* ; then echo "Java is Installed" ; else brew cask install --force java ; fi
-
 # Eject Ramdisk
 if Ramdisk=`df | grep /Volumes/ | grep Ramdisk | cut -d' ' -f1` ; then tput bold ; echo "" ; echo "=-> Eject Ramdisk" ; tput sgr0  ; fi
 if Ramdisk=`df | grep /Volumes/ | grep Ramdisk | cut -d' ' -f1` ; then diskutil eject $Ramdisk ; sleep 3 ; fi
@@ -51,9 +51,6 @@ DISK_ID=$(hdid -nomount ram://4000000)
 newfs_hfs -v Ramdisk ${DISK_ID}
 diskutil mount ${DISK_ID}
 sleep 3
-
-# Builder
-export CC=clang
 
 # Paths
 TARGET="/Volumes/Ramdisk/sw"
@@ -70,10 +67,9 @@ export CFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL -framework CoreFoundati
 # CPU(s)
 THREADS=`sysctl -n hw.ncpu`
 
+
 # Exit on Error
 set -o errexit
-
-
 
 #-> BASE
 
@@ -132,7 +128,7 @@ cd libud*
 make -j $THREADS && make install
 
 ## bluray git 
-# Require & ANT & libudfread ( java 9 broken / unactivate )
+# Require & ANT & libudfread ( java 9 broken / force java 8 )
 JAVAV=`ls /Library/Java/JavaVirtualMachines/ | tail -1`
 export JAVA_HOME="/Library/Java/JavaVirtualMachines/$JAVAV/Contents/Home"
 tput bold ; echo "" ; echo "=-> libbluray git" ; tput sgr0 ; sleep 3
@@ -141,7 +137,8 @@ git clone http://git.videolan.org/git/libbluray.git
 cd libblura*
 cp -r /Volumes/Ramdisk/compile/libudfread/src /Volumes/Ramdisk/compile/libbluray/contrib/libudfread/src
 ./bootstrap
-./configure --prefix=${TARGET} --disable-shared --disable-dependency-tracking --build x86_64 --disable-doxygen-dot --without-libxml2 --without-freetype --disable-udf --disable-bdjava-jar
+./configure --prefix=${TARGET} --disable-shared --disable-dependency-tracking --build x86_64 --disable-doxygen-dot --without-libxml2 --without-freetype --disable-udf
+#./configure --prefix=${TARGET} --disable-shared --disable-dependency-tracking --build x86_64 --disable-doxygen-dot --without-libxml2 --without-freetype --disable-udf --disable-bdjava-jar
 cp -vpfr /Volumes/Ramdisk/compile/libblura*/jni/darwin/jni_md.h /Volumes/Ramdisk/compile/libblura*/jni
 make -j $THREADS && make install
 
@@ -324,7 +321,7 @@ git clone git://git.videolan.org/x264.git
 cd x264
 ./configure --prefix=${TARGET} --enable-static --bit-depth=all --chroma-format=all && make -j $THREADS && make install && make install
 
-## x265 8-10-12bit - require hg, cmake , libtool, yasm
+## x265 8-10-12bit - Require wget, cmake, yasm, libtool
 LastVersion=`wget --no-check-certificate 'https://bitbucket.org/multicoreware/x265/downloads/' -O- -q | egrep -o 'x265_[0-9\.]+\.[0-9\.]+\.tar.gz' | head -1`
 tput bold ; echo "" ; echo "=-> "${LastVersion}" 8-10-12bit" ; tput sgr0 ; sleep 3
 cd ${CMPL}
