@@ -1,34 +1,30 @@
-# adam | 2014 < 2018-01-20
+# adam | 2014 < 2018-01-25
 # OS X | 10.10 < 10.13
-# Auto Download && Build Last Static ffmpeg 64bits
+# Auto Download && Build Last Static FFmpeg 64bits
 
 clear
-tput bold ; echo "adam | 2014-18" ; tput sgr0
-tput bold ; echo "Download && Build Last Static FFmpeg" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2018" ; tput sgr0
+tput bold ; echo "OS X | 10.10 < 10.13" ; tput sgr0
+tput bold ; echo "Auto ! Download && Build Last Static FFmpeg 64bits" ; tput sgr0
 
-# Check Xcode App
-tput bold ; echo "" ; echo "=-> Check Xcode App" ; tput sgr0 ; sleep 3
-if ls /Applications/ | grep 'Xcode' ; then echo "Xcode App is Installed" ; else echo "Install Xcode App Requirement !" ; /usr/bin/open https://developer.apple.com/xcode/ ; exit ; fi
-
-# Check Xcode Licence & CLI
-tput bold ; echo "" ; echo "=-> Check Xcode Licence & CLI" ; tput sgr0 ; sleep 3
-if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version ; then echo "Xcode CLI is Installed" ; else echo "Xcode CLI Requirement !" ; sudo xcodebuild -license ; xcode-select --install ; exit ; fi
+# Check Xcode CLI Install
+tput bold ; echo "" ; echo "=-> Check Xcode CLI Install" ; tput sgr0
+if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version  ; then tput bold ; echo "Xcode CLI AllReady Installed" ; else tput bold ; echo "Xcode CLI Install" ; tput sgr0 ; xcode-select --install
+sleep 1
+while ps -ax | grep -v grep | grep 'Install Command Line Developer Tools' >/dev/null ; do sleep 5 ; done
+if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version  ; then tput bold ; echo "Xcode CLI Was SucessFully Installed" ; else echo "Xcode CLI Was NOT Installed" ; tput sgr0 ; exit ; fi ; fi
 
 # Check Homebrew Install
-tput bold ; echo "" ; echo "=-> Check Homebrew Install" ; tput sgr0 ; sleep 3
-if ls /usr/local/bin/brew ; then echo "HomeBrew is Installed" ; else echo "Installing HomeBrew" ; /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" ; fi
-
-# Check JAVA ( Force JAVA v1.8 for libbluray )
-tput bold ; echo "" ; echo "=-> Check JAVA v1.8" ; tput sgr0 ; sleep 3
-if ls /Library/Java/JavaVirtualMachines/jdk1.8* ; then echo "Java 1.8 is Installed" ; else brew tap caskroom/versions ; brew cask install --force java8 ; fi
+tput bold ; echo "" ; echo "=-> Check Homebrew Install" ; sleep 3
+if ls /usr/local/bin/brew >/dev/null ; then tput bold ; echo "HomeBrew AllReady Installed" ; else tput bold ; echo "Installing HomeBrew" ; tput sgr0 ; /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" ; fi
 
 # Check Homebrew Update
 tput bold ; echo "" ; echo "=-> Check Homebrew Update" ; tput sgr0 ; sleep 3
 brew update ; brew upgrade ; brew cleanup ; brew prune
 
-# Check Homebrew Static Config
-tput bold ; echo "" ; echo "=-> Check Homebrew Static Config" ; tput sgr0 ; sleep 3
-brew install git wget cmake hg autoconf automake libtool ant nasm itstool
+# Check Homebrew Config
+tput bold ; echo "" ; echo "=-> Check Homebrew Config" ; tput sgr0 ; sleep 3
+brew install git wget cmake autoconf automake nasm libtool ant
 brew uninstall ffmpeg
 brew uninstall lame
 brew uninstall x264
@@ -38,12 +34,20 @@ brew uninstall vpx
 brew uninstall faac
 brew uninstall yasm
 brew uninstall pcre
-brew uninstall pkg-config
-brew uninstall --ignore-dependencies libpng
+#brew uninstall pkg-config
+#brew uninstall --ignore-dependencies libpng
+
+# Check JAVA ( Force JAVA v1.8 for libbluray )
+tput bold ; echo "" ; echo "=-> Check JAVA v1.8" ; tput sgr0 ; sleep 3
+if ls /Library/Java/JavaVirtualMachines/jdk1.8* ; then echo "Java 1.8 is Installed" ; else brew tap caskroom/versions ; brew cask install --force java8 ; fi
+
+
+
+#-> Ramdisk, Paths, Flags, CPU(s) & Exit on Error
 
 # Eject Ramdisk
-if Ramdisk=`df | grep /Volumes/ | grep Ramdisk | cut -d' ' -f1` ; then tput bold ; echo "" ; echo "=-> Eject Ramdisk" ; tput sgr0  ; fi
-if Ramdisk=`df | grep /Volumes/ | grep Ramdisk | cut -d' ' -f1` ; then diskutil eject $Ramdisk ; sleep 3 ; fi
+if df | grep Ramdisk ; then tput bold ; echo "" ; echo "=-> Eject Ramdisk" ; tput sgr0  ; fi
+if df | grep Ramdisk ; then diskutil eject Ramdisk ; sleep 3 ; fi
 
 # Made Ramdisk
 tput bold ; echo "" ; echo "=-> Made Ramdisk" ; tput sgr0 
@@ -71,19 +75,23 @@ THREADS=`sysctl -n hw.ncpu`
 # Exit on Error
 set -o errexit
 
+
+
 #-> BASE
 
 ## gettext
-## Requirement for fontconfig, fribidi
+## Requirement for fontconfig, fribidi, java
 tput bold ; echo "" ; echo "=-> gettext 0.19.8.1" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 wget --no-check-certificate "ftp://ftp.gnu.org/gnu/gettext/gettext-0.19.8.1.tar.gz"
 tar -zxvf gettex*
 cd gettex*
 # edit the file stpncpy.c to add #undef stpncpy just before #ifndef weak_alias
-./configure --prefix=${TARGET} --disable-shared --enable-static && make -j $THREADS && make install
+./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules --disable-debug --with-included-gettext --with-included-glib \
+--with-included-libcroco --with-included-libunistring --with-emacs --disable-java --disable-csharp --disable-shared --enable-static && make -j $THREADS && make install
 
 ## libpng git
+## Requirement for freetype
 tput bold ; echo "" ; echo "=-> libpng git" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 git clone https://github.com/glennrp/libpng.git
@@ -127,8 +135,7 @@ cd libud*
 ./configure --prefix=${TARGET} --disable-shared --enable-static
 make -j $THREADS && make install
 
-## bluray git 
-# Require & ANT & libudfread ( java 9 broken / force java 8 )
+## bluray git
 JAVAV=`ls /Library/Java/JavaVirtualMachines/ | tail -1`
 export JAVA_HOME="/Library/Java/JavaVirtualMachines/$JAVAV/Contents/Home"
 tput bold ; echo "" ; echo "=-> libbluray git" ; tput sgr0 ; sleep 3
@@ -137,8 +144,7 @@ git clone http://git.videolan.org/git/libbluray.git
 cd libblura*
 cp -r /Volumes/Ramdisk/compile/libudfread/src /Volumes/Ramdisk/compile/libbluray/contrib/libudfread/src
 ./bootstrap
-./configure --prefix=${TARGET} --disable-shared --disable-dependency-tracking --build x86_64 --disable-doxygen-dot --without-libxml2 --without-freetype --disable-udf
-#./configure --prefix=${TARGET} --disable-shared --disable-dependency-tracking --build x86_64 --disable-doxygen-dot --without-libxml2 --without-freetype --disable-udf --disable-bdjava-jar
+./configure --prefix=${TARGET} --disable-shared --disable-dependency-tracking --build x86_64 --disable-doxygen-dot --without-libxml2 --without-freetype --disable-udf ##disable-bdjava-jar
 cp -vpfr /Volumes/Ramdisk/compile/libblura*/jni/darwin/jni_md.h /Volumes/Ramdisk/compile/libblura*/jni
 make -j $THREADS && make install
 
@@ -314,7 +320,7 @@ cd build/generic
 ./configure --prefix=${TARGET} --disable-shared --enable-static && make -j $THREADS && make install
 #sleep 3 && rm ${TARGET}/lib/libxvidcore.4.dylib
 
-## x264 8-10bit git
+## x264 8-10bit git - Require nasm
 tput bold ; echo "" ; echo "=-> x264 8-10bit git" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 git clone git://git.videolan.org/x264.git
@@ -378,11 +384,11 @@ cd FFmpe*
 
  make -j $THREADS && make install
 
+## Check Static
+tput bold ; echo "" ; echo "=-> Check Static FFmpeg" ; tput sgr0 ; sleep 3
+otool -L /Volumes/Ramdisk/sw/bin/ffmpeg
+cp /Volumes/Ramdisk/sw/bin/ffmpeg ~/Desktop/ffmpeg
+
 ## End Time
 Time="$(echo 'obase=60;'$SECONDS | bc | sed 's/ /:/g' | cut -c 2-)"
 tput bold ; echo "" ; echo "=-> End in $Time" ; tput sgr0
-
-## Check Static
-tput bold ; echo "" ; echo "=-> Check Static ffmpeg" ; tput sgr0
-otool -L /Volumes/Ramdisk/sw/bin/ffmpeg
-cp /Volumes/Ramdisk/sw/bin/ffmpeg ~/Desktop/ffmpeg
