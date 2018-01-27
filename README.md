@@ -5,9 +5,6 @@
 
 ##### =-> Mac OsX 10.10 < 10.13
 
-##### =-> Apple Xcode
-https://developer.apple.com/xcode/download/
-
 ## How Use :
 
 ##### =-> Download :
