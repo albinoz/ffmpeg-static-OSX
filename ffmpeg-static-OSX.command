@@ -12,17 +12,21 @@ tput bold ; echo "" ; echo "=-> Check Xcode CLI Install" ; tput sgr0
 if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version  ; then tput bold ; echo "Xcode CLI AllReady Installed" ; else tput bold ; echo "Xcode CLI Install" ; tput sgr0 ; xcode-select --install
 sleep 1
 while ps -ax | grep -v grep | grep 'Install Command Line Developer Tools' >/dev/null ; do sleep 5 ; done
-if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version  ; then tput bold ; echo "Xcode CLI Was SucessFully Installed" ; else echo "Xcode CLI Was NOT Installed" ; tput sgr0 ; exit ; fi ; fi
+if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version  ; then tput bold ; echo "Xcode CLI Was SucessFully Installed" ; else tput bold ; echo "Xcode CLI Was NOT Installed" ; tput sgr0 ; exit ; fi ; fi
 
 # Check Homebrew Install
 tput bold ; echo "" ; echo "=-> Check Homebrew Install" ; sleep 3
-if ls /usr/local/bin/brew >/dev/null ; then tput bold ; echo "HomeBrew AllReady Installed" ; else tput bold ; echo "Installing HomeBrew" ; tput sgr0 ; /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" ; fi
+if ls /usr/local/bin/brew >/dev/null ; then tput bold ; echo "HomeBrew AllReady Installed" ; else tput bold ; echo "Installing HomeBrew" ; /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" ; fi
 
 # Check Homebrew Update
 tput bold ; echo "" ; echo "=-> Check Homebrew Update" ; tput sgr0 ; sleep 3
 brew update ; brew upgrade ; brew cleanup ; brew prune
 
-# Check Homebrew Config
+# Check JAVA ( Force JAVA v1.8 for libbluray )
+tput bold ; echo "" ; echo "=-> Check JAVA v1.8" ; tput sgr0 ; sleep 3
+if ls /Library/Java/JavaVirtualMachines/jdk1.8* ; then echo "Java 1.8 is Installed" ; else brew tap caskroom/versions ; brew cask install --force java8 ; fi
+
+# Check Homebrew Config ( ant Require java )
 tput bold ; echo "" ; echo "=-> Check Homebrew Config" ; tput sgr0 ; sleep 3
 brew install git wget cmake autoconf automake nasm libtool ant
 brew uninstall ffmpeg
@@ -36,11 +40,6 @@ brew uninstall yasm
 brew uninstall pcre
 #brew uninstall pkg-config
 #brew uninstall --ignore-dependencies libpng
-
-# Check JAVA ( Force JAVA v1.8 for libbluray )
-tput bold ; echo "" ; echo "=-> Check JAVA v1.8" ; tput sgr0 ; sleep 3
-if ls /Library/Java/JavaVirtualMachines/jdk1.8* ; then echo "Java 1.8 is Installed" ; else brew tap caskroom/versions ; brew cask install --force java8 ; fi
-
 
 
 #-> Ramdisk, Paths, Flags, CPU(s) & Exit on Error
