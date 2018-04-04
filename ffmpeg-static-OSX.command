@@ -1,4 +1,4 @@
-# adam | 2014 < 2018-01-25
+# adam | 2014 < 2018-04-04
 # OS X | 10.10 < 10.13
 # Auto Download && Build Last Static FFmpeg 64bits
 
@@ -308,6 +308,16 @@ git clone https://github.com/webmproject/libvpx.git
 cd libvp*
 ./configure --prefix=${TARGET} --enable-vp8 --enable-postproc --enable-vp9-postproc --enable-vp9-highbitdepth --disable-examples --disable-docs --enable-multi-res-encoding --enable-unit-tests --disable-shared && make -j $THREADS && make install
 
+## av1 git
+tput bold ; echo "" ; echo "=-> av1 git" ; tput sgr0 ; sleep 3
+cd ${CMPL}
+git clone https://aomedia.googlesource.com/aom
+cd aom
+mkdir aom_build
+cd aom_build
+cmake /Volumes/Ramdisk/compile/aom -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC
+make -j $THREADS && make install
+
 ## xvid
 LastVersion=`wget --no-check-certificate 'https://labs.xvid.com/source/' -O- -q | egrep -o 'xvidcore-[0-9\.]+\.tar.gz' | tail -1`
 tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0 ; sleep 3
@@ -372,7 +382,7 @@ cd FFmpe*
  --disable-ffplay --disable-ffprobe --disable-debug --disable-doc \
  --enable-libopus --enable-libvorbis --enable-libtheora --enable-libmp3lame --enable-libfdk-aac \
  --enable-libtwolame --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
- --enable-libxvid --enable-libx264 --enable-libx265 --enable-libvpx \
+ --enable-libxvid --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom \
  --enable-avfilter --enable-filters --enable-libass --enable-fontconfig --enable-libfreetype \
  --enable-libbluray --enable-bzlib --enable-zlib \
  --enable-opengl --enable-opencl --enable-openal
