@@ -1,4 +1,4 @@
-# adam | 2014 < 2018-04-04
+# adam | 2014 < 2018-05-02
 # OS X | 10.10 < 10.13
 # Auto Download && Build Last Static FFmpeg 64bits
 
@@ -22,13 +22,9 @@ if ls /usr/local/bin/brew >/dev/null ; then tput bold ; echo "HomeBrew AllReady 
 tput bold ; echo "" ; echo "=-> Check Homebrew Update" ; tput sgr0 ; sleep 3
 brew update ; brew upgrade ; brew cleanup ; brew prune
 
-# Check JAVA ( Force JAVA v1.8 for libbluray )
-tput bold ; echo "" ; echo "=-> Check JAVA v1.8" ; tput sgr0 ; sleep 3
-if ls /Library/Java/JavaVirtualMachines/jdk1.8* ; then echo "Java 1.8 is Installed" ; else brew tap caskroom/versions ; brew cask install --force java8 ; fi
-
 # Check Homebrew Config ( ant Require java )
 tput bold ; echo "" ; echo "=-> Check Homebrew Config" ; tput sgr0 ; sleep 3
-brew install git wget cmake autoconf automake nasm libtool ant
+brew install git wget cmake autoconf automake nasm libtool #ant
 brew uninstall ffmpeg
 brew uninstall lame
 brew uninstall x264
@@ -37,13 +33,9 @@ brew uninstall xvid
 brew uninstall vpx
 brew uninstall faac
 brew uninstall yasm
-brew uninstall pcre
-#brew uninstall pkg-config
-#brew uninstall --ignore-dependencies libpng
+#brew uninstall pcre
 
-
-#-> Ramdisk, Paths, Flags, CPU(s) & Exit on Error
-
+#-> Ramdisk, Paths, Flags, CPU(s) & Exit on Error & Fix JAVA PopUp
 # Eject Ramdisk
 if df | grep Ramdisk ; then tput bold ; echo "" ; echo "=-> Eject Ramdisk" ; tput sgr0  ; fi
 if df | grep Ramdisk ; then diskutil eject Ramdisk ; sleep 3 ; fi
@@ -70,7 +62,6 @@ export CFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL -framework CoreFoundati
 # CPU(s)
 THREADS=`sysctl -n hw.ncpu`
 
-
 # Exit on Error
 set -o errexit
 
@@ -78,8 +69,19 @@ set -o errexit
 
 #-> BASE
 
+# Apple Java Install - Fix PopUp
+tput bold ; echo "" ; echo "Check Java Install - Fix PopUp" ; tput sgr0 ; sleep 3
+if ls /Library/Java/JavaVirtualMachines/ | grep jdk ; then tput bold ; echo "Java is Installed"
+else tput bold ; echo "Apple Java Install - Fix PopUp" ; tput sgr0 ; sleep 3
+cd ${CMPL}
+wget http://supportdownload.apple.com/download.info.apple.com/Apple_Support_Area/Apple_Software_Updates/Mac_OS_X/downloads/031-33898-20171026-7a797e9e-b8de-11e7-b1fe-c14fbda7e146/javaforosx.dmg
+hdiutil attach -nobrowse ${CMPL}/javaforosx.dmg ; sleep 3
+sudo installer -pkg /Volumes/Java\ for\ macOS\ 2017-001/JavaForOSX.pkg -target /
+hdiutil detach /Volumes/Java\ for\ macOS\ 2017-001/ ; sleep 3
+fi
+
 ## gettext
-## Requirement for fontconfig, fribidi, java
+## Requirement for fontconfig, fribidi
 tput bold ; echo "" ; echo "=-> gettext 0.19.8.1" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 wget --no-check-certificate "ftp://ftp.gnu.org/gnu/gettext/gettext-0.19.8.1.tar.gz"
@@ -87,7 +89,7 @@ tar -zxvf gettex*
 cd gettex*
 # edit the file stpncpy.c to add #undef stpncpy just before #ifndef weak_alias
 ./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules --disable-debug --with-included-gettext --with-included-glib \
---with-included-libcroco --with-included-libunistring --with-emacs --disable-java --disable-csharp --disable-shared --enable-static && make -j $THREADS && make install
+--with-included-libcroco --with-included-libunistring --with-emacs --disable-java --disable-native-java --disable-csharp --with-lispdir=#{elisp} --disable-shared --enable-static --without-git --without-cvs --without-xz && make -j $THREADS && make install
 
 ## libpng git
 ## Requirement for freetype
@@ -143,7 +145,7 @@ git clone http://git.videolan.org/git/libbluray.git
 cd libblura*
 cp -r /Volumes/Ramdisk/compile/libudfread/src /Volumes/Ramdisk/compile/libbluray/contrib/libudfread/src
 ./bootstrap
-./configure --prefix=${TARGET} --disable-shared --disable-dependency-tracking --build x86_64 --disable-doxygen-dot --without-libxml2 --without-freetype --disable-udf ##disable-bdjava-jar
+./configure --prefix=${TARGET} --disable-shared --disable-dependency-tracking --build x86_64 --disable-doxygen-dot --without-libxml2 --without-freetype --disable-udf --disable-bdjava-jar
 cp -vpfr /Volumes/Ramdisk/compile/libblura*/jni/darwin/jni_md.h /Volumes/Ramdisk/compile/libblura*/jni
 make -j $THREADS && make install
 
@@ -158,17 +160,18 @@ cd ${CMPL}
 wget --no-check-certificate 'http://download.savannah.gnu.org/releases/freetype/'${LastVersion}
 tar xzpf freetype-*
 cd freetype-*
-./configure --prefix=${TARGET}  --disable-shared --enable-static && make -j $THREADS && make install
+./configure --prefix=${TARGET}  --disable-shared --enable-static  && make -j $THREADS && make install
 
-## fribidi 0.19.7 fixed 
-tput bold ; echo "" ; echo "=-> fribidi 0.19.7" ; tput sgr0 ; sleep 3
+## fribidi 1.0.2
+tput bold ; echo "" ; echo "=-> fribidi 1.0.2" ; tput sgr0 ; sleep 3
 cd ${CMPL} 
-wget --no-check-certificate https://ftp.openbsd.org/pub/OpenBSD/distfiles/fribidi-0.19.7.tar.bz2
+#wget --no-check-certificate https://ftp.openbsd.org/pub/OpenBSD/distfiles/fribidi-0.19.7.tar.bz2
+wget --no-check-certificate https://github.com/fribidi/fribidi/releases/download/v1.0.2/fribidi-1.0.2.tar.bz2
 tar xzpf fribid*
 cd fribid*
-./configure --prefix=${TARGET} --disable-shared --enable-static --disable-debug --disable-dependency-tracking  && make -j $THREADS && make install
- 
-## fontconfig fixed ( Last Version 2.12.19 Build Error )
+./configure --prefix=${TARGET} --disable-shared --enable-static --disable-docs --disable-silent-rules --disable-debug --disable-dependency-tracking  && make -j $THREADS && make install
+
+## fontconfig fixed ( Last Version 2.13.0 Build Error )
 tput bold ; echo "" ; echo "=-> fontconfig 2.12.6 " ; tput sgr0 ; sleep 3
 cd ${CMPL}
 wget --no-check-certificate https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.12.6.tar.bz2
@@ -366,7 +369,8 @@ libtool -static -o libx265.a libx265_main.a libx265_main10.a libx265_main12.a
 make install
 
 
-## ffmpeg
+
+## FFmpeg
 #LastVersion=`wget --no-check-certificate 'https://www.ffmpeg.org/releases/' -O- -q | egrep -o 'ffmpeg-[0-9\.]+\.[0-9\.]+\.[0-9\.]+\.tar.gz' | tail -1`
 #tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0 ; sleep 3
 tput bold ; echo "" ; echo "=-> FFmpeg git" ; tput sgr0 ; sleep 3
