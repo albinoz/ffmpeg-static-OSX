@@ -284,13 +284,16 @@ cd flac-*
 make -j $THREADS && make install
 
 ## gsm
-LastVersion=`wget --no-check-certificate 'libgsm.sourcearchive.com' -O- -q | egrep -o '1.0.[0-9\.]+\-[0-9\.]+' | tail -1`
-LastVersion2=`wget --no-check-certificate 'libgsm.sourcearchive.com' -O- -q | egrep -o '1.0.[0-9\.]+' | tail -1`
-tput bold ; echo "" ; echo "=-> libgsm "${LastVersion} ; tput sgr0 ; sleep 3
+#LastVersion=`wget --no-check-certificate 'libgsm.sourcearchive.com' -O- -q | egrep -o '1.0.[0-9\.]+\-[0-9\.]+' | tail -1`
+#LastVersion2=`wget --no-check-certificate 'libgsm.sourcearchive.com' -O- -q | egrep -o '1.0.[0-9\.]+' | tail -1`
+#tput bold ; echo "" ; echo "=-> libgsm "${LastVersion} ; tput sgr0 ; sleep 3
+tput bold ; echo "" ; echo "=-> libgsm 1.0.18" ; tput sgr0 ; sleep 3
 cd ${CMPL}
-wget --no-check-certificate 'http://libgsm.sourcearchive.com/downloads/'${LastVersion}'/libgsm_'${LastVersion2}'.orig.tar.gz'
-tar -zxvf libgsm_*
-cd gsm-*
+#wget --no-check-certificate 'http://libgsm.sourcearchive.com/downloads/'${LastVersion}'/libgsm_'${LastVersion2}'.orig.tar.gz'
+wget --no-check-certificate 'http://www.quut.com/gsm/gsm-1.0.18.tar.gz'
+#tar -zxvf libgsm_*
+tar -zxvf gsm*
+cd gsm*
 mkdir -p ${TARGET}/man/man3
 mkdir -p ${TARGET}/man/man1
 mkdir -p ${TARGET}/include/gsm
@@ -322,10 +325,12 @@ cmake /Volumes/Ramdisk/compile/aom -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTY
 make -j $THREADS && make install
 
 ## xvid
-LastVersion=`wget --no-check-certificate 'https://labs.xvid.com/source/' -O- -q | egrep -o 'xvidcore-[0-9\.]+\.tar.gz' | tail -1`
-tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0 ; sleep 3
+tput bold ; echo "" ; echo "=-> XviD 1.3.5" ; tput sgr0 ; sleep 3
+#LastVersion=`wget --no-check-certificate 'https://labs.xvid.com/source/' -O- -q | egrep -o 'xvidcore-[0-9\.]+\.tar.gz' | tail -1`
+#tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0 ; sleep 3
 cd ${CMPL}
-curl -O http://downloads.xvid.org/downloads/${LastVersion}
+#curl -O http://downloads.xvid.org/downloads/${LastVersion}
+curl -O http://downloads.xvid.org/downloads/xvidcore-1.3.5.tar.gz
 tar -zxvf xvidcore-*
 cd xvidcore
 cd build/generic
@@ -339,7 +344,7 @@ git clone git://git.videolan.org/x264.git
 cd x264
 ./configure --prefix=${TARGET} --enable-static --bit-depth=all --chroma-format=all && make -j $THREADS && make install && make install
 
-## x265 8-10-12bit - Require wget, cmake, yasm, libtool
+## x265 8-10-12bit - Require wget, cmake, yasm, nasm, libtool
 LastVersion=`wget --no-check-certificate 'https://bitbucket.org/multicoreware/x265/downloads/' -O- -q | egrep -o 'x265_[0-9\.]+\.[0-9\.]+\.tar.gz' | head -1`
 tput bold ; echo "" ; echo "=-> "${LastVersion}" 8-10-12bit" ; tput sgr0 ; sleep 3
 cd ${CMPL}
@@ -371,15 +376,15 @@ make install
 
 
 ## FFmpeg
-#LastVersion=`wget --no-check-certificate 'https://www.ffmpeg.org/releases/' -O- -q | egrep -o 'ffmpeg-[0-9\.]+\.[0-9\.]+\.[0-9\.]+\.tar.gz' | tail -1`
-#tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0 ; sleep 3
-tput bold ; echo "" ; echo "=-> FFmpeg git" ; tput sgr0 ; sleep 3
+LastVersion=`wget --no-check-certificate 'https://www.ffmpeg.org/releases/' -O- -q | egrep -o 'ffmpeg-[0-9\.]+\.[0-9\.]+\.[0-9\.]+\.tar.gz' | tail -1`
+tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0 ; sleep 3
+#tput bold ; echo "" ; echo "=-> FFmpeg git" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 ## Tmp git last master to fix x264 build 8-10bit
-git clone https://github.com/FFmpeg/FFmpeg.git
-#wget --no-check-certificate "https://www.ffmpeg.org/releases/"${LastVersion}
-#tar xzpf ffmpeg*
-cd FFmpe*
+#git clone https://github.com/FFmpeg/FFmpeg.git
+wget --no-check-certificate "https://www.ffmpeg.org/releases/"${LastVersion}
+tar xzpf ffmpeg*
+cd ffmpe*
 ./configure --extra-version=adam-`date +"%m-%d-%y"` --arch=x86_64 \
  --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect \
  --pkg_config='pkg-config --static' --enable-nonfree --enable-gpl --enable-version3 --prefix=${TARGET} \
