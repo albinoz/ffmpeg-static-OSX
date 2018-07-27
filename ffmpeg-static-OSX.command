@@ -1,9 +1,7 @@
-# adam | 2014 < 2018-05-02
-# OS X | 10.10 < 10.13
-# Auto Download && Build Last Static FFmpeg 64bits
+#!/bin/sh
 
 clear
-tput bold ; echo "adam | 2014 < 2018" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2018-07-21" ; tput sgr0
 tput bold ; echo "OS X | 10.10 < 10.13" ; tput sgr0
 tput bold ; echo "Auto ! Download && Build Last Static FFmpeg 64bits" ; tput sgr0
 
@@ -97,8 +95,9 @@ tput bold ; echo "" ; echo "=-> libpng git" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 git clone https://github.com/glennrp/libpng.git
 cd libpng
-./autogen.sh
-./configure --prefix=${TARGET} --enable-static --disable-shared
+#./autogen.sh
+autoreconf -f -i
+./configure --prefix=${TARGET} --enable-maintainer-mode --enable-static --disable-shared
 make -j $THREADS && make install
 
 ## pkg-config
@@ -312,7 +311,8 @@ tput bold ; echo "" ; echo "=-> vpx git" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 git clone https://github.com/webmproject/libvpx.git
 cd libvp*
-./configure --prefix=${TARGET} --enable-vp8 --enable-postproc --enable-vp9-postproc --enable-vp9-highbitdepth --disable-examples --disable-docs --enable-multi-res-encoding --enable-unit-tests --disable-shared && make -j $THREADS && make install
+./configure --prefix=${TARGET} --enable-vp8 --enable-postproc --enable-vp9-postproc --enable-vp9-highbitdepth --disable-examples --disable-docs --enable-multi-res-encoding --enable-unit-tests --disable-shared
+make -j $THREADS && make install
 
 ## av1 git
 tput bold ; echo "" ; echo "=-> av1 git" ; tput sgr0 ; sleep 3
@@ -372,7 +372,6 @@ mv libx265.a libx265_main.a
 # Mac/BSD libtool
 libtool -static -o libx265.a libx265_main.a libx265_main10.a libx265_main12.a
 make install
-
 
 
 ## FFmpeg
