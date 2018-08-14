@@ -82,7 +82,8 @@ fi
 ## Requirement for fontconfig, fribidi
 tput bold ; echo "" ; echo "=-> gettext 0.19.8.1" ; tput sgr0 ; sleep 3
 cd ${CMPL}
-wget --no-check-certificate "ftp://ftp.gnu.org/gnu/gettext/gettext-0.19.8.1.tar.gz"
+#wget --no-check-certificate "ftp://ftp.gnu.org/gnu/gettext/gettext-0.19.8.1.tar.gz"
+wget --no-check-certificate "http://ftp.igh.cnrs.fr/pub/gnu/gettext/gettext-0.19.8.1.tar.gz"
 tar -zxvf gettex*
 cd gettex*
 # edit the file stpncpy.c to add #undef stpncpy just before #ifndef weak_alias
@@ -121,8 +122,9 @@ cd yasm-*
 ## bzip
 tput bold ; echo "" ; echo "=-> bzip" ; tput sgr0 ; sleep 3
 cd ${CMPL}
-wget --no-check-certificate "http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz"
-tar xzpf bzip2*
+#wget --no-check-certificate "http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz"
+#tar xzpf bzip2*
+git clone https://github.com/enthought/bzip2-1.0.6
 cd bzip2-1.0.6
 make -j $THREADS && make install PREFIX=${TARGET}
 
