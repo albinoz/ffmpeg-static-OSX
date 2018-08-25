@@ -1,8 +1,8 @@
 #!/bin/sh
 
 clear
-tput bold ; echo "adam | 2014 < 2018-07-21" ; tput sgr0
-tput bold ; echo "OS X | 10.10 < 10.13" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2018-08-25" ; tput sgr0
+tput bold ; echo "OS X | 10.10 < 10.14b" ; tput sgr0
 tput bold ; echo "Auto ! Download && Build Last Static FFmpeg 64bits" ; tput sgr0
 
 # Check Xcode CLI Install
@@ -122,8 +122,6 @@ cd yasm-*
 ## bzip
 tput bold ; echo "" ; echo "=-> bzip" ; tput sgr0 ; sleep 3
 cd ${CMPL}
-#wget --no-check-certificate "http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz"
-#tar xzpf bzip2*
 git clone https://github.com/enthought/bzip2-1.0.6
 cd bzip2-1.0.6
 make -j $THREADS && make install PREFIX=${TARGET}
@@ -165,8 +163,7 @@ cd freetype-*
 
 ## fribidi 1.0.2
 tput bold ; echo "" ; echo "=-> fribidi 1.0.2" ; tput sgr0 ; sleep 3
-cd ${CMPL} 
-#wget --no-check-certificate https://ftp.openbsd.org/pub/OpenBSD/distfiles/fribidi-0.19.7.tar.bz2
+cd ${CMPL}
 wget --no-check-certificate https://github.com/fribidi/fribidi/releases/download/v1.0.2/fribidi-1.0.2.tar.bz2
 tar xzpf fribid*
 cd fribid*
@@ -285,14 +282,9 @@ cd flac-*
 make -j $THREADS && make install
 
 ## gsm
-#LastVersion=`wget --no-check-certificate 'libgsm.sourcearchive.com' -O- -q | egrep -o '1.0.[0-9\.]+\-[0-9\.]+' | tail -1`
-#LastVersion2=`wget --no-check-certificate 'libgsm.sourcearchive.com' -O- -q | egrep -o '1.0.[0-9\.]+' | tail -1`
-#tput bold ; echo "" ; echo "=-> libgsm "${LastVersion} ; tput sgr0 ; sleep 3
 tput bold ; echo "" ; echo "=-> libgsm 1.0.18" ; tput sgr0 ; sleep 3
 cd ${CMPL}
-#wget --no-check-certificate 'http://libgsm.sourcearchive.com/downloads/'${LastVersion}'/libgsm_'${LastVersion2}'.orig.tar.gz'
 wget --no-check-certificate 'http://www.quut.com/gsm/gsm-1.0.18.tar.gz'
-#tar -zxvf libgsm_*
 tar -zxvf gsm*
 cd gsm*
 mkdir -p ${TARGET}/man/man3
@@ -328,16 +320,12 @@ make -j $THREADS && make install
 
 ## xvid
 tput bold ; echo "" ; echo "=-> XviD 1.3.5" ; tput sgr0 ; sleep 3
-#LastVersion=`wget --no-check-certificate 'https://labs.xvid.com/source/' -O- -q | egrep -o 'xvidcore-[0-9\.]+\.tar.gz' | tail -1`
-#tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0 ; sleep 3
 cd ${CMPL}
-#curl -O http://downloads.xvid.org/downloads/${LastVersion}
 curl -O http://downloads.xvid.org/downloads/xvidcore-1.3.5.tar.gz
 tar -zxvf xvidcore-*
 cd xvidcore
 cd build/generic
 ./configure --prefix=${TARGET} --disable-shared --enable-static && make -j $THREADS && make install
-#sleep 3 && rm ${TARGET}/lib/libxvidcore.4.dylib
 
 ## x264 8-10bit git - Require nasm
 tput bold ; echo "" ; echo "=-> x264 8-10bit git" ; tput sgr0 ; sleep 3
@@ -379,10 +367,7 @@ make install
 ## FFmpeg
 LastVersion=`wget --no-check-certificate 'https://www.ffmpeg.org/releases/' -O- -q | egrep -o 'ffmpeg-[0-9\.]+\.[0-9\.]+\.[0-9\.]+\.tar.gz' | tail -1`
 tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0 ; sleep 3
-#tput bold ; echo "" ; echo "=-> FFmpeg git" ; tput sgr0 ; sleep 3
 cd ${CMPL}
-## Tmp git last master to fix x264 build 8-10bit
-#git clone https://github.com/FFmpeg/FFmpeg.git
 wget --no-check-certificate "https://www.ffmpeg.org/releases/"${LastVersion}
 tar xzpf ffmpeg*
 cd ffmpe*
