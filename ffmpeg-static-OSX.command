@@ -1,8 +1,8 @@
 #!/bin/sh
 
 clear
-tput bold ; echo "adam | 2014 < 2018-08-25" ; tput sgr0
-tput bold ; echo "OS X | 10.10 < 10.14b" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2018-11-19" ; tput sgr0
+tput bold ; echo "OS X | 10.10 < 10.14" ; tput sgr0
 tput bold ; echo "Auto ! Download && Build Last Static FFmpeg 64bits" ; tput sgr0
 
 # Check Xcode CLI Install
@@ -40,7 +40,7 @@ if df | grep Ramdisk ; then diskutil eject Ramdisk ; sleep 3 ; fi
 
 # Made Ramdisk
 tput bold ; echo "" ; echo "=-> Made Ramdisk" ; tput sgr0 
-DISK_ID=$(hdid -nomount ram://4000000)
+DISK_ID=$(hdid -nomount ram://5000000)
 newfs_hfs -v Ramdisk ${DISK_ID}
 diskutil mount ${DISK_ID}
 sleep 3
@@ -98,8 +98,9 @@ git clone https://github.com/glennrp/libpng.git
 cd libpng
 #./autogen.sh
 autoreconf -f -i
-./configure --prefix=${TARGET} --enable-maintainer-mode --enable-static --disable-shared
-make -j $THREADS && make install
+#./configure --prefix=${TARGET}  --enable-maintainer-mode --enable-static --disable-shared
+./configure --prefix=${TARGET}  --disable-dependency-tracking --disable-silent-rules --enable-static --disable-shared
+make -j $THREADS && make test && make install
 
 ## pkg-config
 LastVersion=`wget  --no-check-certificate 'https://pkg-config.freedesktop.org/releases/' -O- -q | egrep -o 'pkg-config-0.29[0-9\.]+\.tar.gz' | tail -1`
@@ -192,11 +193,12 @@ cd libas*
 #-> AUDIO
 
 ## openal-soft
-LastVersion=`wget --no-check-certificate 'http://kcat.strangesoft.net/openal-releases/' -O- -q | egrep -o 'openal-soft-[0-9\.]+\.tar.bz2' | tail -1`
-tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0 ; sleep 3
+#LastVersion=`wget --no-check-certificate 'http://kcat.strangesoft.net/openal-releases/' -O- -q | egrep -o 'openal-soft-[0-9\.]+\.tar.bz2' | tail -1`
+tput bold ; echo "" ; echo "=-> openal-soft" ; tput sgr0 ; sleep 3
 cd ${CMPL}
-wget --no-check-certificate 'http://kcat.strangesoft.net/openal-releases/'${LastVersion}
-tar xjpf openal-soft-*
+#wget --no-check-certificate 'http://kcat.strangesoft.net/openal-releases/'${LastVersion}
+git clone https://github.com/kcat/openal-soft
+#tar xjpf openal-soft-*
 cd openal-soft*
 cmake -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC .
 make -j $THREADS && make install
@@ -263,13 +265,13 @@ cd twolame-*
 ./configure --prefix=${TARGET} --enable-static --enable-shared=no && make -j $THREADS && make install
 
 ##+ fdk-aac
-LastVersion=`wget --no-check-certificate 'https://kent.dl.sourceforge.net/project/opencore-amr/fdk-aac/' -O- -q | egrep -o 'fdk-aac-[0-9\.]+\.tar.gz' | tail -1`
-tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0 ; sleep 3
+#LastVersion=`wget --no-check-certificate 'https://kent.dl.sourceforge.net/project/opencore-amr/fdk-aac/' -O- -q | egrep -o 'fdk-aac-[0-9\.]+\.tar.gz' | tail -1`
+tput bold ; echo "" ; echo "=-> fdk-aac" ; tput sgr0 ; sleep 3
 cd ${CMPL}
-wget --no-check-certificate https://sourceforge.net/projects/opencore-amr/files/fdk-aac/${LastVersion}/download/ -O ${LastVersion}
+wget --no-check-certificate "https://downloads.sourceforge.net/project/opencore-amr/fdk-aac/fdk-aac-0.1.6.tar.gz"
 tar -zxvf fdk-aac-*
 cd fdk*
-./configure --prefix=${TARGET} --enable-static --enable-shared=no && make -j $THREADS && make install
+./configure --disable-dependency-tracking --prefix=${TARGET} --enable-static --enable-shared=no && make -j $THREADS && make install
 
 ## flac
 LastVersion=`wget --no-check-certificate 'http://downloads.xiph.org/releases/flac/' -O- -q | egrep -o 'flac-[0-9\.]+\.tar.xz' | tail -1`
@@ -365,11 +367,13 @@ make install
 
 
 ## FFmpeg
-LastVersion=`wget --no-check-certificate 'https://www.ffmpeg.org/releases/' -O- -q | egrep -o 'ffmpeg-[0-9\.]+\.[0-9\.]+\.[0-9\.]+\.tar.gz' | tail -1`
-tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0 ; sleep 3
+#LastVersion=`wget --no-check-certificate 'https://www.ffmpeg.org/releases/' -O- -q | egrep -o 'ffmpeg-[0-9\.]+\.[0-9\.]+\.[0-9\.]+\.tar.gz' | tail -1`
+#tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0 ; sleep 3
+tput bold ; echo "" ; echo "=-> FFmpeg Git" ; tput sgr0 ; sleep 3
 cd ${CMPL}
-wget --no-check-certificate "https://www.ffmpeg.org/releases/"${LastVersion}
-tar xzpf ffmpeg*
+#wget --no-check-certificate "https://www.ffmpeg.org/releases/"${LastVersion}
+git clone https://git.ffmpeg.org/ffmpeg.git ffmpeg
+#tar xzpf ffmpeg*
 cd ffmpe*
 ./configure --extra-version=adam-`date +"%m-%d-%y"` --arch=x86_64 \
  --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect \
