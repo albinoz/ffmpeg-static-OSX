@@ -1,5 +1,5 @@
 ## FFmpeg Static Builder OS X 64bits
-####  Mac OsX 10.10 < 10.14b
+####  Mac OsX 10.10 < 10.14
 
 #### Include Last Versions of x264 | x265 | AV1 | FFmpeg…
 
