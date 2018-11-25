@@ -1,7 +1,7 @@
 #!/bin/sh
 
 clear
-tput bold ; echo "adam | 2014 < 2018-11-19" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2018-11-25" ; tput sgr0
 tput bold ; echo "OS X | 10.10 < 10.14" ; tput sgr0
 tput bold ; echo "Auto ! Download && Build Last Static FFmpeg 64bits" ; tput sgr0
 
@@ -45,20 +45,15 @@ newfs_hfs -v Ramdisk ${DISK_ID}
 diskutil mount ${DISK_ID}
 sleep 3
 
+# CPU(s)
+THREADS=`sysctl -n hw.ncpu`
+
 # Paths
 TARGET="/Volumes/Ramdisk/sw"
 CMPL="/Volumes/Ramdisk/compile"
 mkdir ${TARGET}
 mkdir ${CMPL}
 export PATH=${TARGET}/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/include:/usr/local/opt:/usr/local/Cellar:/usr/local/lib:/usr/local/share:/usr/local/etc
-
-# Flags
-export LDFLAGS="-L${TARGET}/lib -Wl,-framework,OpenAL -framework CoreFoundation -framework Carbon"
-export CPPFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL"
-export CFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL -framework CoreFoundation -framework Carbon"
-
-# CPU(s)
-THREADS=`sysctl -n hw.ncpu`
 
 # Exit on Error
 set -o errexit
@@ -98,9 +93,8 @@ git clone https://github.com/glennrp/libpng.git
 cd libpng
 #./autogen.sh
 autoreconf -f -i
-#./configure --prefix=${TARGET}  --enable-maintainer-mode --enable-static --disable-shared
 ./configure --prefix=${TARGET}  --disable-dependency-tracking --disable-silent-rules --enable-static --disable-shared
-make -j $THREADS && make test && make install
+make -j $THREADS && make install
 
 ## pkg-config
 LastVersion=`wget  --no-check-certificate 'https://pkg-config.freedesktop.org/releases/' -O- -q | egrep -o 'pkg-config-0.29[0-9\.]+\.tar.gz' | tail -1`
@@ -109,7 +103,7 @@ cd ${CMPL}
 wget --no-check-certificate 'https://pkg-config.freedesktop.org/releases/'${LastVersion}
 tar -zxvf pkg-config-*
 cd pkg-config-*
-./configure --prefix=${TARGET} --with-internal-glib && make -j $THREADS && make install
+./configure --prefix=${TARGET} --disable-debug --disable-host-tool --with-internal-glib && make -j $THREADS && make install
 
 ## Yasm
 LastVersion=`wget --no-check-certificate 'http://www.tortall.net/projects/yasm/releases/' -O- -q | egrep -o 'yasm-[0-9\.]+\.tar.gz' | tail -1`
@@ -173,6 +167,7 @@ cd fribid*
 ## fontconfig fixed ( Last Version 2.13.0 Build Error )
 tput bold ; echo "" ; echo "=-> fontconfig 2.12.6 " ; tput sgr0 ; sleep 3
 cd ${CMPL}
+#wget --no-check-certificate https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.1.tar.bz2
 wget --no-check-certificate https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.12.6.tar.bz2
 tar xzpf fontconfig-*
 cd fontconfig-*
@@ -193,12 +188,9 @@ cd libas*
 #-> AUDIO
 
 ## openal-soft
-#LastVersion=`wget --no-check-certificate 'http://kcat.strangesoft.net/openal-releases/' -O- -q | egrep -o 'openal-soft-[0-9\.]+\.tar.bz2' | tail -1`
-tput bold ; echo "" ; echo "=-> openal-soft" ; tput sgr0 ; sleep 3
+tput bold ; echo "" ; echo "=-> openal-soft git" ; tput sgr0 ; sleep 3
 cd ${CMPL}
-#wget --no-check-certificate 'http://kcat.strangesoft.net/openal-releases/'${LastVersion}
 git clone https://github.com/kcat/openal-soft
-#tar xjpf openal-soft-*
 cd openal-soft*
 cmake -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC .
 make -j $THREADS && make install
@@ -274,8 +266,8 @@ cd fdk*
 ./configure --disable-dependency-tracking --prefix=${TARGET} --enable-static --enable-shared=no && make -j $THREADS && make install
 
 ## flac
-LastVersion=`wget --no-check-certificate 'http://downloads.xiph.org/releases/flac/' -O- -q | egrep -o 'flac-[0-9\.]+\.tar.xz' | tail -1`
-tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0 ; sleep 3
+sleep 3 ; LastVersion=`wget --no-check-certificate 'http://downloads.xiph.org/releases/flac/' -O- -q | egrep -o 'flac-[0-9\.]+\.tar.xz' | tail -1`
+tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0
 cd ${CMPL}
 wget --no-check-certificate 'http://downloads.xiph.org/releases/flac/'${LastVersion}
 tar -xJf flac-*
@@ -310,6 +302,14 @@ cd libvp*
 ./configure --prefix=${TARGET} --enable-vp8 --enable-postproc --enable-vp9-postproc --enable-vp9-highbitdepth --disable-examples --disable-docs --enable-multi-res-encoding --enable-unit-tests --disable-shared
 make -j $THREADS && make install
 
+## webp
+tput bold ; echo "" ; echo "=-> webp 1.0.1" ; tput sgr0 ; sleep 3
+cd ${CMPL}
+wget --no-check-certificate https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.0.1.tar.gz
+tar -zxvf libweb*
+cd libweb*
+./configure --prefix=${TARGET} --disable-dependency-tracking --disable-gif --disable-gl --enable-libwebpdecoder --enable-libwebpdemux --enable-libwebpmux && make -j $THREADS && make install
+
 ## av1 git
 tput bold ; echo "" ; echo "=-> av1 git" ; tput sgr0 ; sleep 3
 cd ${CMPL}
@@ -327,7 +327,7 @@ curl -O http://downloads.xvid.org/downloads/xvidcore-1.3.5.tar.gz
 tar -zxvf xvidcore-*
 cd xvidcore
 cd build/generic
-./configure --prefix=${TARGET} --disable-shared --enable-static && make -j $THREADS && make install
+./configure --prefix=${TARGET} --disable-shared --enable-static --disable-assembly && make -j $THREADS && make install
 
 ## x264 8-10bit git - Require nasm
 tput bold ; echo "" ; echo "=-> x264 8-10bit git" ; tput sgr0 ; sleep 3
@@ -365,15 +365,14 @@ mv libx265.a libx265_main.a
 libtool -static -o libx265.a libx265_main.a libx265_main10.a libx265_main12.a
 make install
 
+export LDFLAGS="-L${TARGET}/lib -Wl,-framework,OpenAL"
+export CPPFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL"
+export CFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL"
 
 ## FFmpeg
-#LastVersion=`wget --no-check-certificate 'https://www.ffmpeg.org/releases/' -O- -q | egrep -o 'ffmpeg-[0-9\.]+\.[0-9\.]+\.[0-9\.]+\.tar.gz' | tail -1`
-#tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0 ; sleep 3
 tput bold ; echo "" ; echo "=-> FFmpeg Git" ; tput sgr0 ; sleep 3
 cd ${CMPL}
-#wget --no-check-certificate "https://www.ffmpeg.org/releases/"${LastVersion}
 git clone https://git.ffmpeg.org/ffmpeg.git ffmpeg
-#tar xzpf ffmpeg*
 cd ffmpe*
 ./configure --extra-version=adam-`date +"%m-%d-%y"` --arch=x86_64 \
  --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect \
@@ -381,7 +380,7 @@ cd ffmpe*
  --disable-ffplay --disable-ffprobe --disable-debug --disable-doc \
  --enable-libopus --enable-libvorbis --enable-libtheora --enable-libmp3lame --enable-libfdk-aac \
  --enable-libtwolame --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
- --enable-libxvid --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom \
+ --enable-libxvid --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom --enable-libwebp \
  --enable-avfilter --enable-filters --enable-libass --enable-fontconfig --enable-libfreetype \
  --enable-libbluray --enable-bzlib --enable-zlib \
  --enable-opengl --enable-opencl --enable-openal
