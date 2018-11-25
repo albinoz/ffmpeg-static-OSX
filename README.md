@@ -12,9 +12,9 @@
  --enable-libopus --enable-libvorbis --enable-libtheora --enable-libmp3lame --enable-libfdk-aac \
  --enable-libtwolame --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
  --enable-libxvid --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom --enable-libwebp \
- --enable-avfilter --enable-filters --enable-libass --enable-fontconfig --enable-libfreetype \
+ --enable-avfilter --enable-filters --enable-libass --enable-fontconfig --enable-libfreetype --enable-libsrt \
  --enable-libbluray --enable-bzlib --enable-zlib \
- --enable-opengl --enable-opencl --enable-openal
+ --enable-opengl --enable-opencl --enable-openal --enable-openssl
 ```
 
 #### How Use :
