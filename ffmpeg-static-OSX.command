@@ -91,7 +91,6 @@ tput bold ; echo "" ; echo "=-> libpng git" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 git clone https://github.com/glennrp/libpng.git
 cd libpng
-#./autogen.sh
 autoreconf -f -i
 ./configure --prefix=${TARGET}  --disable-dependency-tracking --disable-silent-rules --enable-static --disable-shared
 make -j $THREADS && make install
@@ -182,6 +181,25 @@ wget --no-check-certificate "https://github.com/libass/libass/releases/download/
 tar -zxvf libas*
 cd libas*
 ./configure --prefix=${TARGET} --disable-shared --enable-static && make -j $THREADS && make install
+
+## openssl
+tput bold ; echo "" ; echo "=-> openssl 1.0.2p " ; tput sgr0 ; sleep 3
+cd ${CMPL}
+wget --no-check-certificate https://www.openssl.org/source/openssl-1.0.2p.tar.gz
+tar -zxvf openssl*
+cd openssl-*/
+./Configure --prefix=${TARGET} darwin64-x86_64-cc shared enable-ec_nistp_64_gcc_128 no-ssl2 no-ssl3 no-comp
+make depend
+make install
+
+## str ( Require openssl )
+tput bold ; echo "" ; echo "=-> str git " ; tput sgr0 ; sleep 3
+cd ${CMPL}
+git clone --depth 1 https://github.com/Haivision/srt.git
+cd srt/
+cmake -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED="OFF" -DENABLE_C_DEPS="ON"
+make -j $THREADS && make install
+
 
 
 
@@ -292,6 +310,7 @@ make -j $THREADS && make install
 
 
 
+
 #-> VIDEO
 
 ## libvpx git
@@ -381,9 +400,9 @@ cd ffmpe*
  --enable-libopus --enable-libvorbis --enable-libtheora --enable-libmp3lame --enable-libfdk-aac \
  --enable-libtwolame --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
  --enable-libxvid --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom --enable-libwebp \
- --enable-avfilter --enable-filters --enable-libass --enable-fontconfig --enable-libfreetype \
+ --enable-avfilter --enable-filters --enable-libass --enable-fontconfig --enable-libfreetype --enable-libsrt \
  --enable-libbluray --enable-bzlib --enable-zlib \
- --enable-opengl --enable-opencl --enable-openal
+ --enable-opengl --enable-opencl --enable-openal --enable-openssl
 
 ## Fix Illegall Instruction 4 By Remove "--extra-cflags=-march=native" on Core2Duo
 ## Fix CLOCK_GETTIME on OS Before 10.12 & iOS 10
