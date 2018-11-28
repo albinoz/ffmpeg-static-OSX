@@ -1,7 +1,7 @@
 #!/bin/sh
 
 clear
-tput bold ; echo "adam | 2014 < 2018-11-25" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2018-11-28" ; tput sgr0
 tput bold ; echo "OS X | 10.10 < 10.14" ; tput sgr0
 tput bold ; echo "Auto ! Download && Build Last Static FFmpeg 64bits" ; tput sgr0
 
@@ -183,9 +183,10 @@ cd libas*
 ./configure --prefix=${TARGET} --disable-shared --enable-static && make -j $THREADS && make install
 
 ## openssl
-tput bold ; echo "" ; echo "=-> openssl 1.0.2p " ; tput sgr0 ; sleep 3
+tput bold ; echo "" ; echo "=-> openssl 1.1.1a " ; tput sgr0 ; sleep 3
 cd ${CMPL}
-wget --no-check-certificate https://www.openssl.org/source/openssl-1.0.2p.tar.gz
+#wget --no-check-certificate https://www.openssl.org/source/openssl-1.0.2p.tar.gz
+wget --no-check-certificate https://www.openssl.org/source/openssl-1.1.1a.tar.gz
 tar -zxvf openssl*
 cd openssl-*/
 ./Configure --prefix=${TARGET} darwin64-x86_64-cc shared enable-ec_nistp_64_gcc_128 no-ssl2 no-ssl3 no-comp
@@ -384,12 +385,17 @@ mv libx265.a libx265_main.a
 libtool -static -o libx265.a libx265_main.a libx265_main10.a libx265_main12.a
 make install
 
+# Flags OSX
 export LDFLAGS="-L${TARGET}/lib -Wl,-framework,OpenAL"
 export CPPFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL"
 export CFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL"
 
+# Purge .dylib
+tput bold ; echo "" ; echo "=-> Purge .dylib" ; tput sgr0 ; sleep 3
+rm -vfr $TARGET/lib/*.dylib
+
 ## FFmpeg
-tput bold ; echo "" ; echo "=-> FFmpeg Git" ; tput sgr0 ; sleep 3
+tput bold ; echo "" ; echo "=-> FFmpeg git" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 git clone https://git.ffmpeg.org/ffmpeg.git ffmpeg
 cd ffmpe*
