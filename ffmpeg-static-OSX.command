@@ -1,7 +1,7 @@
 #!/bin/sh
 
 clear
-tput bold ; echo "adam | 2014 < 2018-11-28" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2018-12-02" ; tput sgr0
 tput bold ; echo "OS X | 10.10 < 10.14" ; tput sgr0
 tput bold ; echo "Auto ! Download && Build Last Static FFmpeg 64bits" ; tput sgr0
 
@@ -83,7 +83,9 @@ tar -zxvf gettex*
 cd gettex*
 # edit the file stpncpy.c to add #undef stpncpy just before #ifndef weak_alias
 ./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules --disable-debug --with-included-gettext --with-included-glib \
---with-included-libcroco --with-included-libunistring --with-emacs --disable-java --disable-native-java --disable-csharp --with-lispdir=#{elisp} --disable-shared --enable-static --without-git --without-cvs --without-xz && make -j $THREADS && make install
+ --with-included-libcroco --with-included-libunistring --with-emacs --disable-java --disable-native-java --disable-csharp --with-lispdir=#{elisp} \
+ --disable-shared --enable-static --without-git --without-cvs --without-xz --disable-docs
+make -j $THREADS && make install
 
 ## libpng git
 ## Requirement for freetype
@@ -155,13 +157,14 @@ tar xzpf freetype-*
 cd freetype-*
 ./configure --prefix=${TARGET}  --disable-shared --enable-static  && make -j $THREADS && make install
 
-## fribidi 1.0.2
-tput bold ; echo "" ; echo "=-> fribidi 1.0.2" ; tput sgr0 ; sleep 3
+## fribidi
+tput bold ; echo "" ; echo "=-> fribidi 1.0.5" ; tput sgr0 ; sleep 3
 cd ${CMPL}
-wget --no-check-certificate https://github.com/fribidi/fribidi/releases/download/v1.0.2/fribidi-1.0.2.tar.bz2
+wget --no-check-certificate https://github.com/fribidi/fribidi/releases/download/v1.0.5/fribidi-1.0.5.tar.bz2
 tar xzpf fribid*
-cd fribid*
-./configure --prefix=${TARGET} --disable-shared --enable-static --disable-docs --disable-silent-rules --disable-debug --disable-dependency-tracking  && make -j $THREADS && make install
+cd fribid*/
+./configure --prefix=${TARGET} --disable-shared --enable-static --disable-silent-rules --disable-debug --disable-dependency-tracking
+make -j $THREADS && make install
 
 ## fontconfig fixed ( Last Version 2.13.0 Build Error )
 tput bold ; echo "" ; echo "=-> fontconfig 2.12.6 " ; tput sgr0 ; sleep 3
@@ -170,7 +173,7 @@ cd ${CMPL}
 wget --no-check-certificate https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.12.6.tar.bz2
 tar xzpf fontconfig-*
 cd fontconfig-*
-./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules --with-add-fonts=/System/Library/Fonts,/Library/Fonts,~/Library/Fonts --disable-shared --enable-static && make && make install
+./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules --with-add-fonts="/System/Library/Fonts,/Library/Fonts" --disable-shared --enable-static && make && make install
 
 ## libass
 LastVersion=`wget --no-check-certificate 'https://github.com/libass/libass/releases/' -O- -q | egrep -o -m1 'libass-[0-9\.]+\.tar.gz'`
@@ -186,7 +189,7 @@ cd libas*
 tput bold ; echo "" ; echo "=-> openssl 1.1.1a " ; tput sgr0 ; sleep 3
 cd ${CMPL}
 #wget --no-check-certificate https://www.openssl.org/source/openssl-1.0.2p.tar.gz
-wget --no-check-certificate https://www.openssl.org/source/openssl-1.1.1a.tar.gz
+wget --no-check-certificate https://www.mirrorservice.org/sites/ftp.openssl.org/source/openssl-1.1.1a.tar.gz
 tar -zxvf openssl*
 cd openssl-*/
 ./Configure --prefix=${TARGET} darwin64-x86_64-cc shared enable-ec_nistp_64_gcc_128 no-ssl2 no-ssl3 no-comp
@@ -201,6 +204,14 @@ cd srt/
 cmake -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED="OFF" -DENABLE_C_DEPS="ON"
 make -j $THREADS && make install
 
+## snappy
+tput bold ; echo ; echo "=-> snappy git " ; tput sgr0 ; sleep 3
+cd ${CMPL}
+git clone https://github.com/google/snappy
+cd snappy
+mkdir build && cd build
+cmake ../ -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED="OFF" -DENABLE_C_DEPS="ON"
+make -j $THREADS && make install
 
 
 
@@ -330,6 +341,15 @@ tar -zxvf libweb*
 cd libweb*
 ./configure --prefix=${TARGET} --disable-dependency-tracking --disable-gif --disable-gl --enable-libwebpdecoder --enable-libwebpdemux --enable-libwebpmux && make -j $THREADS && make install
 
+## openjpeg
+tput bold ; echo "" ; echo "=-> openjpeg 2.3.0" ; tput sgr0 ; sleep 3
+cd ${CMPL}
+wget --no-check-certificate https://github.com/uclouvain/openjpeg/archive/v2.3.0.tar.gz
+tar -zxvf v.2.3.0*
+cd openjpeg*/
+cmake /Volumes/Ramdisk/compile/aom -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC
+make -j $THREADS && make install
+
 ## av1 git
 tput bold ; echo "" ; echo "=-> av1 git" ; tput sgr0 ; sleep 3
 cd ${CMPL}
@@ -348,6 +368,14 @@ tar -zxvf xvidcore-*
 cd xvidcore
 cd build/generic
 ./configure --prefix=${TARGET} --disable-shared --enable-static --disable-assembly && make -j $THREADS && make install
+
+## openh264
+tput bold ; echo ; echo "=-> openH264 1.8.0" ; tput sgr0 ; sleep 3
+cd ${CMPL}
+wget --no-check-certificate https://github.com/cisco/openh264/archive/v1.8.0.tar.gz 
+tar -zxvf v1.8.0.tar.gz
+cd openh264-1.8.0
+make -j $THREADS install-static PREFIX=${TARGET}
 
 ## x264 8-10bit git - Require nasm
 tput bold ; echo "" ; echo "=-> x264 8-10bit git" ; tput sgr0 ; sleep 3
@@ -398,16 +426,16 @@ rm -vfr $TARGET/lib/*.dylib
 tput bold ; echo "" ; echo "=-> FFmpeg git" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 git clone https://git.ffmpeg.org/ffmpeg.git ffmpeg
-cd ffmpe*
-./configure --extra-version=adam-`date +"%m-%d-%y"` --arch=x86_64 \
+cd ffmpe*/
+./configure --extra-version=adam-`date +"%m-%d-%y"` --arch=x86_64 --cc=/usr/bin/clang \
  --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect \
  --pkg_config='pkg-config --static' --enable-nonfree --enable-gpl --enable-version3 --prefix=${TARGET} \
- --disable-ffplay --disable-ffprobe --disable-debug --disable-doc \
+ --disable-ffplay --disable-ffprobe --disable-debug --disable-doc --enable-avfilter --enable-avisynth --enable-filters \
  --enable-libopus --enable-libvorbis --enable-libtheora --enable-libmp3lame --enable-libfdk-aac \
  --enable-libtwolame --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
- --enable-libxvid --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom --enable-libwebp \
- --enable-avfilter --enable-filters --enable-libass --enable-fontconfig --enable-libfreetype --enable-libsrt \
- --enable-libbluray --enable-bzlib --enable-zlib \
+ --enable-libxvid --enable-libopenh264 --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom \
+ --enable-fontconfig --enable-libfreetype --enable-libfribidi --enable-libass --enable-libsrt \
+ --enable-libbluray --enable-bzlib --enable-zlib --enable-libsnappy --enable-libwebp --enable-libopenjpeg \
  --enable-opengl --enable-opencl --enable-openal --enable-openssl
 
 ## Fix Illegall Instruction 4 By Remove "--extra-cflags=-march=native" on Core2Duo
