@@ -7,10 +7,10 @@ tput bold ; echo "Auto ! Download && Build Last Static FFmpeg 64bits" ; tput sgr
 
 # Check Xcode CLI Install
 tput bold ; echo "" ; echo "=-> Check Xcode CLI Install" ; tput sgr0
-if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version  ; then tput bold ; echo "Xcode CLI AllReady Installed" ; else tput bold ; echo "Xcode CLI Install" ; tput sgr0 ; xcode-select --install
+if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version ; then tput bold ; echo "Xcode CLI AllReady Installed" ; else tput bold ; echo "Xcode CLI Install" ; tput sgr0 ; xcode-select --install
 sleep 1
 while ps -ax | grep -v grep | grep 'Install Command Line Developer Tools' >/dev/null ; do sleep 5 ; done
-if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version  ; then tput bold ; echo "Xcode CLI Was SucessFully Installed" ; else tput bold ; echo "Xcode CLI Was NOT Installed" ; tput sgr0 ; exit ; fi ; fi
+if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version ; then tput bold ; echo "Xcode CLI Was SucessFully Installed" ; else tput bold ; echo "Xcode CLI Was NOT Installed" ; tput sgr0 ; exit ; fi ; fi
 
 # Check Homebrew Install
 tput bold ; echo "" ; echo "=-> Check Homebrew Install" ; sleep 3
@@ -31,11 +31,9 @@ brew uninstall xvid
 brew uninstall vpx
 brew uninstall faac
 brew uninstall yasm
-#brew uninstall pcre
 
-#-> Ramdisk, Paths, Flags, CPU(s) & Exit on Error & Fix JAVA PopUp
 # Eject Ramdisk
-if df | grep Ramdisk ; then tput bold ; echo "" ; echo "=-> Eject Ramdisk" ; tput sgr0  ; fi
+if df | grep Ramdisk ; then tput bold ; echo "" ; echo "=-> Eject Ramdisk" ; tput sgr0 ; fi
 if df | grep Ramdisk ; then diskutil eject Ramdisk ; sleep 3 ; fi
 
 # Made Ramdisk
@@ -45,18 +43,17 @@ newfs_hfs -v Ramdisk ${DISK_ID}
 diskutil mount ${DISK_ID}
 sleep 3
 
-# CPU(s)
+# CPU & PATHS & ERROR
 THREADS=`sysctl -n hw.ncpu`
-
-# Paths
 TARGET="/Volumes/Ramdisk/sw"
 CMPL="/Volumes/Ramdisk/compile"
-mkdir ${TARGET}
-mkdir ${CMPL}
 export PATH=${TARGET}/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/include:/usr/local/opt:/usr/local/Cellar:/usr/local/lib:/usr/local/share:/usr/local/etc
 
-# Exit on Error
 set -o errexit
+
+# Make Ramdisk Directories
+mkdir ${TARGET}
+mkdir ${CMPL}
 
 
 
@@ -77,7 +74,6 @@ fi
 ## Requirement for fontconfig, fribidi
 tput bold ; echo "" ; echo "=-> gettext 0.19.8.1" ; tput sgr0 ; sleep 3
 cd ${CMPL}
-#wget --no-check-certificate "ftp://ftp.gnu.org/gnu/gettext/gettext-0.19.8.1.tar.gz"
 wget --no-check-certificate "http://ftp.igh.cnrs.fr/pub/gnu/gettext/gettext-0.19.8.1.tar.gz"
 tar -zxvf gettex*
 cd gettex*
@@ -94,17 +90,18 @@ cd ${CMPL}
 git clone https://github.com/glennrp/libpng.git
 cd libpng
 autoreconf -f -i
-./configure --prefix=${TARGET}  --disable-dependency-tracking --disable-silent-rules --enable-static --disable-shared
+./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules --enable-static --disable-shared
 make -j $THREADS && make install
 
 ## pkg-config
-LastVersion=`wget  --no-check-certificate 'https://pkg-config.freedesktop.org/releases/' -O- -q | egrep -o 'pkg-config-0.29[0-9\.]+\.tar.gz' | tail -1`
+LastVersion=`wget --no-check-certificate 'https://pkg-config.freedesktop.org/releases/' -O- -q | egrep -o 'pkg-config-0.29[0-9\.]+\.tar.gz' | tail -1`
 tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0 ; sleep 3
 cd ${CMPL}
 wget --no-check-certificate 'https://pkg-config.freedesktop.org/releases/'${LastVersion}
 tar -zxvf pkg-config-*
 cd pkg-config-*
-./configure --prefix=${TARGET} --disable-debug --disable-host-tool --with-internal-glib && make -j $THREADS && make install
+./configure --prefix=${TARGET} --disable-debug --disable-host-tool --with-internal-glib
+make -j $THREADS && make check && make install
 
 ## Yasm
 LastVersion=`wget --no-check-certificate 'http://www.tortall.net/projects/yasm/releases/' -O- -q | egrep -o 'yasm-[0-9\.]+\.tar.gz' | tail -1`
@@ -155,7 +152,8 @@ cd ${CMPL}
 wget --no-check-certificate 'http://download.savannah.gnu.org/releases/freetype/'${LastVersion}
 tar xzpf freetype-*
 cd freetype-*
-./configure --prefix=${TARGET}  --disable-shared --enable-static  && make -j $THREADS && make install
+./configure --prefix=${TARGET} --disable-shared --enable-static
+make -j $THREADS && make install
 
 ## fribidi
 tput bold ; echo "" ; echo "=-> fribidi 1.0.5" ; tput sgr0 ; sleep 3
@@ -166,35 +164,35 @@ cd fribid*/
 ./configure --prefix=${TARGET} --disable-shared --enable-static --disable-silent-rules --disable-debug --disable-dependency-tracking
 make -j $THREADS && make install
 
-## fontconfig fixed ( Last Version 2.13.0 Build Error )
+## fontconfig fixed ( Last Version 2.13.+ Build Error )
 tput bold ; echo "" ; echo "=-> fontconfig 2.12.6 " ; tput sgr0 ; sleep 3
 cd ${CMPL}
 #wget --no-check-certificate https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.1.tar.bz2
 wget --no-check-certificate https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.12.6.tar.bz2
 tar xzpf fontconfig-*
 cd fontconfig-*
-./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules --with-add-fonts="/System/Library/Fonts,/Library/Fonts" --disable-shared --enable-static && make && make install
+./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules --with-add-fonts="/System/Library/Fonts,/Library/Fonts" --disable-shared --enable-static
+make -j $THREADS && make install
 
 ## libass
 LastVersion=`wget --no-check-certificate 'https://github.com/libass/libass/releases/' -O- -q | egrep -o -m1 'libass-[0-9\.]+\.tar.gz'`
-Number=`echo  $LastVersion | cut -d'-' -f2 | cut -d'.' -f1-3`
+Number=`echo $LastVersion | cut -d'-' -f2 | cut -d'.' -f1-3`
 tput bold ; echo "" ; echo "=-> "${LastVersion} ; tput sgr0 ; sleep 3
 cd ${CMPL}
 wget --no-check-certificate "https://github.com/libass/libass/releases/download/"${Number}/${LastVersion}
 tar -zxvf libas*
 cd libas*
-./configure --prefix=${TARGET} --disable-shared --enable-static && make -j $THREADS && make install
+./configure --prefix=${TARGET} --disable-shared --enable-static
+make -j $THREADS && make install
 
 ## openssl
 tput bold ; echo "" ; echo "=-> openssl 1.1.1a " ; tput sgr0 ; sleep 3
 cd ${CMPL}
-#wget --no-check-certificate https://www.openssl.org/source/openssl-1.0.2p.tar.gz
 wget --no-check-certificate https://www.mirrorservice.org/sites/ftp.openssl.org/source/openssl-1.1.1a.tar.gz
 tar -zxvf openssl*
 cd openssl-*/
-./Configure --prefix=${TARGET} darwin64-x86_64-cc shared enable-ec_nistp_64_gcc_128 no-ssl2 no-ssl3 no-comp
-make depend
-make install
+./Configure --prefix=${TARGET} darwin64-x86_64-cc shared enable-ec_nistp_64_gcc_128 no-ssl3 no-comp
+make -j $THREADS depend && make install
 
 ## str ( Require openssl )
 tput bold ; echo "" ; echo "=-> str git " ; tput sgr0 ; sleep 3
@@ -231,7 +229,8 @@ cd ${CMPL}
 curl -O http://freefr.dl.sourceforge.net/project/opencore-amr/opencore-amr/opencore-amr-0.1.3.tar.gz
 tar -zxvf /Volumes/Ramdisk/compile/opencore-amr-0.1.3.tar.gz
 cd opencore-amr-0.1.3
-./configure --prefix=${TARGET} --disable-shared --enable-static && make -j $THREADS && make install
+./configure --prefix=${TARGET} --disable-shared --enable-static
+make -j $THREADS && make install
 
 ## opus - Replace speex
 LastVersion=`wget --no-check-certificate 'http://downloads.xiph.org/releases/opus/' -O- -q | egrep -o 'opus-1.[0-9\.]+\.[0-9\.]+\.tar.gz' | tail -1`
@@ -250,7 +249,8 @@ cd ${CMPL}
 wget --no-check-certificate 'http://downloads.xiph.org/releases/ogg/'${LastVersion}
 tar -zxvf libogg-*
 cd libogg-*
-./configure --prefix=${TARGET} --disable-shared --enable-static && make -j $THREADS && make install
+./configure --prefix=${TARGET} --disable-shared --enable-static
+make -j $THREADS && make install
 
 ## Theora git - Require autoconf automake libtool
 tput bold ; echo "" ; echo "=-> theora git" ; tput sgr0 ; sleep 3
@@ -268,14 +268,16 @@ cd ${CMPL}
 wget --no-check-certificate 'http://downloads.xiph.org/releases/vorbis/'${LastVersion}
 tar -zxvf libvorbis-*
 cd libvorbis-*
-./configure --prefix=${TARGET} --with-ogg-libraries=${TARGET}/lib --with-ogg-includes=/Volumes/Ramdisk/sw/include/ --enable-static --disable-shared && make -j $THREADS && make install
+./configure --prefix=${TARGET} --with-ogg-libraries=${TARGET}/lib --with-ogg-includes=/Volumes/Ramdisk/sw/include/ --enable-static --disable-shared
+make -j $THREADS && make install
 
 ## lame git
 tput bold ; echo "" ; echo "=-> lame git" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 git clone https://github.com/rbrito/lame.git
 cd lam*
-./configure --prefix=${TARGET} --disable-shared --enable-static && make -j $THREADS && make install
+./configure --prefix=${TARGET} --disable-shared --enable-static
+make -j $THREADS && make install
 
 ## TwoLame - optimised MPEG Audio Layer 2
 LastVersion=`wget --no-check-certificate 'http://www.twolame.org' -O- -q | egrep -o 'twolame-[0-9\.]+\.tar.gz' | tail -1`
@@ -284,7 +286,8 @@ cd ${CMPL}
 wget --no-check-certificate 'http://downloads.sourceforge.net/twolame/'${LastVersion}
 tar -zxvf twolame-*
 cd twolame-*
-./configure --prefix=${TARGET} --enable-static --enable-shared=no && make -j $THREADS && make install
+./configure --prefix=${TARGET} --enable-static --enable-shared=no
+make -j $THREADS && make install
 
 ##+ fdk-aac
 #LastVersion=`wget --no-check-certificate 'https://kent.dl.sourceforge.net/project/opencore-amr/fdk-aac/' -O- -q | egrep -o 'fdk-aac-[0-9\.]+\.tar.gz' | tail -1`
@@ -293,7 +296,8 @@ cd ${CMPL}
 wget --no-check-certificate "https://downloads.sourceforge.net/project/opencore-amr/fdk-aac/fdk-aac-0.1.6.tar.gz"
 tar -zxvf fdk-aac-*
 cd fdk*
-./configure --disable-dependency-tracking --prefix=${TARGET} --enable-static --enable-shared=no && make -j $THREADS && make install
+./configure --disable-dependency-tracking --prefix=${TARGET} --enable-static --enable-shared=no
+make -j $THREADS && make install
 
 ## flac
 sleep 3 ; LastVersion=`wget --no-check-certificate 'http://downloads.xiph.org/releases/flac/' -O- -q | egrep -o 'flac-[0-9\.]+\.tar.xz' | tail -1`
@@ -339,15 +343,16 @@ cd ${CMPL}
 wget --no-check-certificate https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.0.1.tar.gz
 tar -zxvf libweb*
 cd libweb*
-./configure --prefix=${TARGET} --disable-dependency-tracking --disable-gif --disable-gl --enable-libwebpdecoder --enable-libwebpdemux --enable-libwebpmux && make -j $THREADS && make install
+./configure --prefix=${TARGET} --disable-dependency-tracking --disable-gif --disable-gl --enable-libwebpdecoder --enable-libwebpdemux --enable-libwebpmux
+make -j $THREADS && make install
 
 ## openjpeg
 tput bold ; echo "" ; echo "=-> openjpeg 2.3.0" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 wget --no-check-certificate https://github.com/uclouvain/openjpeg/archive/v2.3.0.tar.gz
-tar -zxvf v.2.3.0*
+tar -zxvf v2.3.0*
 cd openjpeg*/
-cmake /Volumes/Ramdisk/compile/aom -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC
+cmake -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC
 make -j $THREADS && make install
 
 ## av1 git
@@ -367,7 +372,8 @@ curl -O http://downloads.xvid.org/downloads/xvidcore-1.3.5.tar.gz
 tar -zxvf xvidcore-*
 cd xvidcore
 cd build/generic
-./configure --prefix=${TARGET} --disable-shared --enable-static --disable-assembly && make -j $THREADS && make install
+./configure --prefix=${TARGET} --disable-shared --enable-static --disable-assembly
+make -j $THREADS && make install
 
 ## openh264
 tput bold ; echo ; echo "=-> openH264 1.8.0" ; tput sgr0 ; sleep 3
@@ -382,13 +388,14 @@ tput bold ; echo "" ; echo "=-> x264 8-10bit git" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 git clone git://git.videolan.org/x264.git
 cd x264
-./configure --prefix=${TARGET} --enable-static --bit-depth=all --chroma-format=all && make -j $THREADS && make install && make install
+./configure --prefix=${TARGET} --enable-static --bit-depth=all --chroma-format=all
+make -j $THREADS && make install
 
 ## x265 8-10-12bit - Require wget, cmake, yasm, nasm, libtool
 LastVersion=`wget --no-check-certificate 'https://bitbucket.org/multicoreware/x265/downloads/' -O- -q | egrep -o 'x265_[0-9\.]+\.[0-9\.]+\.tar.gz' | head -1`
 tput bold ; echo "" ; echo "=-> "${LastVersion}" 8-10-12bit" ; tput sgr0 ; sleep 3
 cd ${CMPL}
-wget --no-check-certificate https://bitbucket.org/multicoreware/x265/downloads/${LastVersion}
+wget --no-check-certificate https://bitbucket.org/multicoreware/x265/downloads/"$LastVersion"
 tar -zxvf x265*
 cd x265*/source/
 mkdir -p 8bit 10bit 12bit
@@ -413,16 +420,20 @@ mv libx265.a libx265_main.a
 libtool -static -o libx265.a libx265_main.a libx265_main10.a libx265_main12.a
 make install
 
-# Flags OSX
-export LDFLAGS="-L${TARGET}/lib -Wl,-framework,OpenAL"
-export CPPFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL"
-export CFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL"
+
+
+#-> FFmpeg Check
 
 # Purge .dylib
 tput bold ; echo "" ; echo "=-> Purge .dylib" ; tput sgr0 ; sleep 3
 rm -vfr $TARGET/lib/*.dylib
 
-## FFmpeg
+# Flags
+export LDFLAGS="-L${TARGET}/lib -Wl,-framework,OpenAL"
+export CPPFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL"
+export CFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL"
+
+## FFmpeg Build
 tput bold ; echo "" ; echo "=-> FFmpeg git" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 git clone https://git.ffmpeg.org/ffmpeg.git ffmpeg
