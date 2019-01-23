@@ -1,8 +1,8 @@
 #!/bin/bash
 clear
-( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d_%H:%M:%S]") $line"; done;) #Date to Every Line
+( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2019-01-10" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2019-01-23" ; tput sgr0
 tput bold ; echo "Auto ! Download && Build Last Static FFmpeg 64bits" ; tput sgr0
 tput bold ; echo "OS X | 10.11 < 10.14" ; tput sgr0
 
@@ -21,7 +21,7 @@ if ls /usr/local/bin/brew >/dev/null ; then tput sgr0 ; echo "HomeBrew AllReady 
 tput bold ; echo ; echo '♻️ '  Check Homebrew Update ; tput sgr0 ; sleep 3
 brew update ; brew upgrade ; brew cleanup
 
-# Check Homebrew Config ( ant Require java )
+# Check Homebrew Config
 tput bold ; echo ; echo '♻️ '  Check Homebrew Config ; tput sgr0 ; sleep 3
 brew install git wget cmake autoconf automake nasm libtool ninja meson
 brew uninstall ffmpeg
@@ -76,11 +76,11 @@ tput bold ; echo ; echo '📍 ' gettext 0.19.8.1 ; tput sgr0 ; sleep 3
 cd ${CMPL}
 wget --no-check-certificate "http://ftp.igh.cnrs.fr/pub/gnu/gettext/gettext-0.19.8.1.tar.gz"
 tar -zxvf gettex*
-cd gettex*
+cd gettex*/
 # edit the file stpncpy.c to add #undef stpncpy just before #ifndef weak_alias
 ./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules --disable-debug --with-included-gettext --with-included-glib \
  --with-included-libcroco --with-included-libunistring --with-emacs --disable-java --disable-native-java --disable-csharp \
- --disable-shared --enable-static --without-git --without-cvs --without-xz --disable-docs
+ --disable-shared --enable-static --without-git --without-cvs --without-xz --disable-docs --disable-examples
 make -j "$THREADS" && make install
 
 ## libpng git
@@ -99,7 +99,7 @@ tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 wget --no-check-certificate 'https://pkg-config.freedesktop.org/releases/'"$LastVersion"
 tar -zxvf pkg-config-*
-cd pkg-config-*
+cd pkg-config-*/
 ./configure --prefix=${TARGET} --disable-debug --disable-host-tool --with-internal-glib
 make -j "$THREADS" && make check && make install
 
@@ -109,7 +109,7 @@ tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 wget --no-check-certificate 'http://www.tortall.net/projects/yasm/releases/'"$LastVersion"
 tar -zxvf /Volumes/Ramdisk/compile/yasm-*
-cd yasm-*
+cd yasm-*/
 ./configure --prefix=${TARGET} && make -j "$THREADS" && make install
 
 ## bzip
@@ -123,7 +123,7 @@ make -j "$THREADS" && make install PREFIX=${TARGET}
 tput bold ; echo ; echo '📍 ' libudfread git ; tput sgr0 ; sleep 3
 cd ${CMPL}
 git clone https://github.com/vlc-mirror/libudfread.git
-cd libud*
+cd libud*/
 ./bootstrap
 ./configure --prefix=${TARGET} --disable-shared --enable-static
 make -j "$THREADS" && make install
@@ -134,7 +134,7 @@ export JAVA_HOME="$JAVAV/Contents/Home"
 tput bold ; echo ; echo '📍 ' libbluray git ; tput sgr0 ; sleep 3
 cd ${CMPL}
 git clone http://git.videolan.org/git/libbluray.git
-cd libblura*
+cd libblura*/
 cp -r /Volumes/Ramdisk/compile/libudfread/src /Volumes/Ramdisk/compile/libbluray/contrib/libudfread/src
 ./bootstrap
 ./configure --prefix=${TARGET} --disable-shared --disable-dependency-tracking --build x86_64 --disable-doxygen-dot --without-libxml2 --without-freetype --disable-udf --disable-bdjava-jar
@@ -151,7 +151,7 @@ tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 wget --no-check-certificate 'http://download.savannah.gnu.org/releases/freetype/'"$LastVersion"
 tar xzpf freetype-*
-cd freetype-*
+cd freetype-*/
 ./configure --prefix=${TARGET} --disable-shared --enable-static
 make -j "$THREADS" && make install
 
@@ -170,7 +170,7 @@ cd ${CMPL}
 #wget --no-check-certificate https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.1.tar.bz2
 wget --no-check-certificate https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.12.6.tar.bz2
 tar xzpf fontconfig-*
-cd fontconfig-*
+cd fontconfig-*/
 ./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules --with-add-fonts="/System/Library/Fonts,/Library/Fonts" --disable-shared --enable-static
 make -j "$THREADS" && make install
 
@@ -181,7 +181,7 @@ tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 wget --no-check-certificate "https://github.com/libass/libass/releases/download/""$Number"/"$LastVersion"
 tar -zxvf libas*
-cd libas*
+cd libas*/
 ./configure --prefix=${TARGET} --disable-shared --enable-static
 make -j "$THREADS" && make install
 
@@ -191,8 +191,8 @@ cd ${CMPL}
 wget --no-check-certificate https://www.mirrorservice.org/sites/ftp.openssl.org/source/openssl-1.1.1a.tar.gz
 tar -zxvf openssl*
 cd openssl-*/
-./Configure --prefix=${TARGET} shared darwin64-x86_64-cc enable-ec_nistp_64_gcc_128 no-ssl3 no-comp enable-cms
-#./Configure -prefix=${TARGET} -openssldir=${TARGET}/usr/local/etc/openssl no-ssl2 no-ssl3 no-zlib enable-cms darwin64-x86_64-cc shared enable-ec_nistp_64_gcc_128
+#./Configure --prefix=${TARGET} shared darwin64-x86_64-cc enable-ec_nistp_64_gcc_128 no-ssl3 no-comp enable-cms
+./Configure --prefix=${TARGET} -openssldir=${TARGET}/usr/local/etc/openssl no-ssl3 no-zlib enable-cms darwin64-x86_64-cc shared enable-ec_nistp_64_gcc_128
 make -j "$THREADS" depend && make install
 
 ## str ( Require openssl )
@@ -200,8 +200,11 @@ tput bold ; echo ; echo '📍 ' str git ; tput sgr0 ; sleep 3
 cd ${CMPL}
 git clone --depth 1 https://github.com/Haivision/srt.git
 cd srt/
-cmake -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED="OFF" -DENABLE_C_DEPS="ON"
-make -j "$THREADS" && make install
+#./configure --prefix=${TARGET} --enable-shared=0 --enable-static
+mkdir build && cd build
+cmake -G "Ninja" .. -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED="OFF" -DENABLE_C_DEPS="ON"
+ninja && ninja install
+#make -j "$THREADS" && make install
 
 ## snappy
 tput bold ; echo ; echo '📍 ' snappy git ; tput sgr0 ; sleep 3
@@ -209,9 +212,9 @@ cd ${CMPL}
 git clone https://github.com/google/snappy
 cd snappy
 mkdir build && cd build
-cmake ../ -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED="OFF" -DENABLE_C_DEPS="ON"
-make -j "$THREADS" && make install
-
+cmake -G "Ninja" ../ -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED="OFF" -DENABLE_C_DEPS="ON"
+#make -j "$THREADS" && make install
+ninja && ninja install
 
 
 #-> AUDIO
@@ -220,9 +223,10 @@ make -j "$THREADS" && make install
 tput bold ; echo ; echo '📍 ' openal-soft git ; tput sgr0 ; sleep 3
 cd ${CMPL}
 git clone https://github.com/kcat/openal-soft
-cd openal-soft*
-cmake -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC .
-make -j "$THREADS" && make install
+cd openal-soft*/
+cmake -G "Ninja" -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC .
+#make -j "$THREADS" && make install
+ninja && ninja install
 
 # opencore-amr
 tput bold ; echo ; echo '📍 ' opencore-amr ; tput sgr0 ; sleep 3
@@ -239,7 +243,7 @@ tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 wget --no-check-certificate 'http://downloads.xiph.org/releases/opus/'"$LastVersion"
 tar -zxvf opus-*
-cd opus-*
+cd opus-*/
 ./configure --prefix=${TARGET} --disable-shared --enable-static 
 make -j "$THREADS" && make install
 
@@ -249,7 +253,7 @@ tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 wget --no-check-certificate 'http://downloads.xiph.org/releases/ogg/'"$LastVersion"
 tar -zxvf libogg-*
-cd libogg-*
+cd libogg-*/
 ./configure --prefix=${TARGET} --disable-shared --enable-static
 make -j "$THREADS" && make install
 
@@ -268,7 +272,7 @@ tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 wget --no-check-certificate 'http://downloads.xiph.org/releases/vorbis/'"$LastVersion"
 tar -zxvf libvorbis-*
-cd libvorbis-*
+cd libvorbis-*/
 ./configure --prefix=${TARGET} --with-ogg-libraries=${TARGET}/lib --with-ogg-includes=/Volumes/Ramdisk/sw/include/ --enable-static --disable-shared
 make -j "$THREADS" && make install
 
@@ -276,7 +280,7 @@ make -j "$THREADS" && make install
 tput bold ; echo ; echo '📍 ' lame git ; tput sgr0 ; sleep 3
 cd ${CMPL}
 git clone https://github.com/rbrito/lame.git
-cd lam*
+cd lam*/
 ./configure --prefix=${TARGET} --disable-shared --enable-static
 make -j "$THREADS" && make install
 
@@ -286,7 +290,7 @@ tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 3
 cd ${CMPL}
 wget --no-check-certificate 'http://downloads.sourceforge.net/twolame/'"$LastVersion"
 tar -zxvf twolame-*
-cd twolame-*
+cd twolame-*/
 ./configure --prefix=${TARGET} --enable-static --enable-shared=no
 make -j "$THREADS" && make install
 
@@ -295,7 +299,7 @@ tput bold ; echo ; echo '📍 ' fdk-aac ; tput sgr0 ; sleep 3
 cd ${CMPL}
 wget --no-check-certificate "https://downloads.sourceforge.net/project/opencore-amr/fdk-aac/fdk-aac-0.1.6.tar.gz"
 tar -zxvf fdk-aac-*
-cd fdk*
+cd fdk*/
 ./configure --disable-dependency-tracking --prefix=${TARGET} --enable-static --enable-shared=no
 make -j "$THREADS" && make install
 
@@ -305,7 +309,7 @@ tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0
 cd ${CMPL}
 wget --no-check-certificate 'http://downloads.xiph.org/releases/flac/'"$LastVersion"
 tar -xJf flac-*
-cd flac-*
+cd flac-*/
 ./configure --prefix=${TARGET} --disable-asm-optimizations --disable-xmms-plugin --with-ogg-libraries=${TARGET}/lib --with-ogg-includes=${TARGET}/include/ --enable-static --disable-shared
 make -j "$THREADS" && make install
 
@@ -314,7 +318,7 @@ tput bold ; echo ; echo '📍 ' libgsm 1.0.18 ; tput sgr0 ; sleep 3
 cd ${CMPL}
 wget --no-check-certificate 'http://www.quut.com/gsm/gsm-1.0.18.tar.gz'
 tar -zxvf gsm*
-cd gsm*
+cd gsm*/
 mkdir -p ${TARGET}/man/man3
 mkdir -p ${TARGET}/man/man1
 mkdir -p ${TARGET}/include/gsm
@@ -333,8 +337,8 @@ make -j "$THREADS" && make install
 tput bold ; echo ; echo '📍 ' vpx git ; tput sgr0 ; sleep 3
 cd ${CMPL}
 git clone https://github.com/webmproject/libvpx.git
-cd libvp*
-./configure --prefix=${TARGET} --enable-vp8 --enable-postproc --enable-vp9-postproc --enable-vp9-highbitdepth --disable-examples --disable-docs --enable-multi-res-encoding --enable-unit-tests --disable-shared
+cd libvp*/
+./configure --prefix=${TARGET} --enable-vp8 --enable-postproc --enable-vp9-postproc --enable-vp9-highbitdepth --disable-examples --disable-docs --enable-multi-res-encoding --disable-unit-tests --enable-pic --disable-shared
 make -j "$THREADS" && make install
 
 ## webp
@@ -342,7 +346,7 @@ tput bold ; echo ; echo '📍 ' webp 1.0.1 ; tput sgr0 ; sleep 3
 cd ${CMPL}
 wget --no-check-certificate https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.0.1.tar.gz
 tar -zxvf libweb*
-cd libweb*
+cd libweb*/
 ./configure --prefix=${TARGET} --disable-dependency-tracking --disable-gif --disable-gl --enable-libwebpdecoder --enable-libwebpdemux --enable-libwebpmux
 make -j "$THREADS" && make install
 
@@ -352,18 +356,20 @@ cd ${CMPL}
 wget --no-check-certificate https://github.com/uclouvain/openjpeg/archive/v2.3.0.tar.gz
 tar -zxvf v2.3.0*
 cd openjpeg*/
-cmake -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC
-make -j "$THREADS" && make install
+mkdir build && cd build
+cmake -G "Ninja" .. -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC
+ninja && ninja install
+#make -j "$THREADS" && make install && make clean
 
 ## av1 git
 tput bold ; echo ; echo '📍 ' av1 git ; tput sgr0 ; sleep 3
 cd ${CMPL}
 git clone https://aomedia.googlesource.com/aom
 cd aom
-mkdir aom_build
-cd aom_build
-cmake /Volumes/Ramdisk/compile/aom -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC
-make -j "$THREADS" && make install
+mkdir aom_build && cd aom_build
+cmake -G "Ninja" /Volumes/Ramdisk/compile/aom -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC
+ninja && ninja install
+#make -j "$THREADS" && make install && make clean
 
 # dav1d git - Require ninja, meson
 tput bold ; echo ; echo '📍 ' dav1d git ; tput sgr0 ; sleep 3
@@ -378,8 +384,7 @@ tput bold ; echo ; echo '📍 ' XviD 1.3.5 ; tput sgr0 ; sleep 3
 cd ${CMPL}
 curl -O http://downloads.xvid.org/downloads/xvidcore-1.3.5.tar.gz
 tar -zxvf xvidcore-*
-cd xvidcore
-cd build/generic
+cd xvidcore/ && cd build/generic/
 ./configure --prefix=${TARGET} --disable-assembly --enable-macosx_module
 make -j "$THREADS" && make install
 
@@ -388,35 +393,37 @@ tput bold ; echo ; echo '📍 ' openH264 1.8.0 ; tput sgr0 ; sleep 3
 cd ${CMPL}
 wget --no-check-certificate https://github.com/cisco/openh264/archive/v1.8.0.tar.gz 
 tar -zxvf v1.8.0.tar.gz
-cd openh264-1.8.0
+cd openh264-1.8.0/
 make -j "$THREADS" install-static PREFIX=${TARGET}
 
 ## x264 8-10bit git - Require nasm
 tput bold ; echo ; echo '📍 ' x264 8-10bit git ; tput sgr0 ; sleep 3
 cd ${CMPL}
 git clone git://git.videolan.org/x264.git
-cd x264
+cd x264/
 ./configure --prefix=${TARGET} --enable-static --bit-depth=all --chroma-format=all
 make -j "$THREADS" && make install
 
-## x265 8-10-12bit - Require wget, cmake, yasm, nasm, libtool
+## x265 8-10-12bit - Require wget, cmake, yasm, nasm, libtool, ninja
 LastVersion=$(wget --no-check-certificate 'https://bitbucket.org/multicoreware/x265/downloads/' -O- -q | grep -Eo 'x265_[0-9\.]+\.[0-9\.]+\.tar.gz' | head -1)
 tput bold ; echo ; echo '📍 ' "$LastVersion" 8-10-12bit ; tput sgr0 ; sleep 3
 cd ${CMPL}
-wget --no-check-certificate https://bitbucket.org/multicoreware/x265/downloads/"$LastVersion"
-tar -zxvf x265*
+if [ test -f ${CMPL}/${LastVersion} ] ; then echo Allready Download and Purge ; rm -vfr ${CMPL}/x265*/ \
+	; else wget --no-check-certificate https://bitbucket.org/multicoreware/x265/downloads/"$LastVersion" && tar -zxvf x265* ; fi
 cd x265*/source/
 mkdir -p 8bit 10bit 12bit
 
 tput bold ; echo ; echo '📍 ' x265 12bit Build ; tput sgr0
 cd 12bit
-cmake ../../../x265*/source -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DHIGH_BIT_DEPTH=ON -DEXPORT_C_API=OFF -DENABLE_SHARED=OFF -DENABLE_CLI=OFF -DMAIN12=ON
-make -j "$THREADS" ${MAKEFLAGS}
+cmake -G "Ninja" ../../../x265*/source -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DHIGH_BIT_DEPTH=ON -DEXPORT_C_API=OFF -DENABLE_SHARED=OFF -DENABLE_CLI=OFF -DMAIN12=ON
+ninja ${MAKEFLAGS}
+#make -j "$THREADS" ${MAKEFLAGS}
 
 tput bold ; echo ; echo '📍 ' x265 10bit Build ; tput sgr0
 cd ../10bit
-cmake ../../../x265*/source -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DHIGH_BIT_DEPTH=ON -DEXPORT_C_API=OFF -DENABLE_SHARED=OFF -DENABLE_CLI=OFF
-make -j "$THREADS" ${MAKEFLAGS}
+cmake -G "Ninja" ../../../x265*/source -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DHIGH_BIT_DEPTH=ON -DEXPORT_C_API=OFF -DENABLE_SHARED=OFF -DENABLE_CLI=OFF
+ninja ${MAKEFLAGS}
+#make -j "$THREADS" ${MAKEFLAGS}
 
 tput bold ; echo ; echo '📍 ' x265 10-12bit Link ; tput sgr0
 cd ../8bit
@@ -424,15 +431,17 @@ ln -sf ../10bit/libx265.a libx265_main10.a
 ln -sf ../12bit/libx265.a libx265_main12.a
 
 tput bold ; echo ; echo '📍 ' x265 8-10-12bit Build ; tput sgr0
-cmake ../../../x265*/source -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED=NO -DEXTRA_LIB="x265_main10.a;x265_main12.a" -DEXTRA_LINK_FLAGS=-L. -DLINKED_10BIT=ON -DLINKED_12BIT=ON
-make -j "$THREADS" ${MAKEFLAGS}
+cmake -G "Ninja" ../../../x265*/source -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED=NO -DEXTRA_LIB="x265_main10.a;x265_main12.a" -DEXTRA_LINK_FLAGS=-L. -DLINKED_10BIT=ON -DLINKED_12BIT=ON
+ninja ${MAKEFLAGS}
+#make -j "$THREADS" ${MAKEFLAGS}
 
 tput bold ; echo ; echo '📍 ' x265 Install ; tput sgr0
 # rename the 8bit library, then combine all three into libx265.a
 mv libx265.a libx265_main.a
 # Mac/BSD libtool
 libtool -static -o libx265.a libx265_main.a libx265_main10.a libx265_main12.a
-make install
+#make install
+ninja install
 
 
 #-> FFmpeg Check
@@ -452,7 +461,7 @@ tput bold ; echo ; echo '📍 ' FFmpeg git ; tput sgr0 ; sleep 3
 cd ${CMPL}
 git clone https://git.ffmpeg.org/ffmpeg.git ffmpeg
 cd ffmpe*/
-./configure --extra-version=adam-"$(date +"%m-%d-%y")" --arch=x86_64 --cc=/usr/bin/clang \
+./configure --extra-version=adam-"$(date +"%y-%m-%d")" --arch=x86_64 --cc=/usr/bin/clang \
  --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect \
  --pkg_config='pkg-config --static' --enable-nonfree --enable-gpl --enable-version3 --prefix=${TARGET} \
  --disable-ffplay --disable-ffprobe --disable-debug --disable-doc --enable-avfilter --enable-avisynth --enable-filters \
@@ -483,5 +492,4 @@ tput bold ; echo ; echo '⏱ ' End in "$Time" ; tput sgr0
 # Compress & Rotating +c30d Logs
 Logs="$HOME"/Library/Logs/adam-FFmpeg-Static.
 cat < "$Logs"log | gzip -9 > "$Logs""$(date +"%d_%Hh%Mm%Ss")".gz
-find "$Logs"*.gz -ctime +30 -exec rm -vfr {} \;
-rm -v "$Logs"log
+find "$Logs"*.gz -ctime +30 -exec rm -vfr "{}" \;
