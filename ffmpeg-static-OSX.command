@@ -188,7 +188,7 @@ make -j "$THREADS" && make install
 ## openssl
 tput bold ; echo ; echo '📍 ' openssl 1.1.1a ; tput sgr0 ; sleep 3
 cd ${CMPL}
-wget --no-check-certificate https://www.mirrorservice.org/sites/ftp.openssl.org/source/openssl-1.1.1a.tar.gz
+wget --no-check-certificate https://www.openssl.org/source/openssl-1.1.1b.tar.gz
 tar -zxvf openssl*
 cd openssl-*/
 #./Configure --prefix=${TARGET} shared darwin64-x86_64-cc enable-ec_nistp_64_gcc_128 no-ssl3 no-comp enable-cms
