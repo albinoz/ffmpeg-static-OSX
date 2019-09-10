@@ -254,7 +254,9 @@ cd ${CMPL}
 wget --no-check-certificate 'http://downloads.xiph.org/releases/ogg/'"$LastVersion"
 tar -zxvf libogg-*
 cd libogg-*/
-./configure --prefix=${TARGET} --disable-shared --enable-static
+wget https://github.com/xiph/ogg/commit/c8fca6b4a02d695b1ceea39b330d4406001c03ed.patch?full_index=1
+patch /Volumes/Ramdisk/compile/libogg-1.3.4/include/ogg/os_types.h  <  /Volumes/Ramdisk/compile/libogg-1.3.4/c8fca6b4a02d695b1ceea39b330d4406001c03ed.patch\?full_index\=1 
+./configure --prefix=${TARGET} --disable-shared --enable-static --disable-dependency-tracking
 make -j "$THREADS" && make install
 
 ## Theora git - Require autoconf automake libtool
