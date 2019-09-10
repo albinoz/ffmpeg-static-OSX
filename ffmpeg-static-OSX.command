@@ -39,7 +39,7 @@ if df | grep Ramdisk ; then diskutil eject Ramdisk ; sleep 3 ; fi
 
 # Made Ramdisk
 tput bold ; echo ; echo '💾 ' Made Ramdisk ; tput sgr0 
-DISK_ID=$(hdid -nomount ram://5000000)
+DISK_ID=$(hdid -nomount ram://6000000)
 newfs_hfs -v Ramdisk ${DISK_ID}
 diskutil mount ${DISK_ID}
 sleep 3
