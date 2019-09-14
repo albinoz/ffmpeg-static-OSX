@@ -2,9 +2,9 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2019-01-23" ; tput sgr0
-tput bold ; echo "Auto ! Download && Build Last Static FFmpeg 64bits" ; tput sgr0
-tput bold ; echo "OS X | 10.11 < 10.14" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2019-09-14" ; tput sgr0
+tput bold ; echo "Auto ! Download && Build Last Static FFmpeg" ; tput sgr0
+tput bold ; echo "OS X | 10.12 < 10.14" ; tput sgr0
 
 # Check Xcode CLI Install
 tput bold ; echo ; echo '♻️ '  Check Xcode CLI Install ; tput sgr0
@@ -19,7 +19,7 @@ if ls /usr/local/bin/brew >/dev/null ; then tput sgr0 ; echo "HomeBrew AllReady 
 
 # Check Homebrew Update
 tput bold ; echo ; echo '♻️ '  Check Homebrew Update ; tput sgr0 ; sleep 3
-brew update ; brew upgrade ; brew cleanup
+brew doctor ; brew update ; brew upgrade ; brew cleanup ; brew cask upgrade
 
 # Check Homebrew Config
 tput bold ; echo ; echo '♻️ '  Check Homebrew Config ; tput sgr0 ; sleep 3
@@ -33,9 +33,16 @@ brew uninstall vpx
 brew uninstall faac
 brew uninstall yasm
 
+# Java Install - Fix PopUp
+tput bold ; echo ; echo '♻️ '  Check Java Install ; tput sgr0 ; sleep 3
+if [ -n "$(find /Library/Java/JavaVirtualMachines/ -name *.jdk)" ] ; then tput sgr0 ; java -version ; echo "Java AllReady Installed"
+else tput bold ; echo "Java Install" ; tput sgr0 ; sleep 3
+brew cask install java
+fi
+
 # Eject Ramdisk
-if df | grep Ramdisk ; then tput bold ; echo ; echo ⏏ Eject Ramdisk ; tput sgr0 ; fi
-if df | grep Ramdisk ; then diskutil eject Ramdisk ; sleep 3 ; fi
+if df | grep Ramdisk > /dev/null ; then tput bold ; echo ; echo ⏏ Eject Ramdisk ; tput sgr0 ; fi
+if df | grep Ramdisk > /dev/null ; then diskutil eject Ramdisk ; sleep 3 ; fi
 
 # Made Ramdisk
 tput bold ; echo ; echo '💾 ' Made Ramdisk ; tput sgr0 
@@ -49,6 +56,7 @@ THREADS=$(sysctl -n hw.ncpu)
 TARGET="/Volumes/Ramdisk/sw"
 CMPL="/Volumes/Ramdisk/compile"
 export PATH=${TARGET}/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/include:/usr/local/opt:/usr/local/Cellar:/usr/local/lib:/usr/local/share:/usr/local/etc
+mdutil -i off /Volumes/Ramdisk
 
 set -o errexit
 
@@ -59,17 +67,6 @@ mkdir ${CMPL}
 
 
 #-> BASE
-
-# Apple Java Install - Fix PopUp
-tput bold ; echo ; echo '♻️ '  Check Java Install - Fix PopUp ; tput sgr0 ; sleep 3
-if [ -n "$(find /Library/Java/JavaVirtualMachines/ -name *.jdk)" ] ; then tput sgr0 ; echo "Java is Installed"
-else tput bold ; echo "Apple Java Install - Fix PopUp" ; tput sgr0 ; sleep 3
-cd ${CMPL}
-wget http://supportdownload.apple.com/download.info.apple.com/Apple_Support_Area/Apple_Software_Updates/Mac_OS_X/downloads/031-33898-20171026-7a797e9e-b8de-11e7-b1fe-c14fbda7e146/javaforosx.dmg
-hdiutil attach -nobrowse ${CMPL}/javaforosx.dmg ; sleep 3
-sudo installer -pkg /Volumes/Java\ for\ macOS\ 2017-001/JavaForOSX.pkg -target /
-hdiutil detach /Volumes/Java\ for\ macOS\ 2017-001/ ; sleep 3
-fi
 
 ## gettext - Requirement for fontconfig, fribidi
 tput bold ; echo ; echo '📍 ' gettext 0.19.8.1 ; tput sgr0 ; sleep 3
@@ -186,12 +183,11 @@ cd libas*/
 make -j "$THREADS" && make install
 
 ## openssl
-tput bold ; echo ; echo '📍 ' openssl 1.1.1a ; tput sgr0 ; sleep 3
+tput bold ; echo ; echo '📍 ' openssl 1.1.1 ; tput sgr0 ; sleep 3
 cd ${CMPL}
-wget --no-check-certificate https://www.openssl.org/source/openssl-1.1.1b.tar.gz
+wget --no-check-certificate https://www.openssl.org/source/openssl-1.1.1d.tar.gz
 tar -zxvf openssl*
 cd openssl-*/
-#./Configure --prefix=${TARGET} shared darwin64-x86_64-cc enable-ec_nistp_64_gcc_128 no-ssl3 no-comp enable-cms
 ./Configure --prefix=${TARGET} -openssldir=${TARGET}/usr/local/etc/openssl no-ssl3 no-zlib enable-cms darwin64-x86_64-cc shared enable-ec_nistp_64_gcc_128
 make -j "$THREADS" depend && make install
 
@@ -200,11 +196,9 @@ tput bold ; echo ; echo '📍 ' str git ; tput sgr0 ; sleep 3
 cd ${CMPL}
 git clone --depth 1 https://github.com/Haivision/srt.git
 cd srt/
-#./configure --prefix=${TARGET} --enable-shared=0 --enable-static
 mkdir build && cd build
 cmake -G "Ninja" .. -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED="OFF" -DENABLE_C_DEPS="ON"
 ninja && ninja install
-#make -j "$THREADS" && make install
 
 ## snappy
 tput bold ; echo ; echo '📍 ' snappy git ; tput sgr0 ; sleep 3
@@ -213,7 +207,6 @@ git clone https://github.com/google/snappy
 cd snappy
 mkdir build && cd build
 cmake -G "Ninja" ../ -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED="OFF" -DENABLE_C_DEPS="ON"
-#make -j "$THREADS" && make install
 ninja && ninja install
 
 
@@ -225,7 +218,6 @@ cd ${CMPL}
 git clone https://github.com/kcat/openal-soft
 cd openal-soft*/
 cmake -G "Ninja" -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC .
-#make -j "$THREADS" && make install
 ninja && ninja install
 
 # opencore-amr
@@ -361,7 +353,6 @@ cd openjpeg*/
 mkdir build && cd build
 cmake -G "Ninja" .. -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC
 ninja && ninja install
-#make -j "$THREADS" && make install && make clean
 
 ## av1 git
 tput bold ; echo ; echo '📍 ' av1 git ; tput sgr0 ; sleep 3
@@ -371,7 +362,6 @@ cd aom
 mkdir aom_build && cd aom_build
 cmake -G "Ninja" /Volumes/Ramdisk/compile/aom -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC
 ninja && ninja install
-#make -j "$THREADS" && make install && make clean
 
 # dav1d git - Require ninja, meson
 tput bold ; echo ; echo '📍 ' dav1d git ; tput sgr0 ; sleep 3
@@ -419,13 +409,11 @@ tput bold ; echo ; echo '📍 ' x265 12bit Build ; tput sgr0
 cd 12bit
 cmake -G "Ninja" ../../../x265*/source -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DHIGH_BIT_DEPTH=ON -DEXPORT_C_API=OFF -DENABLE_SHARED=OFF -DENABLE_CLI=OFF -DMAIN12=ON
 ninja ${MAKEFLAGS}
-#make -j "$THREADS" ${MAKEFLAGS}
 
 tput bold ; echo ; echo '📍 ' x265 10bit Build ; tput sgr0
 cd ../10bit
 cmake -G "Ninja" ../../../x265*/source -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DHIGH_BIT_DEPTH=ON -DEXPORT_C_API=OFF -DENABLE_SHARED=OFF -DENABLE_CLI=OFF
 ninja ${MAKEFLAGS}
-#make -j "$THREADS" ${MAKEFLAGS}
 
 tput bold ; echo ; echo '📍 ' x265 10-12bit Link ; tput sgr0
 cd ../8bit
@@ -435,14 +423,12 @@ ln -sf ../12bit/libx265.a libx265_main12.a
 tput bold ; echo ; echo '📍 ' x265 8-10-12bit Build ; tput sgr0
 cmake -G "Ninja" ../../../x265*/source -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED=NO -DEXTRA_LIB="x265_main10.a;x265_main12.a" -DEXTRA_LINK_FLAGS=-L. -DLINKED_10BIT=ON -DLINKED_12BIT=ON
 ninja ${MAKEFLAGS}
-#make -j "$THREADS" ${MAKEFLAGS}
 
 tput bold ; echo ; echo '📍 ' x265 Install ; tput sgr0
 # rename the 8bit library, then combine all three into libx265.a
 mv libx265.a libx265_main.a
 # Mac/BSD libtool
 libtool -static -o libx265.a libx265_main.a libx265_main10.a libx265_main12.a
-#make install
 ninja install
 
 
@@ -476,7 +462,7 @@ cd ffmpe*/
 
 ## Fix Illegall Instruction 4 By Remove "--extra-cflags=-march=native" on Core2Duo
 ## Fix CLOCK_GETTIME on OS Before 10.12 & iOS 10
- sed -i -- 's/HAVE_CLOCK_GETTIME 1/HAVE_CLOCK_GETTIME 0/g' config.h
+#sed -i -- 's/HAVE_CLOCK_GETTIME 1/HAVE_CLOCK_GETTIME 0/g' config.h
 
  make -j "$THREADS" && make install
 
