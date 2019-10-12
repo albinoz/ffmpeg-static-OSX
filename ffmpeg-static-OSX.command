@@ -2,9 +2,13 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2019-09-14" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2019-10-10" ; tput sgr0
 tput bold ; echo "Auto ! Download && Build Last Static FFmpeg" ; tput sgr0
 tput bold ; echo "OS X | 10.12 < 10.14" ; tput sgr0
+
+# Check Xcode Install
+tput bold ; echo ; echo '♻️ '  Check Xcode Install ; tput sgr0
+if ls /Applications | grep Xcode >/dev/null ; then tput sgr0 ; echo Xcode AllReady Installed ; else echo Xcode Install Request ; tput sgr0 ; open -a /Applications/App\ Store.app https://apps.apple.com/fr/app/xcode/id497799835\?mt\=12 ; exit ; fi
 
 # Check Xcode CLI Install
 tput bold ; echo ; echo '♻️ '  Check Xcode CLI Install ; tput sgr0
@@ -37,7 +41,7 @@ brew uninstall yasm
 tput bold ; echo ; echo '♻️ '  Check Java Install ; tput sgr0 ; sleep 3
 if [ -n "$(find /Library/Java/JavaVirtualMachines/ -name *.jdk)" ] ; then tput sgr0 ; java -version ; echo "Java AllReady Installed"
 else tput bold ; echo "Java Install" ; tput sgr0 ; sleep 3
-brew cask install java
+brew cask reinstall java
 fi
 
 # Eject Ramdisk
@@ -45,7 +49,7 @@ if df | grep Ramdisk > /dev/null ; then tput bold ; echo ; echo ⏏ Eject Ramdis
 if df | grep Ramdisk > /dev/null ; then diskutil eject Ramdisk ; sleep 3 ; fi
 
 # Made Ramdisk
-tput bold ; echo ; echo '💾 ' Made Ramdisk ; tput sgr0 
+tput bold ; echo ; echo '💾 ' Made Ramdisk ; tput sgr0
 DISK_ID=$(hdid -nomount ram://6000000)
 newfs_hfs -v Ramdisk ${DISK_ID}
 diskutil mount ${DISK_ID}
@@ -236,7 +240,7 @@ cd ${CMPL}
 wget --no-check-certificate 'http://downloads.xiph.org/releases/opus/'"$LastVersion"
 tar -zxvf opus-*
 cd opus-*/
-./configure --prefix=${TARGET} --disable-shared --enable-static 
+./configure --prefix=${TARGET} --disable-shared --enable-static
 make -j "$THREADS" && make install
 
 ## ogg
@@ -247,7 +251,7 @@ wget --no-check-certificate 'http://downloads.xiph.org/releases/ogg/'"$LastVersi
 tar -zxvf libogg-*
 cd libogg-*/
 wget https://github.com/xiph/ogg/commit/c8fca6b4a02d695b1ceea39b330d4406001c03ed.patch?full_index=1
-patch /Volumes/Ramdisk/compile/libogg-1.3.4/include/ogg/os_types.h  <  /Volumes/Ramdisk/compile/libogg-1.3.4/c8fca6b4a02d695b1ceea39b330d4406001c03ed.patch\?full_index\=1 
+patch /Volumes/Ramdisk/compile/libogg-1.3.4/include/ogg/os_types.h  <  /Volumes/Ramdisk/compile/libogg-1.3.4/c8fca6b4a02d695b1ceea39b330d4406001c03ed.patch\?full_index\=1
 ./configure --prefix=${TARGET} --disable-shared --enable-static --disable-dependency-tracking
 make -j "$THREADS" && make install
 
@@ -383,7 +387,7 @@ make -j "$THREADS" && make install
 ## openh264
 tput bold ; echo ; echo '📍 ' openH264 1.8.0 ; tput sgr0 ; sleep 3
 cd ${CMPL}
-wget --no-check-certificate https://github.com/cisco/openh264/archive/v1.8.0.tar.gz 
+wget --no-check-certificate https://github.com/cisco/openh264/archive/v1.8.0.tar.gz
 tar -zxvf v1.8.0.tar.gz
 cd openh264-1.8.0/
 make -j "$THREADS" install-static PREFIX=${TARGET}
