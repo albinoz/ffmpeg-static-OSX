@@ -1,11 +1,11 @@
 ## FFmpeg Static Builder OS X
-####  Mac OsX 10.12 < 10.14
+####  Mac OsX 10.12 < 10.15
 
 #### Include Last Versions of x264 | x265 | AV1 | FFmpeg…
 
 
 ```
-./configure --extra-version=adam-"$(date +"%y-%m-%d")" --arch=x86_64 --cc=/usr/bin/clang \
+./configure --extra-version=adam-"$(date +"%y-%m-%d")" --extra-cflags="-fno-stack-check" --arch=x86_64 --cc=/usr/bin/clang \
  --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect \
  --pkg_config='pkg-config --static' --enable-nonfree --enable-gpl --enable-version3 --prefix=${TARGET} \
  --disable-ffplay --disable-ffprobe --disable-debug --disable-doc --enable-avfilter --enable-avisynth --enable-filters \
