@@ -2,14 +2,9 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2019-10-10" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2019-12-10" ; tput sgr0
 tput bold ; echo "Auto ! Download && Build Last Static FFmpeg" ; tput sgr0
-tput bold ; echo "OS X | 10.12 < 10.14" ; tput sgr0
-
-# Check Xcode Install
-tput bold ; echo ; echo '♻️ '  Check Xcode Install ; tput sgr0
-if ls /Applications | grep Xcode >/dev/null ; then tput sgr0 ; echo Xcode AllReady Installed ; else echo Xcode Install Request ; tput sgr0 ; open -a /Applications/App\ Store.app https://apps.apple.com/fr/app/xcode/id497799835\?mt\=12 ; exit ; fi
-
+tput bold ; echo "OS X | 10.12 < 10.15" ; tput sgr0
 # Check Xcode CLI Install
 tput bold ; echo ; echo '♻️ '  Check Xcode CLI Install ; tput sgr0
 if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version ; then tput sgr0 ; echo "Xcode CLI AllReady Installed" ; else tput bold ; echo "Xcode CLI Install" ; tput sgr0 ; xcode-select --install
@@ -446,14 +441,14 @@ rm -vfr $TARGET/lib/*.dylib
 tput bold ; echo ; echo '🚩 ' Define FLAGS ; tput sgr0 ; sleep 3
 export LDFLAGS="-L${TARGET}/lib -Wl,-framework,OpenAL"
 export CPPFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL"
-export CFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL"
+export CFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL,-fno-stack-check"
 
 ## FFmpeg Build
 tput bold ; echo ; echo '📍 ' FFmpeg git ; tput sgr0 ; sleep 3
 cd ${CMPL}
 git clone https://git.ffmpeg.org/ffmpeg.git ffmpeg
 cd ffmpe*/
-./configure --extra-version=adam-"$(date +"%y-%m-%d")" --arch=x86_64 --cc=/usr/bin/clang \
+./configure --extra-version=adam-"$(date +"%y-%m-%d")" --extra-cflags="-fno-stack-check" --arch=x86_64 --cc=/usr/bin/clang \
  --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect \
  --pkg_config='pkg-config --static' --enable-nonfree --enable-gpl --enable-version3 --prefix=${TARGET} \
  --disable-ffplay --disable-ffprobe --disable-debug --disable-doc --enable-avfilter --enable-avisynth --enable-filters \
