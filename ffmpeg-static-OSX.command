@@ -129,7 +129,7 @@ JAVAV=$(find /Library/Java/JavaVirtualMachines -iname "*.jdk" | tail -1)
 export JAVA_HOME="$JAVAV/Contents/Home"
 tput bold ; echo ; echo '📍 ' libbluray git ; tput sgr0 ; sleep 3
 cd ${CMPL}
-git clone http://git.videolan.org/git/libbluray.git
+git clone https://code.videolan.org/videolan/libbluray.git
 cd libblura*/
 cp -r /Volumes/Ramdisk/compile/libudfread/src /Volumes/Ramdisk/compile/libbluray/contrib/libudfread/src
 ./bootstrap
@@ -390,7 +390,7 @@ make -j "$THREADS" install-static PREFIX=${TARGET}
 ## x264 8-10bit git - Require nasm
 tput bold ; echo ; echo '📍 ' x264 8-10bit git ; tput sgr0 ; sleep 3
 cd ${CMPL}
-git clone git://git.videolan.org/x264.git
+git clone https://code.videolan.org/videolan/x264.git
 cd x264/
 ./configure --prefix=${TARGET} --enable-static --bit-depth=all --chroma-format=all
 make -j "$THREADS" && make install
