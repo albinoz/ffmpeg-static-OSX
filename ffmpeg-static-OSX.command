@@ -428,6 +428,14 @@ mv libx265.a libx265_main.a
 libtool -static -o libx265.a libx265_main.a libx265_main10.a libx265_main12.a
 ninja install
 
+## AviSynth+
+tput bold ; echo ; echo '📍 ' AviSynthPlus git ; tput sgr0 ; sleep 1
+cd ${CMPL}
+git clone https://github.com/AviSynth/AviSynthPlus.git
+cd AviSynthPlus
+mkdir avisynth-build && cd avisynth-build
+cmake ../ -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DHEADERS_ONLY:bool=on
+make install
 
 #-> FFmpeg Check
 
@@ -444,7 +452,7 @@ export CFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL,-fno-stack-check"
 ## FFmpeg Build
 tput bold ; echo ; echo '📍 ' FFmpeg git ; tput sgr0 ; sleep 1
 cd ${CMPL}
-git clone https://git.ffmpeg.org/ffmpeg.git ffmpeg
+git clone git://git.ffmpeg.org/ffmpeg.git
 cd ffmpe*/
 ./configure --extra-version=adam-"$(date +"%y-%m-%d")" --extra-cflags="-fno-stack-check" --arch=x86_64 --cc=/usr/bin/clang \
  --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect \
