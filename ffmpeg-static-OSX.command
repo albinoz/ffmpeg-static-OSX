@@ -252,7 +252,7 @@ make -j "$THREADS" && make install
 ## Theora git - Require autoconf automake libtool
 tput bold ; echo ; echo '📍 ' theora git ; tput sgr0 ; sleep 1
 cd ${CMPL}
-git clone https://git.xiph.org/theora.git
+git clone https://github.com/xiph/theora.git
 cd theora
 ./autogen.sh
 ./configure --prefix=${TARGET} --with-ogg-libraries=${TARGET}/lib --with-ogg-includes=${TARGET}/include/ --with-vorbis-libraries=${TARGET}/lib --with-vorbis-includes=${TARGET}/include/ --enable-static --disable-shared
