@@ -140,10 +140,10 @@ make -j "$THREADS" && make install
 #-> SUBTITLES
 
 ## freetype
-LastVersion=$(wget --no-check-certificate 'http://download.savannah.gnu.org/releases/freetype/' -O- -q | grep -Eo 'freetype-[0-9\.]+\.10+\.[0-9\.]+\.tar.gz' | tail -1)
+LastVersion=$(wget --no-check-certificate 'https://download.savannah.gnu.org/releases/freetype/' -O- -q | grep -Eo 'freetype-[0-9\.]+\.10+\.[0-9\.]+\.tar.gz' | tail -1)
 tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 1
 cd ${CMPL}
-wget --no-check-certificate 'http://download.savannah.gnu.org/releases/freetype/'"$LastVersion"
+wget --no-check-certificate 'https://download.savannah.gnu.org/releases/freetype/'"$LastVersion"
 tar xzpf freetype-*
 cd freetype-*/
 pip3 install docwriter
