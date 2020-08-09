@@ -2,7 +2,7 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2020-04-02" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2020-08-09" ; tput sgr0
 tput bold ; echo " ! Download && Build Last Static FFmpeg" ; tput sgr0
 tput bold ; echo "OS X | 10.12 < 10.15" ; tput sgr0
 # Check Xcode CLI Install
@@ -195,7 +195,7 @@ cd ${CMPL}
 git clone --depth 1 https://github.com/Haivision/srt.git
 cd srt/
 mkdir build && cd build
-cmake -G "Ninja" .. -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED="OFF" -DENABLE_C_DEPS="ON"
+cmake -G "Ninja" .. -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_C_DEPS=ON -DENABLE_SHARED=OFF -DENABLE_STATIC=ON
 ninja && ninja install
 
 ## snappy
@@ -374,7 +374,7 @@ tput bold ; echo ; echo '📍 ' XviD svn ; tput sgr0 ; sleep 1
 cd ${CMPL}
 svn checkout http://svn.xvid.org/trunk
 cd trunk/xvidcore/build/generic
-./bootstrap.sh
+./bootstrap.sh  ; sleep 1
 ./configure --prefix=${TARGET} --disable-assembly --enable-macosx_module
 make -j "$THREADS" && make install
 
@@ -454,7 +454,7 @@ tput bold ; echo ; echo '📍 ' FFmpeg git ; tput sgr0 ; sleep 1
 cd ${CMPL}
 git clone git://git.ffmpeg.org/ffmpeg.git
 cd ffmpe*/
-./configure --extra-version=adam-"$(date +"%y-%m-%d")" --extra-cflags="-fno-stack-check" --arch=x86_64 --cc=/usr/bin/clang \
+./configure --extra-version=adam-"$(date +"%Y-%m-%d")" --extra-cflags="-fno-stack-check" --arch=x86_64 --cc=/usr/bin/clang \
  --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect \
  --pkg_config='pkg-config --static' --enable-nonfree --enable-gpl --enable-version3 --prefix=${TARGET} \
  --disable-ffplay --disable-ffprobe --disable-debug --disable-doc --enable-avfilter --enable-avisynth --enable-filters \
@@ -464,10 +464,6 @@ cd ffmpe*/
  --enable-fontconfig --enable-libfreetype --enable-libfribidi --enable-libass --enable-libsrt \
  --enable-libbluray --enable-bzlib --enable-zlib --enable-libsnappy --enable-libwebp --enable-libopenjpeg \
  --enable-opengl --enable-opencl --enable-openal --enable-openssl
-
-## Fix Illegall Instruction 4 By Remove "--extra-cflags=-march=native" on Core2Duo
-## Fix CLOCK_GETTIME on OS Before 10.12 & iOS 10
-#sed -i -- 's/HAVE_CLOCK_GETTIME 1/HAVE_CLOCK_GETTIME 0/g' config.h
 
  make -j "$THREADS" && make install
 
