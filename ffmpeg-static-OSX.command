@@ -2,7 +2,7 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2020-08-09" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2020-10-25" ; tput sgr0
 tput bold ; echo " ! Download && Build Last Static FFmpeg" ; tput sgr0
 tput bold ; echo "OS X | 10.12 < 10.15" ; tput sgr0
 # Check Xcode CLI Install
@@ -14,11 +14,11 @@ if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version ; then tp
 
 # Check Homebrew Install
 tput bold ; echo ; echo '♻️ ' Check Homebrew Install ; tput sgr0 ; sleep 1
-if ls /usr/local/bin/brew >/dev/null ; then tput sgr0 ; echo "HomeBrew AllReady Installed" ; else tput bold ; echo "Installing HomeBrew" ; tput sgr0 ; /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" ; fi
+if ls /usr/local/bin/brew >/dev/null ; then tput sgr0 ; echo "HomeBrew AllReady Installed" ; else tput bold ; echo "Installing HomeBrew" ; tput sgr0 ; brew install mas ; fi
 
 # Check Homebrew Update
 tput bold ; echo ; echo '♻️ '  Check Homebrew Update ; tput sgr0 ; sleep 1
-brew doctor ; brew update ; brew upgrade ; brew cleanup ; brew cask upgrade
+brew doctor ; brew update ; brew upgrade ; brew cleanup ; brew upgrade --cask
 
 # Check Homebrew Config
 tput bold ; echo ; echo '♻️ '  Check Homebrew Config ; tput sgr0 ; sleep 1
@@ -31,6 +31,9 @@ brew uninstall xvid
 brew uninstall vpx
 brew uninstall faac
 brew uninstall yasm
+brew uninstall xz
+brew uninstall lzma
+brew uninstall --ignore-dependencies xz
 
 # Java Install - Fix PopUp
 tput bold ; echo ; echo '♻️ '  Check Java Install ; tput sgr0 ; sleep 1
@@ -45,7 +48,7 @@ if df | grep Ramdisk > /dev/null ; then diskutil eject Ramdisk ; sleep 1 ; fi
 
 # Made Ramdisk
 tput bold ; echo ; echo '💾 ' Made Ramdisk ; tput sgr0
-DISK_ID=$(hdid -nomount ram://6000000)
+DISK_ID=$(hdid -nomount ram://7000000)
 newfs_hfs -v Ramdisk ${DISK_ID}
 diskutil mount ${DISK_ID}
 sleep 1
@@ -67,10 +70,29 @@ mkdir ${CMPL}
 
 #-> BASE
 
-## gettext - Requirement for fontconfig, fribidi
-tput bold ; echo ; echo '📍 ' gettext 0.20 ; tput sgr0 ; sleep 1
+## libexpat
+tput bold ; echo ; echo '📍 ' libexpat git ; tput sgr0 ; sleep 1
 cd ${CMPL}
-wget --no-check-certificate "https://ftp.gnu.org/pub/gnu/gettext/gettext-0.20.tar.gz"
+git clone https://github.com/libexpat/libexpat.git libexpat
+cd libexpat/expat
+./buildconf.sh
+# 64 bits
+./configure --prefix=${TARGET} CPPFLAGS=-DXML_LARGE_SIZE --enable-static
+make -j "$THREADS" && make install DESTDIR=/
+
+## iconv
+tput bold ; echo ; echo '📍 ' iconv 1.16 ; tput sgr0 ; sleep 1
+cd ${CMPL}
+wget --no-check-certificate "https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.16.tar.gz"
+tar -zxvf libiconv*
+cd libiconv*/
+./configure --prefix=${TARGET} --with-iconv=${TARGET} --enable-static --enable-extra-encodings
+make -j "$THREADS" && make install
+
+## gettext - Requirement for fontconfig, fribidi
+tput bold ; echo ; echo '📍 ' gettext 0.21 ; tput sgr0 ; sleep 1
+cd ${CMPL}
+wget --no-check-certificate "https://ftp.gnu.org/pub/gnu/gettext/gettext-0.21.tar.gz"
 tar -zxvf gettex*
 cd gettex*/
 ./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules --disable-debug --with-included-gettext --with-included-glib \
@@ -151,10 +173,10 @@ pip3 install docwriter
 make -j "$THREADS" && make install
 
 ## fribidi
-tput bold ; echo ; echo '📍 ' fribidi 1.0.5 ; tput sgr0 ; sleep 1
+tput bold ; echo ; echo '📍 ' fribidi 1.0.10 ; tput sgr0 ; sleep 1
 cd ${CMPL}
-wget --no-check-certificate https://github.com/fribidi/fribidi/releases/download/v1.0.5/fribidi-1.0.5.tar.bz2
-tar xzpf fribid*
+wget --no-check-certificate https://github.com/fribidi/fribidi/releases/download/v1.0.10/fribidi-1.0.10.tar.xz
+tar -xJf fribid*
 cd fribid*/
 ./configure --prefix=${TARGET} --disable-shared --enable-static --disable-silent-rules --disable-debug --disable-dependency-tracking
 make -j "$THREADS" && make install
@@ -187,7 +209,7 @@ wget --no-check-certificate https://www.openssl.org/source/"$LastVersion"
 tar -zxvf openssl*
 cd openssl-*/
 ./Configure --prefix=${TARGET} -openssldir=${TARGET}/usr/local/etc/openssl no-ssl3 no-zlib enable-cms darwin64-x86_64-cc shared enable-ec_nistp_64_gcc_128
-make -j "$THREADS" depend && make install
+make -j "$THREADS" depend && make install_sw
 
 ## str ( Require openssl )
 tput bold ; echo ; echo '📍 ' str git ; tput sgr0 ; sleep 1
@@ -390,15 +412,17 @@ tput bold ; echo ; echo '📍 ' x264 8-10bit git ; tput sgr0 ; sleep 1
 cd ${CMPL}
 git clone https://code.videolan.org/videolan/x264.git
 cd x264/
-./configure --prefix=${TARGET} --enable-static --bit-depth=all --chroma-format=all
+./configure --prefix=${TARGET} --enable-static --bit-depth=all --chroma-format=all --enable-mp4-output
 make -j "$THREADS" && make install
 
 ## x265 8-10-12bit - Require wget, cmake, yasm, nasm, libtool, ninja
-LastVersion=$(wget --no-check-certificate 'https://bitbucket.org/multicoreware/x265/downloads/' -O- -q | grep -Eo 'x265_[0-9\.]+\.[0-9\.]+\.tar.gz' | head -1)
-tput bold ; echo ; echo '📍 ' "$LastVersion" 8-10-12bit ; tput sgr0 ; sleep 1
+#LastVersion=$(wget --no-check-certificate 'https://bitbucket.org/multicoreware/x265/downloads/' -O- -q | grep -Eo 'x265_[0-9\.]+\.[0-9\.]+\.tar.gz' | head -1)
+#tput bold ; echo ; echo '📍 ' "$LastVersion" 8-10-12bit ; tput sgr0 ; sleep 1
+tput bold ; echo ; echo '📍 ' x265 8-10-12bit git ; tput sgr0 ; sleep 1
 cd ${CMPL}
-if [ test -f ${CMPL}/${LastVersion} ] ; then echo Allready Download and Purge ; rm -vfr ${CMPL}/x265*/ \
-	; else wget --no-check-certificate https://bitbucket.org/multicoreware/x265/downloads/"$LastVersion" && tar -zxvf x265* ; fi
+#if [ test -f ${CMPL}/${LastVersion} ] ; then echo Allready Download and Purge ; rm -vfr ${CMPL}/x265*/ \
+#	; else wget --no-check-certificate https://bitbucket.org/multicoreware/x265/downloads/"$LastVersion" && tar -zxvf x265* ; fi
+git clone https://bitbucket.org/multicoreware/x265_git/src/master/ x265-master
 cd x265*/source/
 mkdir -p 8bit 10bit 12bit
 
@@ -455,12 +479,12 @@ cd ${CMPL}
 git clone git://git.ffmpeg.org/ffmpeg.git
 cd ffmpe*/
 ./configure --extra-version=adam-"$(date +"%Y-%m-%d")" --extra-cflags="-fno-stack-check" --arch=x86_64 --cc=/usr/bin/clang \
- --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect \
+--enable-encoder=aac --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect \
  --pkg_config='pkg-config --static' --enable-nonfree --enable-gpl --enable-version3 --prefix=${TARGET} \
  --disable-ffplay --disable-ffprobe --disable-debug --disable-doc --enable-avfilter --enable-avisynth --enable-filters \
  --enable-libopus --enable-libvorbis --enable-libtheora --enable-libmp3lame --enable-libfdk-aac \
  --enable-libtwolame --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
- --enable-libxvid --enable-libopenh264 --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom --enable-libdav1d \
+ --enable-muxer=mp4 --enable-libxvid --enable-libopenh264 --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom --enable-libdav1d \
  --enable-fontconfig --enable-libfreetype --enable-libfribidi --enable-libass --enable-libsrt \
  --enable-libbluray --enable-bzlib --enable-zlib --enable-libsnappy --enable-libwebp --enable-libopenjpeg \
  --enable-opengl --enable-opencl --enable-openal --enable-openssl
