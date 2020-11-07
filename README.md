@@ -6,10 +6,10 @@
 
 ```
 ./configure --extra-version=adam-"$(date +"%Y-%m-%d")" --extra-cflags="-fno-stack-check" --arch=x86_64 --cc=/usr/bin/clang \
---enable-encoder=aac --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect \
+ --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect \
  --pkg_config='pkg-config --static' --enable-nonfree --enable-gpl --enable-version3 --prefix=${TARGET} \
  --disable-ffplay --disable-ffprobe --disable-debug --disable-doc --enable-avfilter --enable-avisynth --enable-filters \
- --enable-libopus --enable-libvorbis --enable-libtheora --enable-libmp3lame --enable-libfdk-aac \
+ --enable-libopus --enable-libvorbis --enable-libtheora --enable-libmp3lame --enable-libfdk-aac --enable-encoder=aac \
  --enable-libtwolame --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
  --enable-muxer=mp4 --enable-libxvid --enable-libopenh264 --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom --enable-libdav1d \
  --enable-fontconfig --enable-libfreetype --enable-libfribidi --enable-libass --enable-libsrt \
