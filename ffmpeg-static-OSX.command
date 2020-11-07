@@ -2,7 +2,7 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2020-10-25" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2020-11-07" ; tput sgr0
 tput bold ; echo " ! Download && Build Last Static FFmpeg" ; tput sgr0
 tput bold ; echo "OS X | 10.12 < 10.15" ; tput sgr0
 # Check Xcode CLI Install
@@ -31,15 +31,13 @@ brew uninstall xvid
 brew uninstall vpx
 brew uninstall faac
 brew uninstall yasm
-brew uninstall xz
-brew uninstall lzma
-brew uninstall --ignore-dependencies xz
 
 # Java Install - Fix PopUp
 tput bold ; echo ; echo '♻️ '  Check Java Install ; tput sgr0 ; sleep 1
 if [ -n "$(find /Library/Java/JavaVirtualMachines/ -name *.jdk)" ] ; then tput sgr0 ; java -version ; echo "Java AllReady Installed"
 else tput bold ; echo "Java Install" ; tput sgr0 ; sleep 1
-brew cask reinstall java
+brew reinstall java
+sudo ln -sfn /usr/local/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
 fi
 
 # Eject Ramdisk
@@ -60,8 +58,6 @@ CMPL="/Volumes/Ramdisk/compile"
 export PATH=${TARGET}/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/include:/usr/local/opt:/usr/local/Cellar:/usr/local/lib:/usr/local/share:/usr/local/etc
 mdutil -i off /Volumes/Ramdisk
 
-set -o errexit
-
 # Make Ramdisk Directories
 mkdir ${TARGET}
 mkdir ${CMPL}
@@ -69,6 +65,17 @@ mkdir ${CMPL}
 
 
 #-> BASE
+
+## xz
+tput bold ; echo ; echo '📍 ' xz git ; tput sgr0 ; sleep 1
+cd ${CMPL}
+git clone https://git.tukaani.org/xz.git
+cd xz
+./autogen.sh
+./configure --prefix=${TARGET} --disable-shared
+make -j "$THREADS" && make install
+
+set -o errexit
 
 ## libexpat
 tput bold ; echo ; echo '📍 ' libexpat git ; tput sgr0 ; sleep 1
@@ -97,7 +104,7 @@ tar -zxvf gettex*
 cd gettex*/
 ./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules --disable-debug --with-included-gettext --with-included-glib \
  --with-included-libcroco --with-included-libunistring --with-emacs --disable-java --disable-native-java --disable-csharp \
- --disable-shared --enable-static --without-git --without-cvs --without-xz --disable-docs --disable-examples
+ --disable-shared --enable-static --without-git --without-cvs --disable-docs --disable-examples
 make -j "$THREADS" && make install
 
 ## libpng git - Requirement for freetype
@@ -190,12 +197,14 @@ cd fontconfig-*/
 ./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules --with-add-fonts="/System/Library/Fonts,/Library/Fonts" --disable-shared --enable-static
 make -j "$THREADS" && make install
 
-## libass
-LastVersion=$(wget --no-check-certificate 'https://github.com/libass/libass/releases/' -O- -q | grep -Eo -m1 'libass-[0-9\.]+\.tar.gz')
-Number=$(echo "$LastVersion" | cut -d'-' -f2 | cut -d'.' -f1-3)
-tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 1
+## libass # 0.15 - harfbuzz pb
+#LastVersion=$(wget --no-check-certificate 'https://github.com/libass/libass/releases/' -O- -q | grep -Eo -m1 'libass-[0-9\.]+\.tar.gz')
+#Number=$(echo "$LastVersion" | cut -d'-' -f2 | cut -d'.' -f1-3)
+#tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 1
+tput bold ; echo ; echo '📍 ' libass-0.14.0 ; tput sgr0 ; sleep 1
 cd ${CMPL}
-wget --no-check-certificate "https://github.com/libass/libass/releases/download/""$Number"/"$LastVersion"
+#wget --no-check-certificate "https://github.com/libass/libass/releases/download/""$Number"/"$LastVersion"
+wget --no-check-certificate https://github.com/libass/libass/releases/download/0.14.0/libass-0.14.0.tar.gz
 tar -zxvf libas*
 cd libas*/
 ./configure --prefix=${TARGET} --disable-shared --enable-static
@@ -394,7 +403,7 @@ ninja install -C build
 ## xvid
 tput bold ; echo ; echo '📍 ' XviD svn ; tput sgr0 ; sleep 1
 cd ${CMPL}
-svn checkout http://svn.xvid.org/trunk
+svn checkout http://svn.xvid.org/trunk --username anonymous
 cd trunk/xvidcore/build/generic
 ./bootstrap.sh  ; sleep 1
 ./configure --prefix=${TARGET} --disable-assembly --enable-macosx_module
@@ -479,10 +488,10 @@ cd ${CMPL}
 git clone git://git.ffmpeg.org/ffmpeg.git
 cd ffmpe*/
 ./configure --extra-version=adam-"$(date +"%Y-%m-%d")" --extra-cflags="-fno-stack-check" --arch=x86_64 --cc=/usr/bin/clang \
---enable-encoder=aac --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect \
+ --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect \
  --pkg_config='pkg-config --static' --enable-nonfree --enable-gpl --enable-version3 --prefix=${TARGET} \
  --disable-ffplay --disable-ffprobe --disable-debug --disable-doc --enable-avfilter --enable-avisynth --enable-filters \
- --enable-libopus --enable-libvorbis --enable-libtheora --enable-libmp3lame --enable-libfdk-aac \
+ --enable-libopus --enable-libvorbis --enable-libtheora --enable-libmp3lame --enable-libfdk-aac --enable-encoder=aac \
  --enable-libtwolame --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
  --enable-muxer=mp4 --enable-libxvid --enable-libopenh264 --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom --enable-libdav1d \
  --enable-fontconfig --enable-libfreetype --enable-libfribidi --enable-libass --enable-libsrt \
@@ -493,8 +502,11 @@ cd ffmpe*/
 
 ## Check Static
 tput bold ; echo ; echo '♻️ ' Check Static FFmpeg ; tput sgr0 ; sleep 1
-otool -L /Volumes/Ramdisk/sw/bin/ffmpeg
+if otool -L /Volumes/Ramdisk/sw/bin/ffmpeg | grep /usr/local
+then echo FFmpeg build Not Static, Please Report
+else echo FFmpeg build Static, Have Fun
 cp /Volumes/Ramdisk/sw/bin/ffmpeg ~/Desktop/ffmpeg
+fi
 
 ## End Time
 Time="$(echo 'obase=60;'$SECONDS | bc | sed 's/ /:/g' | cut -c 2-)"
