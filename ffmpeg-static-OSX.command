@@ -409,11 +409,10 @@ make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
 ## openjpeg
-tput bold ; echo ; echo '📍 ' openjpeg 2.3.0 ; tput sgr0 ; sleep 2
+tput bold ; echo ; echo '📍 ' openjpeg git ; tput sgr0 ; sleep 2
 cd ${CMPL}
-wget --no-check-certificate https://github.com/uclouvain/openjpeg/archive/v2.3.0.tar.gz
-tar -zxvf v2.3.0*
-cd openjpeg*/
+git clone https://github.com/uclouvain/openjpeg.git
+cd openjpeg
 mkdir build && cd build
 cmake -G "Ninja" .. -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC
 ninja && ninja install
