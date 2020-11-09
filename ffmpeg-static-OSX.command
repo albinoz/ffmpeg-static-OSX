@@ -22,11 +22,11 @@ brew doctor ; brew update ; brew upgrade ; brew cleanup
 
 # Check Homebrew Config
 tput bold ; echo ; echo '♻️ '  Check Homebrew Config ; tput sgr0 ; sleep 2
-brew install git wget cmake autoconf automake nasm libtool ninja meson
+brew install git wget cmake autoconf automake nasm libtool ninja meson pkg-config
 
 # Java Install - Fix PopUp
 tput bold ; echo ; echo '♻️ '  Check Java Install ; tput sgr0 ; sleep 2
-if [ -n "$(find /Library/Java/JavaVirtualMachines/ -name *.jdk)" ] ; then tput sgr0 ; java -version ; echo "Java AllReady Installed"
+if [ -n "$(find /usr/local/opt/openjdk/libexec/ -name *.jdk)" ] ; then tput sgr0 ; java -version ; echo "Java AllReady Installed"
 else tput bold ; echo "Java Install" ; tput sgr0 ; sleep 2
 brew reinstall java
 sudo ln -sfn /usr/local/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
@@ -69,16 +69,6 @@ make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
 set -o errexit
-
-## SDL2
-tput bold ; echo ; echo '📍 ' SDL2 2.0.12 ; tput sgr0 ; sleep 2
-cd ${CMPL}
-wget http://www.libsdl.org/release/SDL2-2.0.12.tar.gz
-tar xvf SDL2-*.tar.gz
-cd SDL2*
-./configure --prefix=${TARGET} --enable-static --disable-shared
-make -j "$THREADS" && make install
-rm -fr ${CMPL}/*
 
 ## libexpat
 tput bold ; echo ; echo '📍 ' libexpat git ; tput sgr0 ; sleep 2
@@ -506,6 +496,16 @@ cd AviSynthPlus
 mkdir avisynth-build && cd avisynth-build
 cmake ../ -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DHEADERS_ONLY:bool=on
 make install
+rm -fr ${CMPL}/*
+
+## SDL2
+tput bold ; echo ; echo '📍 ' SDL2 2.0.12 ; tput sgr0 ; sleep 2
+cd ${CMPL}
+wget http://www.libsdl.org/release/SDL2-2.0.12.tar.gz
+tar xvf SDL2-*.tar.gz
+cd SDL2*
+./configure --prefix=${TARGET} --enable-static --disable-shared
+make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
 #-> FFmpeg Check
