@@ -22,7 +22,7 @@ brew doctor ; brew update ; brew upgrade ; brew cleanup
 
 # Check Homebrew Config
 tput bold ; echo ; echo '♻️ '  Check Homebrew Config ; tput sgr0 ; sleep 2
-brew install git wget cmake autoconf automake nasm libtool ninja meson pkg-config
+brew install git wget svn cmake autoconf automake nasm libtool ninja meson pkg-config
 
 # Java Install - Fix PopUp
 tput bold ; echo ; echo '♻️ '  Check Java Install ; tput sgr0 ; sleep 2
