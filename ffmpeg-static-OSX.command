@@ -5,6 +5,7 @@ clear
 tput bold ; echo "adam | 2014 < 2020-11-08" ; tput sgr0
 tput bold ; echo " ! Download && Build Last Static FFmpeg" ; tput sgr0
 tput bold ; echo "OS X | 10.12 < 10.15" ; tput sgr0
+
 # Check Xcode CLI Install
 tput bold ; echo ; echo '♻️ '  Check Xcode CLI Install ; tput sgr0
 if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version ; then tput sgr0 ; echo "Xcode CLI AllReady Installed" ; else tput bold ; echo "Xcode CLI Install" ; tput sgr0 ; xcode-select --install
@@ -26,7 +27,7 @@ brew install git wget svn cmake autoconf automake nasm libtool ninja meson pkg-c
 
 # Java Install - Fix PopUp
 tput bold ; echo ; echo '♻️ '  Check Java Install ; tput sgr0 ; sleep 2
-if [ -n "$(find /usr/local/opt/openjdk/libexec/ -name *.jdk)" ] ; then tput sgr0 ; java -version ; echo "Java AllReady Installed"
+if $(java -version) ; then tput sgr0 ; echo "Java AllReady Installed"
 else tput bold ; echo "Java Install" ; tput sgr0 ; sleep 2
 brew reinstall java
 sudo ln -sfn /usr/local/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
@@ -430,7 +431,7 @@ rm -fr ${CMPL}/*
 ## xvid
 tput bold ; echo ; echo '📍 ' XviD svn ; tput sgr0 ; sleep 2
 cd ${CMPL}
-svn checkout http://svn.xvid.org/trunk --username anonymous
+svn checkout http://svn.xvid.org/trunk --username anonymous --password anonymous
 cd trunk/xvidcore/build/generic
 ./bootstrap.sh
 ./configure --prefix=${TARGET} --disable-assembly --enable-macosx_module
@@ -551,4 +552,4 @@ fi
 Time="$(echo 'obase=60;'$SECONDS | bc | sed 's/ /:/g' | cut -c 2-)"
 tput bold ; echo ; echo '⏱ ' End in "$Time" ; tput sgr0
 
-) 2>&1 | tee "$HOME/Library/Logs/adam-FFmpeg-Static.log" #Logs End
+) 2>&1 | tee "$HOME/Library/Logs/adam-FFmpeg-Static.log"
