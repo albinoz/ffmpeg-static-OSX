@@ -14,7 +14,7 @@
  --enable-muxer=mp4 --enable-libxvid --enable-libopenh264 --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom --enable-libdav1d \
  --enable-fontconfig --enable-libfreetype --enable-libfribidi --enable-libass --enable-libsrt \
  --enable-libbluray --enable-bzlib --enable-zlib --enable-libsnappy --enable-libwebp --enable-libopenjpeg \
- --enable-opengl --enable-opencl --enable-openal --enable-openssl
+ --enable-opengl --enable-opencl --enable-openal --enable-openssl --enable-librtmp
 ```
 
 #### How Use :
