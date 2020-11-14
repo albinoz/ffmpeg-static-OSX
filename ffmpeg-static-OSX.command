@@ -2,7 +2,7 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2020-11-08" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2020-11-13" ; tput sgr0
 tput bold ; echo " ! Download && Build Last Static FFmpeg" ; tput sgr0
 tput bold ; echo "OS X | 10.12 < 10.15" ; tput sgr0
 
@@ -19,11 +19,11 @@ if ls /usr/local/bin/brew >/dev/null ; then tput sgr0 ; echo "HomeBrew AllReady 
 
 # Check Homebrew Update
 tput bold ; echo ; echo '♻️ '  Check Homebrew Update ; tput sgr0 ; sleep 2
-brew doctor ; brew update ; brew upgrade ; brew cleanup
+brew cleanup ; brew doctor ; brew update ; brew upgrade
 
 # Check Homebrew Config
 tput bold ; echo ; echo '♻️ '  Check Homebrew Config ; tput sgr0 ; sleep 2
-brew install git wget svn cmake autoconf automake nasm libtool ninja meson pkg-config
+brew install git wget cmake autoconf automake nasm libtool ninja meson pkg-config
 
 # Java Install - Fix PopUp
 tput bold ; echo ; echo '♻️ '  Check Java Install ; tput sgr0 ; sleep 2
@@ -429,10 +429,12 @@ ninja install -C build
 rm -fr ${CMPL}/*
 
 ## xvid
-tput bold ; echo ; echo '📍 ' XviD svn ; tput sgr0 ; sleep 2
+LastVersion=$(wget --no-check-certificate https://downloads.xvid.com/downloads/ -O- -q | grep -Eo 'xvidcore-[0-9\.]+\.tar.gz' | tail -1)
+tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 2
 cd ${CMPL}
-svn checkout http://svn.xvid.org/trunk --username anonymous --password anonymous
-cd trunk/xvidcore/build/generic
+wget --no-check-certificate https://downloads.xvid.com/downloads/"$LastVersion"
+tar -zxvf xvidcore*
+cd xvidcore/build/generic/
 ./bootstrap.sh
 ./configure --prefix=${TARGET} --disable-assembly --enable-macosx_module
 make -j "$THREADS" && make install
