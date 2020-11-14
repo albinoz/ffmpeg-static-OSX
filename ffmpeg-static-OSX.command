@@ -2,7 +2,7 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2020-11-13" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2020-11-14" ; tput sgr0
 tput bold ; echo " ! Download && Build Last Static FFmpeg" ; tput sgr0
 tput bold ; echo "OS X | 10.12 < 10.15" ; tput sgr0
 
@@ -23,7 +23,7 @@ brew cleanup ; brew doctor ; brew update ; brew upgrade
 
 # Check Homebrew Config
 tput bold ; echo ; echo '♻️ '  Check Homebrew Config ; tput sgr0 ; sleep 2
-brew install git wget cmake autoconf automake nasm libtool ninja meson pkg-config
+brew install git wget cmake autoconf automake nasm libtool ninja meson pkg-config rtmpdump
 
 # Java Install - Fix PopUp
 tput bold ; echo ; echo '♻️ '  Check Java Install ; tput sgr0 ; sleep 2
@@ -77,7 +77,6 @@ cd ${CMPL}
 git clone https://github.com/libexpat/libexpat.git libexpat
 cd libexpat/expat
 ./buildconf.sh
-# 64 bits
 ./configure --prefix=${TARGET} CPPFLAGS=-DXML_LARGE_SIZE --enable-static
 make -j "$THREADS" && make install DESTDIR=/
 rm -fr ${CMPL}/*
@@ -511,6 +510,14 @@ cd SDL2*
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
+## librtmp
+tput bold ; echo ; echo '📍 ' librtmp 2.4 Copy ; tput sgr0 ; sleep 2
+cp -v /usr/local/Cellar/rtmpdump/2.4+20151223_1/bin/* /Volumes/Ramdisk/sw/bin/
+cp -vr /usr/local/Cellar/rtmpdump/2.4+20151223_1/include/* /Volumes/Ramdisk/sw/include/
+cp -v /usr/local/Cellar/rtmpdump/2.4+20151223_1/lib/pkgconfig/librtmp.pc /Volumes/Ramdisk/sw/lib/pkgconfig
+cp -v /usr/local/Cellar/rtmpdump/2.4+20151223_1/lib/librtmp* /Volumes/Ramdisk/sw/lib
+
+
 #-> FFmpeg Check
 
 # Purge .dylib
@@ -537,7 +544,7 @@ cd ffmpe*/
  --enable-muxer=mp4 --enable-libxvid --enable-libopenh264 --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom --enable-libdav1d \
  --enable-fontconfig --enable-libfreetype --enable-libfribidi --enable-libass --enable-libsrt \
  --enable-libbluray --enable-bzlib --enable-zlib --enable-libsnappy --enable-libwebp --enable-libopenjpeg \
- --enable-opengl --enable-opencl --enable-openal --enable-openssl
+ --enable-opengl --enable-opencl --enable-openal --enable-openssl --enable-librtmp
 
  make -j "$THREADS" && make install
 
