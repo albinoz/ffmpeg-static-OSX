@@ -385,6 +385,16 @@ mv Makefile.new Makefile
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
+#_ speex
+tput bold ; echo ; echo '📍 ' libspeex 1.2.0 ; tput sgr0 ; sleep 2
+cd ${CMPL}
+wget http://downloads.us.xiph.org/releases/speex/speex-1.2.0.tar.gz
+tar xvf speex-1.2.0.tar.gz
+cd speex-1.2.0
+./configure --prefix=${TARGET} --enable-static --enable-shared=no
+make -j "$THREADS" && make install
+rm -fr ${CMPL}/*
+
 
 
 #-> VIDEO
@@ -552,7 +562,7 @@ cd ffmpe*/
  --enable-hardcoded-tables --enable-pthreads --enable-postproc --enable-runtime-cpudetect \
  --pkg_config='pkg-config --static' --enable-nonfree --enable-gpl --enable-version3 --prefix=${TARGET} \
  --disable-ffplay --disable-ffprobe --disable-debug --disable-doc --enable-avfilter --enable-avisynth --enable-filters \
- --enable-libopus --enable-libvorbis --enable-libtheora --enable-libmp3lame --enable-libfdk-aac --enable-encoder=aac \
+ --enable-libopus --enable-libvorbis --enable-libtheora --enable-libspeex --enable-libmp3lame --enable-libfdk-aac --enable-encoder=aac \
  --enable-libtwolame --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libopencore_amrwb --enable-libgsm \
  --enable-muxer=mp4 --enable-libxvid --enable-libopenh264 --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom --enable-libdav1d \
  --enable-fontconfig --enable-libfreetype --enable-libfribidi --enable-libass --enable-libsrt \
