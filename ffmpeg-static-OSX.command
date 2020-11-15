@@ -1,77 +1,83 @@
 #!/bin/bash
 clear
-( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #Date to Every Line
+( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #_Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2020-11-14" ; tput sgr0
-tput bold ; echo " ! Download && Build Last Static FFmpeg" ; tput sgr0
-tput bold ; echo "OS X | 10.12 < 10.15" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2020-11-15" ; tput sgr0
+tput bold ; echo '⚙️ ' Download and Build Last Static FFmpeg ; tput sgr0
+tput bold ; echo "macOS 10.12 < 10.15 Build Compatibility" ; tput sgr0
+tput bold ; echo macOS $(sw_vers -productVersion) Used ; tput sgr0 ; sleep 2
 
-# Check Xcode CLI Install
-tput bold ; echo ; echo '♻️ '  Check Xcode CLI Install ; tput sgr0
+#_ Check Xcode CLI Install
+tput bold ; echo ; echo '♻️ ' Check Xcode CLI Install ; tput sgr0
 if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version ; then tput sgr0 ; echo "Xcode CLI AllReady Installed" ; else tput bold ; echo "Xcode CLI Install" ; tput sgr0 ; xcode-select --install
 sleep 1
 while pgrep 'Install Command Line Developer Tools' >/dev/null ; do sleep 5 ; done
 if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version ; then tput sgr0 ; echo "Xcode CLI Was SucessFully Installed" ; else tput bold ; echo "Xcode CLI Was NOT Installed" ; tput sgr0 ; exit ; fi ; fi
 
-# Check Homebrew Install
+#_ Check Homebrew Install
 tput bold ; echo ; echo '♻️ ' Check Homebrew Install ; tput sgr0 ; sleep 2
 if ls /usr/local/bin/brew >/dev/null ; then tput sgr0 ; echo "HomeBrew AllReady Installed" ; else tput bold ; echo "Installing HomeBrew" ; tput sgr0 ; /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" ; fi
 
-# Check Homebrew Update
-tput bold ; echo ; echo '♻️ '  Check Homebrew Update ; tput sgr0 ; sleep 2
+#_ Check Homebrew Update
+tput bold ; echo ; echo '♻️ ' Check Homebrew Update ; tput sgr0 ; sleep 2
 brew cleanup ; brew doctor ; brew update ; brew upgrade
 
-# Check Homebrew Config
-tput bold ; echo ; echo '♻️ '  Check Homebrew Config ; tput sgr0 ; sleep 2
-brew install git wget cmake autoconf automake nasm libtool ninja meson pkg-config rtmpdump
-
-# Java Install - Fix PopUp
-tput bold ; echo ; echo '♻️ '  Check Java Install ; tput sgr0 ; sleep 2
+#_ Java Install - Fix PopUp
+tput bold ; echo ; echo '♻️ ' Check Java Install ; tput sgr0 ; sleep 2
 if $(java -version) ; then tput sgr0 ; echo "Java AllReady Installed"
 else tput bold ; echo "Java Install" ; tput sgr0 ; sleep 2
 brew reinstall java
 sudo ln -sfn /usr/local/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
 fi
 
-# Eject Ramdisk
+#_ Check Homebrew Config
+tput bold ; echo ; echo '♻️ ' Check Homebrew Config ; tput sgr0 ; sleep 2
+brew install git wget cmake autoconf automake nasm libtool ninja meson pkg-config rtmpdump
+
+#_ Check Miminum Requirement Build Time
+Time="$(echo 'obase=60;'$SECONDS | bc | sed 's/ /:/g' | cut -c 2-)"
+tput bold ; echo ; echo '⏱ ' Miminum Requirement Build in "$Time"s ; tput sgr0 ; sleep 2
+
+#_ Eject Ramdisk
 if df | grep Ramdisk > /dev/null ; then tput bold ; echo ; echo ⏏ Eject Ramdisk ; tput sgr0 ; fi
 if df | grep Ramdisk > /dev/null ; then diskutil eject Ramdisk ; sleep 2 ; fi
 
-# Made Ramdisk
+#_ Made Ramdisk
 tput bold ; echo ; echo '💾 ' Made Ramdisk ; tput sgr0
 DISK_ID=$(hdid -nomount ram://2000000)
 newfs_hfs -v Ramdisk ${DISK_ID}
 diskutil mount ${DISK_ID}
 sleep 1
 
-# CPU & PATHS & ERROR
+#_ CPU & PATHS & ERROR
 THREADS=$(sysctl -n hw.ncpu)
 TARGET="/Volumes/Ramdisk/sw"
 CMPL="/Volumes/Ramdisk/compile"
 export PATH=${TARGET}/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/include:/usr/local/opt:/usr/local/Cellar:/usr/local/lib:/usr/local/share:/usr/local/etc
 mdutil -i off /Volumes/Ramdisk
 
-# Make Ramdisk Directories
+#_ Make Ramdisk Directories
 mkdir ${TARGET}
 mkdir ${CMPL}
 
 
 
 #-> BASE
+tput bold ; echo ; echo '⚙️ ' Base Builds ; tput sgr0
 
-## xz
+#_ xz
 tput bold ; echo ; echo '📍 ' xz git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://git.tukaani.org/xz.git
 cd xz
 ./autogen.sh
-./configure --prefix=${TARGET} --disable-shared
+./configure --prefix=${TARGET} --enable-static --disable-shared --disable-docs --disable-examples
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
 set -o errexit
 
-## libexpat
+#_ libexpat
 tput bold ; echo ; echo '📍 ' libexpat git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://github.com/libexpat/libexpat.git libexpat
@@ -81,7 +87,7 @@ cd libexpat/expat
 make -j "$THREADS" && make install DESTDIR=/
 rm -fr ${CMPL}/*
 
-## iconv
+#_ iconv
 tput bold ; echo ; echo '📍 ' iconv 1.16 ; tput sgr0 ; sleep 2
 cd ${CMPL}
 wget --no-check-certificate "https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.16.tar.gz"
@@ -91,7 +97,7 @@ cd libiconv*/
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## gettext - Requirement for fontconfig, fribidi
+#_ gettext - Requirement for fontconfig, fribidi
 tput bold ; echo ; echo '📍 ' gettext 0.21 ; tput sgr0 ; sleep 2
 cd ${CMPL}
 wget --no-check-certificate "https://ftp.gnu.org/pub/gnu/gettext/gettext-0.21.tar.gz"
@@ -103,7 +109,7 @@ cd gettex*/
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## libpng git - Requirement for freetype
+#_ libpng git - Requirement for freetype
 tput bold ; echo ; echo '📍 ' libpng git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://github.com/glennrp/libpng.git
@@ -113,7 +119,7 @@ autoreconf -f -i
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## pkg-config
+#_ pkg-config
 LastVersion=$(wget --no-check-certificate 'https://pkg-config.freedesktop.org/releases/' -O- -q | grep -Eo 'pkg-config-0.29[0-9\.]+\.tar.gz' | tail -1)
 tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 2
 cd ${CMPL}
@@ -124,7 +130,7 @@ cd pkg-config-*/
 make -j "$THREADS" && make check && make install
 rm -fr ${CMPL}/*
 
-## Yasm
+#_ Yasm
 LastVersion=$(wget --no-check-certificate 'http://www.tortall.net/projects/yasm/releases/' -O- -q | grep -Eo 'yasm-[0-9\.]+\.tar.gz' | tail -1)
 tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 2
 cd ${CMPL}
@@ -134,15 +140,15 @@ cd yasm-*/
 ./configure --prefix=${TARGET} && make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## bzip
-tput bold ; echo ; echo '📍 ' bzip ; tput sgr0 ; sleep 2
+#_ bzip
+tput bold ; echo ; echo '📍 ' bzip2-1.0.6 ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://github.com/enthought/bzip2-1.0.6
 cd bzip2-1.0.6
 make -j "$THREADS" && make install PREFIX=${TARGET}
 rm -fr ${CMPL}/*
 
-## libudfread git
+#_ libudfread git
 tput bold ; echo ; echo '📍 ' libudfread git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://github.com/vlc-mirror/libudfread.git
@@ -151,7 +157,7 @@ cd libud*/
 ./configure --prefix=${TARGET} --disable-shared --enable-static
 make -j "$THREADS" && make install
 
-## bluray git
+#_ bluray git
 JAVAV=$(find /Library/Java/JavaVirtualMachines -iname "*.jdk" | tail -1)
 export JAVA_HOME="$JAVAV/Contents/Home"
 tput bold ; echo ; echo '📍 ' libbluray git ; tput sgr0 ; sleep 2
@@ -166,9 +172,11 @@ make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
 
-#-> SUBTITLES
 
-## freetype
+#-> SUBTITLES
+tput bold ; echo ; echo '⚙️ ' Subtitles Builds ; tput sgr0
+
+#_ freetype
 LastVersion=$(wget --no-check-certificate 'https://download.savannah.gnu.org/releases/freetype/' -O- -q | grep -Eo 'freetype-[0-9\.]+\.10+\.[0-9\.]+\.tar.gz' | tail -1)
 tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 2
 cd ${CMPL}
@@ -180,7 +188,7 @@ pip3 install docwriter
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## fribidi
+#_ fribidi
 tput bold ; echo ; echo '📍 ' fribidi 1.0.10 ; tput sgr0 ; sleep 2
 cd ${CMPL}
 wget --no-check-certificate https://github.com/fribidi/fribidi/releases/download/v1.0.10/fribidi-1.0.10.tar.xz
@@ -190,7 +198,7 @@ cd fribid*/
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## fontconfig
+#_ fontconfig
 tput bold ; echo ; echo '📍 ' fontconfig 2.13.92 ; tput sgr0 ; sleep 2
 cd ${CMPL}
 wget --no-check-certificate https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.92.tar.gz
@@ -200,7 +208,7 @@ cd fontconfig-*/
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## harfbuzz git
+#_ harfbuzz git
 tput bold ; echo ; echo '📍 ' harfbuzz git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://github.com/harfbuzz/harfbuzz.git
@@ -210,7 +218,7 @@ cd harfbuzz
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## libass git ( require harfbuzz )
+#_ libass git ( require harfbuzz )
 tput bold ; echo ; echo '📍 ' libass git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://github.com/libass/libass.git
@@ -220,7 +228,7 @@ cd libas*/
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## openssl
+#_ openssl
 LastVersion=$(wget --no-check-certificate 'https://www.openssl.org/source/' -O- -q | grep -Eo 'openssl-[0-9\.]+\.[0-9\.]+\.[0-9\.]+[A-Za-z].tar.gz' | tail -1)
 tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 2
 cd ${CMPL}
@@ -231,7 +239,7 @@ cd openssl-*/
 make -j "$THREADS" depend && make install_sw
 rm -fr ${CMPL}/*
 
-## str ( Require openssl )
+#_ str ( Require openssl )
 tput bold ; echo ; echo '📍 ' str git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone --depth 1 https://github.com/Haivision/srt.git
@@ -241,7 +249,7 @@ cmake -G "Ninja" .. -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_C_DEPS=ON -DE
 ninja && ninja install
 rm -fr ${CMPL}/*
 
-## snappy
+#_ snappy
 tput bold ; echo ; echo '📍 ' snappy git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://github.com/google/snappy
@@ -252,9 +260,11 @@ ninja && ninja install
 rm -fr ${CMPL}/*
 
 
-#-> AUDIO
 
-## openal-soft
+#-> AUDIO
+tput bold ; echo ; echo '⚙️ ' Audio Builds ; tput sgr0
+
+#_ openal-soft
 tput bold ; echo ; echo '📍 ' openal-soft git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://github.com/kcat/openal-soft
@@ -263,7 +273,7 @@ cmake -G "Ninja" -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC .
 ninja && ninja install
 rm -fr ${CMPL}/*
 
-# opencore-amr
+#_ opencore-amr
 tput bold ; echo ; echo '📍 ' opencore-amr ; tput sgr0 ; sleep 2
 cd ${CMPL}
 curl -O http://freefr.dl.sourceforge.net/project/opencore-amr/opencore-amr/opencore-amr-0.1.5.tar.gz
@@ -273,7 +283,7 @@ cd opencore-amr-0.1.5
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## opus - Replace speex
+#_ opus - Replace speex
 LastVersion=$(wget --no-check-certificate https://ftp.osuosl.org/pub/xiph/releases/opus/ -O- -q | grep -Eo 'opus-1.[0-9\.]+\.[0-9\.]+\.tar.gz' | tail -1)
 tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 2
 cd ${CMPL}
@@ -284,7 +294,7 @@ cd opus-*/
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## ogg
+#_ ogg
 LastVersion=$(wget --no-check-certificate https://ftp.osuosl.org/pub/xiph/releases/ogg/ -O- -q | grep -Eo 'libogg-[0-9\.]+\.tar.gz' | tail -1)
 tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 2
 cd ${CMPL}
@@ -297,7 +307,7 @@ patch /Volumes/Ramdisk/compile/libogg-1.3.4/include/ogg/os_types.h  <  /Volumes/
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## Theora git - Require autoconf automake libtool
+#_ Theora git - Require nf automake libtool
 tput bold ; echo ; echo '📍 ' theora git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://github.com/xiph/theora.git
@@ -307,7 +317,7 @@ cd theora
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## vorbis
+#_ vorbis
 LastVersion=$(wget --no-check-certificate https://ftp.osuosl.org/pub/xiph/releases/vorbis/ -O- -q | grep -Eo 'libvorbis-[0-9\.]+\.tar.gz' | tail -1)
 tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 2
 cd ${CMPL}
@@ -318,7 +328,7 @@ cd libvorbis-*/
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## lame git
+#_ lame git
 tput bold ; echo ; echo '📍 ' lame git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://github.com/rbrito/lame.git
@@ -327,7 +337,7 @@ cd lam*/
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## TwoLame - optimised MPEG Audio Layer 2
+#_ TwoLame - optimised MPEG Audio Layer 2
 LastVersion=$(wget --no-check-certificate 'http://www.twolame.org' -O- -q | grep -Eo 'twolame-[0-9\.]+\.tar.gz' | tail -1)
 tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 2
 cd ${CMPL}
@@ -338,7 +348,7 @@ cd twolame-*/
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-##+ fdk-aac
+#_ fdk-aac
 tput bold ; echo ; echo '📍 ' fdk-aac ; tput sgr0 ; sleep 2
 cd ${CMPL}
 wget --no-check-certificate "https://downloads.sourceforge.net/project/opencore-amr/fdk-aac/fdk-aac-2.0.1.tar.gz"
@@ -348,7 +358,7 @@ cd fdk*/
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## flac
+#_ flac
 LastVersion=$(wget --no-check-certificate https://ftp.osuosl.org/pub/xiph/releases/flac/ -O- -q | grep -Eo 'flac-[0-9\.]+\.tar.xz' | tail -1)
 tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 2
 cd ${CMPL}
@@ -359,7 +369,7 @@ cd flac-*/
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## gsm
+#_ gsm
 tput bold ; echo ; echo '📍 ' libgsm 1.0.19 ; tput sgr0 ; sleep 2
 cd ${CMPL}
 wget --no-check-certificate 'http://www.quut.com/gsm/gsm-1.0.19.tar.gz'
@@ -378,8 +388,9 @@ rm -fr ${CMPL}/*
 
 
 #-> VIDEO
+tput bold ; echo ; echo '⚙️ ' Video Builds ; tput sgr0
 
-## libvpx git
+#_ libvpx git
 tput bold ; echo ; echo '📍 ' vpx git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://github.com/webmproject/libvpx.git
@@ -388,7 +399,7 @@ cd libvp*/
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## webp
+#_ webp
 tput bold ; echo ; echo '📍 ' webp git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://chromium.googlesource.com/webm/libwebp
@@ -398,7 +409,7 @@ cd libweb*/
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## openjpeg
+#_ openjpeg
 tput bold ; echo ; echo '📍 ' openjpeg git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://github.com/uclouvain/openjpeg.git
@@ -408,7 +419,7 @@ cmake -G "Ninja" .. -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC
 ninja && ninja install
 rm -fr ${CMPL}/*
 
-## av1 git
+#_ av1 git
 tput bold ; echo ; echo '📍 ' av1 git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://aomedia.googlesource.com/aom
@@ -418,7 +429,7 @@ cmake -G "Ninja" /Volumes/Ramdisk/compile/aom -DCMAKE_INSTALL_PREFIX:PATH=${TARG
 ninja && ninja install
 rm -fr ${CMPL}/*
 
-# dav1d git - Require ninja, meson
+#_ dav1d git - Require ninja, meson
 tput bold ; echo ; echo '📍 ' dav1d git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://code.videolan.org/videolan/dav1d.git
@@ -427,7 +438,7 @@ meson --prefix=${TARGET} build --buildtype release --default-library static
 ninja install -C build
 rm -fr ${CMPL}/*
 
-## xvid
+#_ xvid
 LastVersion=$(wget --no-check-certificate https://downloads.xvid.com/downloads/ -O- -q | grep -Eo 'xvidcore-[0-9\.]+\.tar.gz' | tail -1)
 tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 2
 cd ${CMPL}
@@ -439,7 +450,7 @@ cd xvidcore/build/generic/
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## openh264
+#_ openh264
 tput bold ; echo ; echo '📍 ' openH264 git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://github.com/cisco/openh264.git
@@ -447,7 +458,7 @@ cd openh264/
 make -j "$THREADS" install-static PREFIX=${TARGET}
 rm -fr ${CMPL}/*
 
-## x264 8-10bit git - Require nasm
+#_ x264 8-10bit git - Require nasm
 tput bold ; echo ; echo '📍 ' x264 8-10bit git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://code.videolan.org/videolan/x264.git
@@ -456,7 +467,7 @@ cd x264/
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## x265 8-10-12bit - Require wget, cmake, yasm, nasm, libtool, ninja
+#_ x265 8-10-12bit - Require wget, cmake, yasm, nasm, libtool, ninja
 tput bold ; echo ; echo '📍 ' x265 8-10-12bit git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://bitbucket.org/multicoreware/x265_git/src/master/ x265-master
@@ -483,14 +494,14 @@ cmake -G "Ninja" ../../../x265*/source -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DE
 ninja ${MAKEFLAGS}
 
 tput bold ; echo ; echo '📍 ' x265 Install ; tput sgr0
-# rename the 8bit library, then combine all three into libx265.a
+#_ rename the 8bit library, then combine all three into libx265.a
 mv libx265.a libx265_main.a
-# Mac/BSD libtool
+#_ Mac/BSD libtool
 libtool -static -o libx265.a libx265_main.a libx265_main10.a libx265_main12.a
 ninja install
 rm -fr ${CMPL}/*
 
-## AviSynth+
+#_ AviSynth+
 tput bold ; echo ; echo '📍 ' AviSynthPlus git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://github.com/AviSynth/AviSynthPlus.git
@@ -500,7 +511,7 @@ cmake ../ -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DHEADERS_ONLY:bool=on
 make install
 rm -fr ${CMPL}/*
 
-## SDL2
+#_ SDL2
 tput bold ; echo ; echo '📍 ' SDL2 2.0.12 ; tput sgr0 ; sleep 2
 cd ${CMPL}
 wget http://www.libsdl.org/release/SDL2-2.0.12.tar.gz
@@ -510,7 +521,7 @@ cd SDL2*
 make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-## librtmp
+#_ librtmp
 tput bold ; echo ; echo '📍 ' librtmp 2.4 Copy ; tput sgr0 ; sleep 2
 cp -v /usr/local/Cellar/rtmpdump/2.4+20151223_1/bin/* /Volumes/Ramdisk/sw/bin/
 cp -vr /usr/local/Cellar/rtmpdump/2.4+20151223_1/include/* /Volumes/Ramdisk/sw/include/
@@ -518,19 +529,21 @@ cp -v /usr/local/Cellar/rtmpdump/2.4+20151223_1/lib/pkgconfig/librtmp.pc /Volume
 cp -v /usr/local/Cellar/rtmpdump/2.4+20151223_1/lib/librtmp* /Volumes/Ramdisk/sw/lib
 
 
-#-> FFmpeg Check
 
-# Purge .dylib
+#-> FFmpeg Check
+tput bold ; echo ; echo '⚙️ ' FFmpeg Build ; tput sgr0
+
+#_ Purge .dylib
 tput bold ; echo ; echo '💢 ' Purge .dylib ; tput sgr0 ; sleep 2
 rm -vfr $TARGET/lib/*.dylib
 
-# Flags
+#_ Flags
 tput bold ; echo ; echo '🚩 ' Define FLAGS ; tput sgr0 ; sleep 2
 export LDFLAGS="-L${TARGET}/lib -Wl,-framework,OpenAL"
 export CPPFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL"
 export CFLAGS="-I${TARGET}/include -Wl,-framework,OpenAL,-fno-stack-check"
 
-## FFmpeg Build
+#_ FFmpeg Build
 tput bold ; echo ; echo '📍 ' FFmpeg git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone git://git.ffmpeg.org/ffmpeg.git
@@ -540,15 +553,15 @@ cd ffmpe*/
  --pkg_config='pkg-config --static' --enable-nonfree --enable-gpl --enable-version3 --prefix=${TARGET} \
  --disable-ffplay --disable-ffprobe --disable-debug --disable-doc --enable-avfilter --enable-avisynth --enable-filters \
  --enable-libopus --enable-libvorbis --enable-libtheora --enable-libmp3lame --enable-libfdk-aac --enable-encoder=aac \
- --enable-libtwolame --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libgsm \
+ --enable-libtwolame --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libopencore_amrwb --enable-libgsm \
  --enable-muxer=mp4 --enable-libxvid --enable-libopenh264 --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom --enable-libdav1d \
  --enable-fontconfig --enable-libfreetype --enable-libfribidi --enable-libass --enable-libsrt \
- --enable-libbluray --enable-bzlib --enable-zlib --enable-libsnappy --enable-libwebp --enable-libopenjpeg \
+ --enable-libbluray --enable-bzlib --enable-zlib --enable-lzma --enable-libsnappy --enable-libwebp --enable-libopenjpeg \
  --enable-opengl --enable-opencl --enable-openal --enable-openssl --enable-librtmp
 
  make -j "$THREADS" && make install
 
-## Check Static
+#_ Check Static
 tput bold ; echo ; echo '♻️ ' Check Static FFmpeg ; tput sgr0 ; sleep 2
 if otool -L /Volumes/Ramdisk/sw/bin/ffmpeg | grep /usr/local
 then echo FFmpeg build Not Static, Please Report
@@ -557,8 +570,8 @@ else echo FFmpeg build Static, Have Fun
 cp /Volumes/Ramdisk/sw/bin/ffmpeg ~/Desktop/ffmpeg
 fi
 
-## End Time
+#_ End Time
 Time="$(echo 'obase=60;'$SECONDS | bc | sed 's/ /:/g' | cut -c 2-)"
-tput bold ; echo ; echo '⏱ ' End in "$Time" ; tput sgr0
+tput bold ; echo ; echo '⏱ ' End in "$Time"s ; tput sgr0
 
 ) 2>&1 | tee "$HOME/Library/Logs/adam-FFmpeg-Static.log"
