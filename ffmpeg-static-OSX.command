@@ -2,7 +2,7 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #_Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2020-11-15" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2020-11-16" ; tput sgr0
 tput bold ; echo '⚙️ ' Download and Build Last Static FFmpeg ; tput sgr0
 tput bold ; echo "macOS 10.12 < 10.15 Build Compatibility" ; tput sgr0
 tput bold ; echo macOS $(sw_vers -productVersion) Used ; tput sgr0 ; sleep 2
@@ -140,11 +140,11 @@ cd yasm-*/
 ./configure --prefix=${TARGET} && make -j "$THREADS" && make install
 rm -fr ${CMPL}/*
 
-#_ bzip
-tput bold ; echo ; echo '📍 ' bzip2-1.0.6 ; tput sgr0 ; sleep 2
+#_ bzip2
+tput bold ; echo ; echo '📍 ' bzip2 git ; tput sgr0 ; sleep 2
 cd ${CMPL}
-git clone https://github.com/enthought/bzip2-1.0.6
-cd bzip2-1.0.6
+git clone git://sourceware.org/git/bzip2.git bzip2
+cd bzip2
 make -j "$THREADS" && make install PREFIX=${TARGET}
 rm -fr ${CMPL}/*
 
