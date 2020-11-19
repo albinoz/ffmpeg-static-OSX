@@ -250,10 +250,11 @@ ninja && ninja install
 rm -fr ${CMPL}/*
 
 #_ snappy
-tput bold ; echo ; echo '📍 ' snappy git ; tput sgr0 ; sleep 2
+tput bold ; echo ; echo '📍 ' snappy 1.1.8 ; tput sgr0 ; sleep 2
 cd ${CMPL}
-git clone https://github.com/google/snappy
-cd snappy
+wget --no-check-certificate https://github.com/google/snappy/archive/1.1.8.tar.gz
+tar -zxvf 1.1.8.tar.gz
+cd snappy-1.1.8
 mkdir build && cd build
 cmake -G "Ninja" ../ -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED="OFF" -DENABLE_C_DEPS="ON"
 ninja && ninja install
