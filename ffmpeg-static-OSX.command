@@ -2,9 +2,9 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #_Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2020-11-28" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2020-12-03" ; tput sgr0
 tput bold ; echo "Download and Build Last Static FFmpeg" ; tput sgr0
-tput bold ; echo "macOS 10.12 < 10.15 Build Compatibility" ; tput sgr0
+tput bold ; echo "macOS 10.12 < 11 Build Compatibility" ; tput sgr0
 echo "macOS $(sw_vers -productVersion) | $(system_profiler SPHardwareDataType | grep Memory | cut -d ':' -f2) | $(system_profiler SPHardwareDataType | grep Cores: | cut -d ':' -f2) Cores | $(system_profiler SPHardwareDataType | grep Speed | cut -d ':' -f2)" ; sleep 2
 
 #_ Check Xcode CLI Install
@@ -16,7 +16,7 @@ if pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version ; then tp
 
 #_ Check Homebrew Install
 tput bold ; echo ; echo '♻️  ' Check Homebrew Install ; tput sgr0 ; sleep 2
-if ls /usr/local/bin/brew >/dev/null ; then tput sgr0 ; echo "HomeBrew AllReady Installed" ; else tput bold ; echo "Installing HomeBrew" ; tput sgr0 ; /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" ; fi
+if ls /usr/local/bin/brew >/dev/null ; then tput sgr0 ; echo "HomeBrew AllReady Installed" ; else tput bold ; echo "Installing HomeBrew" ; tput sgr0 ; /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" ; fi
 
 #_ Check Homebrew Update
 tput bold ; echo ; echo '♻️  ' Check Homebrew Update ; tput sgr0 ; sleep 2
@@ -44,11 +44,8 @@ if df | grep RamDisk > /dev/null ; then diskutil eject RamDisk ; sleep 2 ; fi
 
 #_ Made RamDisk
 tput bold ; echo ; echo '💾 ' Made 1Go RamDisk ; tput sgr0
-#DISK_ID=$(hdid -nomount ram://2000000)
-#newfs_hfs -v Ramdisk $DISK_ID
-#diskutil mount $DISK_ID
-#diskutil erasevolume HFS+ 'RamDisk' $(hdiutil attach -nomount ram://2000000)
-diskutil partitionDisk $(hdiutil attach -nomount ram://2097152) 1 GPTFormat APFS 'RamDisk' '100%'
+diskutil erasevolume HFS+ 'RamDisk' $(hdiutil attach -nomount ram://2097152)
+#diskutil partitionDisk $(hdiutil attach -nomount ram://2097152) 1 GPTFormat APFS 'RamDisk' '100%'
 sleep 1
 
 #_ CPU & PATHS & ERROR
