@@ -8,7 +8,7 @@
 ./configure --extra-version=adam-"$(date +"%Y-%m-%d")" --extra-cflags="-fno-stack-check" --arch=x86_64 --cc=/usr/bin/clang \
  --enable-pthreads --enable-postproc --enable-runtime-cpudetect \
  --pkg_config='pkg-config --static' --enable-nonfree --enable-gpl --enable-version3 --prefix=${TARGET} \
- --disable-ffplay --disable-ffprobe --disable-debug --disable-doc --enable-avfilter --enable-avresample --enable-avisynth --enable-filters \
+ --disable-ffplay --disable-ffprobe --disable-debug --disable-doc --enable-avfilter --enable-avisynth --enable-filters \
  --enable-libopus --enable-libvorbis --enable-libtheora --enable-libspeex --enable-libmp3lame --enable-libfdk-aac --enable-encoder=aac \
  --enable-libtwolame --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libopencore_amrwb --enable-libgsm \
  --enable-muxer=mp4 --enable-libxvid --enable-libopenh264 --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom --enable-libdav1d \
