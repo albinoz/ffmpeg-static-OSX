@@ -2,7 +2,7 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #_Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2020-01-10" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2021-07-02" ; tput sgr0
 tput bold ; echo "Download and Build Last Static FFmpeg" ; tput sgr0
 tput bold ; echo "macOS 10.12 < 11 Build Compatibility" ; tput sgr0
 echo "macOS $(sw_vers -productVersion) | $(system_profiler SPHardwareDataType | grep Memory | cut -d ':' -f2) | $(system_profiler SPHardwareDataType | grep Cores: | cut -d ':' -f2) Cores | $(system_profiler SPHardwareDataType | grep Speed | cut -d ':' -f2)" ; sleep 2
@@ -301,9 +301,7 @@ tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 2
 cd ${CMPL}
 wget --no-check-certificate https://ftp.osuosl.org/pub/xiph/releases/ogg/"$LastVersion"
 tar -zxvf libogg-*
-cd libogg-*
-wget --no-check-certificate https://github.com/xiph/ogg/commit/c8fca6b4a02d695b1ceea39b330d4406001c03ed.patch?full_index=1
-patch /Volumes/Ramdisk/compile/libogg-1.3.4/include/ogg/os_types.h  <  /Volumes/Ramdisk/compile/libogg-1.3.4/c8fca6b4a02d695b1ceea39b330d4406001c03ed.patch\?full_index\=1
+cd libogg-*/
 ./configure --prefix=${TARGET} --disable-shared --enable-static --disable-dependency-tracking
 make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
