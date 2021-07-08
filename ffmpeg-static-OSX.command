@@ -2,7 +2,7 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #_Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2021-07-02" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2021-07-08" ; tput sgr0
 tput bold ; echo "Download and Build Last Static FFmpeg" ; tput sgr0
 tput bold ; echo "macOS 10.12 < 11 Build Compatibility" ; tput sgr0
 echo "macOS $(sw_vers -productVersion) | $(system_profiler SPHardwareDataType | grep Memory | cut -d ':' -f2) | $(system_profiler SPHardwareDataType | grep Cores: | cut -d ':' -f2) Cores | $(system_profiler SPHardwareDataType | grep Speed | cut -d ':' -f2)" ; sleep 2
@@ -260,8 +260,6 @@ cmake -G "Ninja" ../ -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED="OFF"
 ninja && ninja install
 rm -fr /Volumes/RamDisk/compile/*
 
-
-
 #-> AUDIO
 tput bold ; echo ; echo ; echo '⚙️  ' Audio Builds ; tput sgr0
 
@@ -387,6 +385,16 @@ rm -fr /Volumes/RamDisk/compile/*
 
 #-> VIDEO
 tput bold ; echo ; echo ; echo '⚙️  ' Video Builds ; tput sgr0
+
+#_ libzimg
+tput bold ; echo ; echo '📍 ' libzimg git ; tput sgr0 ; sleep 2
+cd ${CMPL}
+git clone https://github.com/sekrit-twc/zimg.git
+cd zimg
+./autogen.sh
+./Configure --prefix=${TARGET} --disable-shared --enable-static
+make -j "$THREADS" && make install
+rm -fr /Volumes/RamDisk/compile/*
 
 #_ libvpx git
 tput bold ; echo ; echo '📍 ' vpx git ; tput sgr0 ; sleep 2
@@ -555,7 +563,7 @@ cd ffmpe*/
  --enable-muxer=mp4 --enable-libxvid --enable-libopenh264 --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom --enable-libdav1d \
  --enable-fontconfig --enable-libfreetype --enable-libfribidi --enable-libass --enable-libsrt \
  --enable-libbluray --enable-bzlib --enable-zlib --enable-lzma --enable-libsnappy --enable-libwebp --enable-libopenjpeg \
- --enable-opengl --enable-opencl --enable-openal --enable-openssl --enable-librtmp
+ --enable-opengl --enable-opencl --enable-openal --enable-libzimg --enable-openssl --enable-librtmp
 
  make -j "$THREADS" && make install
 
