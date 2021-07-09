@@ -2,7 +2,7 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #_Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2021-07-08" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2021-07-09" ; tput sgr0
 tput bold ; echo "Download and Build Last Static FFmpeg" ; tput sgr0
 tput bold ; echo "macOS 10.12 < 11 Build Compatibility" ; tput sgr0
 echo "macOS $(sw_vers -productVersion) | $(system_profiler SPHardwareDataType | grep Memory | cut -d ':' -f2) | $(system_profiler SPHardwareDataType | grep Cores: | cut -d ':' -f2) Cores | $(system_profiler SPHardwareDataType | grep Speed | cut -d ':' -f2)" ; sleep 2
@@ -146,6 +146,17 @@ cd ${CMPL}
 git clone git://sourceware.org/git/bzip2.git bzip2
 cd bzip2
 make -j "$THREADS" && make install PREFIX=${TARGET}
+rm -fr /Volumes/RamDisk/compile/*
+
+#_ SDL2
+tput bold ; echo ; echo '📍 ' SDL2 2.0.14 ; tput sgr0 ; sleep 2
+cd ${CMPL}
+wget http://www.libsdl.org/release/SDL2-2.0.14.tar.gz
+tar xvf SDL2-*.tar.gz
+cd SDL2*/
+./autogen.sh
+./configure --prefix=${TARGET} --enable-static --disable-shared --without-x --enable-hidapi
+make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
 
 #_ libudfread git
@@ -515,16 +526,6 @@ cd AviSynthPlus
 mkdir avisynth-build && cd avisynth-build
 cmake ../ -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DHEADERS_ONLY:bool=on
 make install
-rm -fr /Volumes/RamDisk/compile/*
-
-#_ SDL2
-tput bold ; echo ; echo '📍 ' SDL2 2.0.12 ; tput sgr0 ; sleep 2
-cd ${CMPL}
-wget http://www.libsdl.org/release/SDL2-2.0.12.tar.gz
-tar xvf SDL2-*.tar.gz
-cd SDL2*
-./configure --prefix=${TARGET} --enable-static --disable-shared
-make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
 
 #_ librtmp
