@@ -2,7 +2,7 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #_Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2021-07-09" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2021-08-22" ; tput sgr0
 tput bold ; echo "Download and Build Last Static FFmpeg" ; tput sgr0
 tput bold ; echo "macOS 10.12 < 11 Build Compatibility" ; tput sgr0
 echo "macOS $(sw_vers -productVersion) | $(system_profiler SPHardwareDataType | grep Memory | cut -d ':' -f2) | $(system_profiler SPHardwareDataType | grep Cores: | cut -d ':' -f2) Cores | $(system_profiler SPHardwareDataType | grep Speed | cut -d ':' -f2)" ; sleep 2
@@ -33,6 +33,7 @@ fi
 #_ Check Homebrew Config
 tput bold ; echo ; echo '♻️  ' Check Homebrew Config ; tput sgr0 ; sleep 2
 brew install git wget cmake autoconf automake nasm libtool ninja meson pkg-config rtmpdump
+#brew uninstall --ignore-dependencies libx11
 
 #_ Check Miminum Requirement Build Time
 Time="$(echo 'obase=60;'$SECONDS | bc | sed 's/ /:/g' | cut -c 2-)"
@@ -102,9 +103,9 @@ cd ${CMPL}
 wget --no-check-certificate "https://ftp.gnu.org/pub/gnu/gettext/gettext-0.21.tar.gz"
 tar -zxvf gettex*
 cd gettex*/
-autoreconf -fiv
+#autoreconf -fiv
 ./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules --disable-debug --with-included-gettext --with-included-glib \
- --with-included-libcroco --with-included-libunistring --with-emacs --disable-java --disable-native-java --disable-csharp \
+ --with-included-libcroco --with-included-libunistring --with-included-libxml --with-emacs --disable-java --disable-native-java --disable-csharp \
  --disable-shared --enable-static --without-git --without-cvs --disable-docs --disable-examples
 make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
@@ -263,9 +264,9 @@ rm -fr /Volumes/RamDisk/compile/*
 #_ snappy
 tput bold ; echo ; echo '📍 ' snappy 1.1.8 ; tput sgr0 ; sleep 2
 cd ${CMPL}
-wget --no-check-certificate https://github.com/google/snappy/archive/1.1.8.tar.gz
-tar -zxvf 1.1.8.tar.gz
-cd snappy-1.1.8
+wget -O snappy.tar.gz --no-check-certificate https://github.com/google/snappy/archive/1.1.8.tar.gz
+tar -zxvf snappy.tar.gz
+cd snappy-*/
 mkdir build && cd build
 cmake -G "Ninja" ../ -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED="OFF" -DENABLE_C_DEPS="ON"
 ninja && ninja install
