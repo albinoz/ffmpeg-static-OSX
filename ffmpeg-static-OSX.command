@@ -33,7 +33,7 @@ fi
 #_ Check Homebrew Config
 tput bold ; echo ; echo '♻️  ' Check Homebrew Config ; tput sgr0 ; sleep 2
 brew install git wget cmake autoconf automake nasm libtool ninja meson pkg-config rtmpdump
-#brew uninstall --ignore-dependencies libx11
+brew uninstall --ignore-dependencies libx11
 
 #_ Check Miminum Requirement Build Time
 Time="$(echo 'obase=60;'$SECONDS | bc | sed 's/ /:/g' | cut -c 2-)"
