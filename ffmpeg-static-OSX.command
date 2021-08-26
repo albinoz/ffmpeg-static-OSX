@@ -2,7 +2,7 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #_Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2021-08-22" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2021-08-26" ; tput sgr0
 tput bold ; echo "Download and Build Last Static FFmpeg" ; tput sgr0
 tput bold ; echo "macOS 10.12 < 11 Build Compatibility" ; tput sgr0
 echo "macOS $(sw_vers -productVersion) | $(system_profiler SPHardwareDataType | grep Memory | cut -d ':' -f2) | $(system_profiler SPHardwareDataType | grep Cores: | cut -d ':' -f2) Cores | $(system_profiler SPHardwareDataType | grep Speed | cut -d ':' -f2)" ; sleep 2
@@ -33,7 +33,7 @@ fi
 #_ Check Homebrew Config
 tput bold ; echo ; echo '♻️  ' Check Homebrew Config ; tput sgr0 ; sleep 2
 brew install git wget cmake autoconf automake nasm libtool ninja meson pkg-config rtmpdump
-brew uninstall --ignore-dependencies libx11
+#brew uninstall --ignore-dependencies libx11
 
 #_ Check Miminum Requirement Build Time
 Time="$(echo 'obase=60;'$SECONDS | bc | sed 's/ /:/g' | cut -c 2-)"
@@ -46,7 +46,6 @@ if df | grep RamDisk > /dev/null ; then diskutil eject RamDisk ; sleep 2 ; fi
 #_ Made RamDisk
 tput bold ; echo ; echo '💾 ' Made 1Go RamDisk ; tput sgr0
 diskutil erasevolume HFS+ 'RamDisk' $(hdiutil attach -nomount ram://2097152)
-#diskutil partitionDisk $(hdiutil attach -nomount ram://2097152) 1 GPTFormat APFS 'RamDisk' '100%'
 sleep 1
 
 #_ CPU & PATHS & ERROR
@@ -544,6 +543,7 @@ tput bold ; echo ; echo ; echo '⚙️  ' FFmpeg Build ; tput sgr0
 #_ Purge .dylib
 tput bold ; echo ; echo '💢 ' Purge .dylib ; tput sgr0 ; sleep 2
 rm -vfr $TARGET/lib/*.dylib
+rm -vfr /usr/local/opt/libx11/lib/libX11.6.dylib
 
 #_ Flags
 tput bold ; echo ; echo '🚩 ' Define FLAGS ; tput sgr0 ; sleep 2
