@@ -2,7 +2,7 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #_Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2022-07-03" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2022-07-23" ; tput sgr0
 tput bold ; echo "Download and Build Last Static FFmpeg" ; tput sgr0
 tput bold ; echo "macOS 10.12 < 12.4 Build Compatibility" ; tput sgr0
 echo "macOS $(sw_vers -productVersion) | $(system_profiler SPHardwareDataType | grep Memory | cut -d ':' -f2) | $(system_profiler SPHardwareDataType | grep Cores: | cut -d ':' -f2) Cores | $(system_profiler SPHardwareDataType | grep Speed | cut -d ':' -f2)" ; sleep 2
@@ -32,8 +32,7 @@ fi
 
 #_ Check Homebrew Config
 tput bold ; echo ; echo '♻️  ' Check Homebrew Config ; tput sgr0 ; sleep 2
-brew install git wget cmake autoconf automake nasm libtool ninja meson pkg-config rtmpdump
-#brew uninstall --ignore-dependencies libx11
+brew install git wget cmake autoconf automake nasm libtool ninja meson pkg-config rtmpdump rust cargo-c
 
 #_ Check Miminum Requirement Build Time
 Time="$(echo 'obase=60;'$SECONDS | bc | sed 's/ /:/g' | cut -c 2-)"
@@ -44,8 +43,8 @@ if df | grep RamDisk > /dev/null ; then tput bold ; echo ; echo '⏏  ' Eject Ra
 if df | grep RamDisk > /dev/null ; then diskutil eject RamDisk ; sleep 2 ; fi
 
 #_ Made RamDisk
-tput bold ; echo ; echo '💾 ' Made 1Go RamDisk ; tput sgr0
-diskutil erasevolume HFS+ 'RamDisk' $(hdiutil attach -nomount ram://2097152)
+tput bold ; echo ; echo '💾 ' Made 2Go RamDisk ; tput sgr0
+diskutil erasevolume HFS+ 'RamDisk' $(hdiutil attach -nomount ram://4194304)
 sleep 1
 
 #_ CPU & PATHS & ERROR
@@ -58,7 +57,6 @@ mdutil -i off /Volumes/RamDisk
 #_ Make RamDisk Directories
 mkdir ${TARGET}
 mkdir ${CMPL}
-
 
 
 #-> BASE
@@ -86,10 +84,11 @@ cd libexpat/expat
 make -j "$THREADS" && make install DESTDIR=/
 rm -fr /Volumes/RamDisk/compile/*
 
-#_ iconv
-tput bold ; echo ; echo '📍 ' iconv 1.16 ; tput sgr0 ; sleep 2
+#_ libiconv
+LastVersion=$(wget --no-check-certificate 'https://ftp.gnu.org/pub/gnu/libiconv/' -O- -q | grep -Eo 'libiconv-[0-9\.]+\.tar.gz' | tail -1)
+tput bold ; echo ; echo '📍 ' "$LastVersion" Last ; tput sgr0 ; sleep 2
 cd ${CMPL}
-wget --no-check-certificate "https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.16.tar.gz"
+wget --no-check-certificate 'https://ftp.gnu.org/pub/gnu/libiconv/'"$LastVersion"
 tar -zxvf libiconv*
 cd libiconv*/
 ./configure --prefix=${TARGET} --with-iconv=${TARGET} --enable-static --enable-extra-encodings
@@ -97,31 +96,31 @@ make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
 
 #_ gettext - Requirement for fontconfig, fribidi
-tput bold ; echo ; echo '📍 ' gettext 0.21 ; tput sgr0 ; sleep 2
+LastVersion=$(wget --no-check-certificate 'https://ftp.gnu.org/pub/gnu/gettext/' -O- -q | grep -Eo 'gettext-[0-9\.]+\.tar.gz' | tail -1)
+tput bold ; echo ; echo '📍 ' "$LastVersion" Last Last ; tput sgr0 ; sleep 2
 cd ${CMPL}
-wget --no-check-certificate "https://ftp.gnu.org/pub/gnu/gettext/gettext-0.21.tar.gz"
+wget --no-check-certificate 'https://ftp.gnu.org/pub/gnu/gettext/'"$LastVersion"
 tar -zxvf gettex*
 cd gettex*/
-#autoreconf -fiv
 ./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules --disable-debug --with-included-gettext --with-included-glib \
- --with-included-libcroco --with-included-libunistring --with-included-libxml --with-emacs --disable-java --disable-native-java --disable-csharp \
+ --with-included-libcroco --with-included-libunistring --with-included-libxml --with-emacs --disable-java --disable-csharp \
  --disable-shared --enable-static --without-git --without-cvs --disable-docs --disable-examples
 make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
 
-#_ libpng git - Requirement for freetype
-tput bold ; echo ; echo '📍 ' libpng git ; tput sgr0 ; sleep 2
+#_ libpng * Required from freetype & webp
+tput bold ; echo ; echo '📍 ' libpng 1.6.37 ; tput sgr0 ; sleep 2
 cd ${CMPL}
-git clone https://github.com/glennrp/libpng.git
-cd libpng
-autoreconf -fiv
-./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules --enable-static --disable-shared
+wget --no-check-certificate https://downloads.sourceforge.net/project/libpng/libpng16/1.6.37/libpng-1.6.37.tar.xz
+tar -xJf libpng-*
+cd libpng*/
+./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules
 make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
 
 #_ pkg-config
 LastVersion=$(wget --no-check-certificate 'https://pkg-config.freedesktop.org/releases/' -O- -q | grep -Eo 'pkg-config-0.29[0-9\.]+\.tar.gz' | tail -1)
-tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 2
+tput bold ; echo ; echo '📍 ' "$LastVersion" Last ; tput sgr0 ; sleep 2
 cd ${CMPL}
 wget --no-check-certificate 'https://pkg-config.freedesktop.org/releases/'"$LastVersion"
 tar -zxvf pkg-config-*
@@ -132,7 +131,7 @@ rm -fr /Volumes/RamDisk/compile/*
 
 #_ Yasm
 LastVersion=$(wget --no-check-certificate 'http://www.tortall.net/projects/yasm/releases/' -O- -q | grep -Eo 'yasm-[0-9\.]+\.tar.gz' | tail -1)
-tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 2
+tput bold ; echo ; echo '📍 ' "$LastVersion" Last ; tput sgr0 ; sleep 2
 cd ${CMPL}
 wget --no-check-certificate 'http://www.tortall.net/projects/yasm/releases/'"$LastVersion"
 tar -zxvf /Volumes/RamDisk/compile/yasm-*
@@ -148,11 +147,11 @@ cd bzip2
 make -j "$THREADS" && make install PREFIX=${TARGET}
 rm -fr /Volumes/RamDisk/compile/*
 
-#_ SDL2
-tput bold ; echo ; echo '📍 ' SDL2 2.0.22 ; tput sgr0 ; sleep 2
+#_ libsdl2
+LastVersion=$(wget --no-check-certificate 'https://www.libsdl.org/release/' -O- -q | grep -Eo 'SDL2-[0-9\.]+\.tar.gz' | tail -1)
+tput bold ; echo ; echo '📍 ' "$LastVersion" Last ; tput sgr0 ; sleep 2
 cd ${CMPL}
-#wget http://www.libsdl.org/release/SDL2-2.0.14.tar.gz
-wget --no-check-certificate https://www.libsdl.org/release/SDL2-2.0.22.tar.gz
+wget --no-check-certificate 'https://www.libsdl.org/release/'"$LastVersion"
 tar xvf SDL2-*.tar.gz
 cd SDL2*/
 ./autogen.sh
@@ -190,7 +189,7 @@ tput bold ; echo ; echo ; echo '⚙️  ' Subtitles Builds ; tput sgr0
 
 #_ freetype
 LastVersion=$(wget --no-check-certificate 'https://download.savannah.gnu.org/releases/freetype/' -O- -q | grep -Eo 'freetype-[0-9\.]+\.10+\.[0-9\.]+\.tar.gz' | tail -1)
-tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 2
+tput bold ; echo ; echo '📍 ' "$LastVersion" Last ; tput sgr0 ; sleep 2
 cd ${CMPL}
 wget --no-check-certificate 'https://download.savannah.gnu.org/releases/freetype/'"$LastVersion"
 tar xzpf freetype-*
@@ -201,9 +200,9 @@ make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
 
 #_ fribidi
-tput bold ; echo ; echo '📍 ' fribidi 1.0.10 ; tput sgr0 ; sleep 2
+tput bold ; echo ; echo '📍 ' fribidi 1.0.12 ; tput sgr0 ; sleep 2
 cd ${CMPL}
-wget --no-check-certificate https://github.com/fribidi/fribidi/releases/download/v1.0.10/fribidi-1.0.10.tar.xz
+wget --no-check-certificate https://github.com/fribidi/fribidi/releases/download/v1.0.12/fribidi-1.0.12.tar.xz
 tar -xJf fribid*
 cd fribid*/
 ./configure --prefix=${TARGET} --disable-shared --enable-static --disable-silent-rules --disable-debug --disable-dependency-tracking
@@ -241,8 +240,8 @@ make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
 
 #_ openssl
-LastVersion=$(wget --no-check-certificate 'https://www.openssl.org/source/' -O- -q | grep -Eo 'openssl-[0-9\.]+\.[0-9\.]+\.[0-9\.]+[A-Za-z].tar.gz' | tail -1)
-tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 2
+LastVersion=$(wget --no-check-certificate 'https://www.openssl.org/source/' -O- -q | grep -Eo 'openssl-[0-9\.]+\.[0-9\.]+\.[0-9\.].tar.gz' | tail -1)
+tput bold ; echo ; echo '📍 ' "$LastVersion" Last ; tput sgr0 ; sleep 2
 cd ${CMPL}
 wget --no-check-certificate https://www.openssl.org/source/"$LastVersion"
 tar -zxvf openssl*
@@ -296,7 +295,7 @@ rm -fr /Volumes/RamDisk/compile/*
 
 #_ opus - Replace speex
 LastVersion=$(wget --no-check-certificate https://ftp.osuosl.org/pub/xiph/releases/opus/ -O- -q | grep -Eo 'opus-1.[0-9\.]+\.[0-9\.]+\.tar.gz' | tail -1)
-tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 2
+tput bold ; echo ; echo '📍 ' "$LastVersion" Last ; tput sgr0 ; sleep 2
 cd ${CMPL}
 wget --no-check-certificate https://ftp.osuosl.org/pub/xiph/releases/opus/"$LastVersion"
 tar -zxvf opus-*
@@ -307,7 +306,7 @@ rm -fr /Volumes/RamDisk/compile/*
 
 #_ ogg
 LastVersion=$(wget --no-check-certificate https://ftp.osuosl.org/pub/xiph/releases/ogg/ -O- -q | grep -Eo 'libogg-[0-9\.]+\.tar.gz' | tail -1)
-tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 2
+tput bold ; echo ; echo '📍 ' "$LastVersion" Last ; tput sgr0 ; sleep 2
 cd ${CMPL}
 wget --no-check-certificate https://ftp.osuosl.org/pub/xiph/releases/ogg/"$LastVersion"
 tar -zxvf libogg-*
@@ -328,7 +327,7 @@ rm -fr /Volumes/RamDisk/compile/*
 
 #_ vorbis
 LastVersion=$(wget --no-check-certificate https://ftp.osuosl.org/pub/xiph/releases/vorbis/ -O- -q | grep -Eo 'libvorbis-[0-9\.]+\.tar.gz' | tail -1)
-tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 2
+tput bold ; echo ; echo '📍 ' "$LastVersion" Last ; tput sgr0 ; sleep 2
 cd ${CMPL}
 wget --no-check-certificate https://ftp.osuosl.org/pub/xiph/releases/vorbis/"$LastVersion"
 tar -zxvf libvorbis-*
@@ -348,7 +347,7 @@ rm -fr /Volumes/RamDisk/compile/*
 
 #_ TwoLame - optimised MPEG Audio Layer 2
 LastVersion=$(wget --no-check-certificate 'http://www.twolame.org' -O- -q | grep -Eo 'twolame-[0-9\.]+\.tar.gz' | tail -1)
-tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 2
+tput bold ; echo ; echo '📍 ' "$LastVersion" Last ; tput sgr0 ; sleep 2
 cd ${CMPL}
 wget --no-check-certificate 'http://downloads.sourceforge.net/twolame/'"$LastVersion"
 tar -zxvf twolame-*
@@ -358,19 +357,20 @@ make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
 
 #_ fdk-aac
-tput bold ; echo ; echo '📍 ' fdk-aac ; tput sgr0 ; sleep 2
+tput bold ; echo ; echo '📍 ' fdk-aac git ; tput sgr0 ; sleep 2
 cd ${CMPL}
-wget --no-check-certificate "https://downloads.sourceforge.net/project/opencore-amr/fdk-aac/fdk-aac-2.0.1.tar.gz"
-tar -zxvf fdk-aac-*
+git clone https://github.com/mstorsjo/fdk-aac.git
 cd fdk*/
+./autogen.sh
 ./configure --disable-dependency-tracking --prefix=${TARGET} --enable-static --enable-shared=no
 make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
 
 #_ gsm
-tput bold ; echo ; echo '📍 ' libgsm 1.0.19 ; tput sgr0 ; sleep 2
+LastVersion=$(wget --no-check-certificate 'http://www.quut.com/gsm/' -O- -q | grep -Eo 'gsm-[0-9\.]+\.tar.gz' | tail -1)
+tput bold ; echo ; echo '📍 ' "$LastVersion" Last ; tput sgr0 ; sleep 2
 cd ${CMPL}
-wget --no-check-certificate 'http://www.quut.com/gsm/gsm-1.0.19.tar.gz'
+wget --no-check-certificate 'http://www.quut.com/gsm/'"$LastVersion"
 tar -zxvf gsm*
 cd gsm*/
 mkdir -p ${TARGET}/man/man3
@@ -384,11 +384,12 @@ make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
 
 #_ speex
-tput bold ; echo ; echo '📍 ' libspeex 1.2.0 ; tput sgr0 ; sleep 2
+LastVersion=$(wget --no-check-certificate 'http://downloads.us.xiph.org/releases/speex/' -O- -q | grep -Eo 'speex-[0-9\.]+\.tar.gz' | tail -1)
+tput bold ; echo ; echo '📍 ' "$LastVersion" Last ; tput sgr0 ; sleep 2
 cd ${CMPL}
-wget http://downloads.us.xiph.org/releases/speex/speex-1.2.0.tar.gz
-tar xvf speex-1.2.0.tar.gz
-cd speex-1.2.0
+wget http://downloads.us.xiph.org/releases/speex/"$LastVersion"
+tar xvf speex-*.tar.gz
+cd speex-*/
 ./configure --prefix=${TARGET} --enable-static --enable-shared=no
 make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
@@ -401,7 +402,6 @@ tput bold ; echo ; echo ; echo '⚙️  ' Video Builds ; tput sgr0
 #_ libzimg
 tput bold ; echo ; echo '📍 ' libzimg 3.0.4 ; tput sgr0 ; sleep 2
 cd ${CMPL}
-#git clone https://github.com/sekrit-twc/zimg.git
 wget --no-check-certificate https://github.com/sekrit-twc/zimg/archive/refs/tags/release-3.0.4.tar.gz
 tar xvf release-3.0.4.tar.gz
 cd zimg-*/
@@ -419,16 +419,6 @@ cd libvp*/
 make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
 
-#_ webp
-tput bold ; echo ; echo '📍 ' webp git ; tput sgr0 ; sleep 2
-cd ${CMPL}
-git clone https://chromium.googlesource.com/webm/libwebp
-cd libweb*/
-./autogen.sh
-./configure --prefix=${TARGET} --disable-dependency-tracking --disable-gif --disable-gl --enable-libwebpdecoder --enable-libwebpdemux --enable-libwebpmux
-make -j "$THREADS" && make install
-rm -fr /Volumes/RamDisk/compile/*
-
 #_ openjpeg
 tput bold ; echo ; echo '📍 ' openjpeg git ; tput sgr0 ; sleep 2
 cd ${CMPL}
@@ -437,6 +427,16 @@ cd openjpeg
 mkdir build && cd build
 cmake -G "Ninja" .. -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC
 ninja && ninja install
+rm -fr /Volumes/RamDisk/compile/*
+
+#_ webp
+tput bold ; echo ; echo '📍 ' webp git ; tput sgr0 ; sleep 2
+cd ${CMPL}
+git clone https://chromium.googlesource.com/webm/libwebp
+cd libweb*/
+./autogen.sh
+./configure --prefix=${TARGET} --disable-dependency-tracking --disable-gif --disable-gl --enable-libwebpdecoder --enable-libwebpdemux --enable-libwebpmux
+make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
 
 #_ av1 git
@@ -458,9 +458,18 @@ meson --prefix=${TARGET} build --buildtype release --default-library static
 ninja install -C build
 rm -fr /Volumes/RamDisk/compile/*
 
+#_ rav1e git - Require rust & cargo
+tput bold ; echo ; echo '📍 ' rav1e git ; tput sgr0 ; sleep 2
+cd ${CMPL}
+git clone https://github.com/xiph/rav1e.git
+cd rav1e
+cargo cinstall --release --prefix=${TARGET} --libdir=${TARGET}/lib --includedir=${TARGET}/include
+rm -v ${TARGET}/*/librav1e.so*
+rm -fr /Volumes/RamDisk/compile/*
+
 #_ xvid
 LastVersion=$(wget --no-check-certificate https://downloads.xvid.com/downloads/ -O- -q | grep -Eo 'xvidcore-[0-9\.]+\.tar.gz' | tail -1)
-tput bold ; echo ; echo '📍 ' "$LastVersion" ; tput sgr0 ; sleep 2
+tput bold ; echo ; echo '📍 ' "$LastVersion" Last ; tput sgr0 ; sleep 2
 cd ${CMPL}
 wget --no-check-certificate https://downloads.xvid.com/downloads/"$LastVersion"
 tar -zxvf xvidcore*
@@ -529,7 +538,6 @@ cd AviSynthPlus
 mkdir avisynth-build && cd avisynth-build
 cmake ../ -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DHEADERS_ONLY:bool=on
 make VersionGen install
-#make install
 rm -fr /Volumes/RamDisk/compile/*
 
 #_ librtmp
@@ -538,7 +546,6 @@ cp -v /usr/local/Cellar/rtmpdump/2.4+20151223_1/bin/* /Volumes/RamDisk/sw/bin/
 cp -vr /usr/local/Cellar/rtmpdump/2.4+20151223_1/include/* /Volumes/RamDisk/sw/include/
 cp -v /usr/local/Cellar/rtmpdump/2.4+20151223_1/lib/pkgconfig/librtmp.pc /Volumes/RamDisk/sw/lib/pkgconfig
 cp -v /usr/local/Cellar/rtmpdump/2.4+20151223_1/lib/librtmp* /Volumes/RamDisk/sw/lib
-
 
 
 #-> FFmpeg Check
@@ -566,12 +573,13 @@ cd ffmpe*/
  --disable-ffplay --disable-ffprobe --disable-debug --disable-doc --enable-avfilter --enable-avisynth --enable-filters \
  --enable-libopus --enable-libvorbis --enable-libtheora --enable-libspeex --enable-libmp3lame --enable-libfdk-aac --enable-encoder=aac \
  --enable-libtwolame --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libopencore_amrwb --enable-libgsm \
- --enable-muxer=mp4 --enable-libxvid --enable-libopenh264 --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom --enable-libdav1d \
+ --enable-muxer=mp4 --enable-libxvid --enable-libopenh264 --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom --enable-libdav1d --enable-librav1e \
  --enable-fontconfig --enable-libfreetype --enable-libfribidi --enable-libass --enable-libsrt \
  --enable-libbluray --enable-bzlib --enable-zlib --enable-lzma --enable-libsnappy --enable-libwebp --enable-libopenjpeg \
  --enable-opengl --enable-opencl --enable-openal --enable-libzimg --enable-openssl --enable-librtmp
 
 make -j "$THREADS" && make install
+rm -fr /Volumes/RamDisk/compile/*
 
 #_ Check Static
 tput bold ; echo ; echo '♻️  ' Check Static FFmpeg ; tput sgr0 ; sleep 2
