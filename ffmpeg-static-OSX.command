@@ -2,9 +2,9 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #_Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2022-07-23" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2022-07-24" ; tput sgr0
 tput bold ; echo "Download and Build Last Static FFmpeg" ; tput sgr0
-tput bold ; echo "macOS 10.12 < 12.4 Build Compatibility" ; tput sgr0
+tput bold ; echo "macOS 10.12 < 12.5 Build Compatibility" ; tput sgr0
 echo "macOS $(sw_vers -productVersion) | $(system_profiler SPHardwareDataType | grep Memory | cut -d ':' -f2) | $(system_profiler SPHardwareDataType | grep Cores: | cut -d ':' -f2) Cores | $(system_profiler SPHardwareDataType | grep Speed | cut -d ':' -f2)" ; sleep 2
 
 #_ Check Xcode CLI Install
@@ -32,6 +32,7 @@ fi
 
 #_ Check Homebrew Config
 tput bold ; echo ; echo '♻️  ' Check Homebrew Config ; tput sgr0 ; sleep 2
+#brew uninstall ffmpeg
 brew install git wget cmake autoconf automake nasm libtool ninja meson pkg-config rtmpdump rust cargo-c
 
 #_ Check Miminum Requirement Build Time
@@ -116,6 +117,16 @@ tar -xJf libpng-*
 cd libpng*/
 ./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules
 make -j "$THREADS" && make install
+rm -fr /Volumes/RamDisk/compile/*
+
+#_ openjpeg
+tput bold ; echo ; echo '📍 ' openjpeg git ; tput sgr0 ; sleep 2
+cd ${CMPL}
+git clone https://github.com/uclouvain/openjpeg.git
+cd openjpeg
+mkdir build && cd build
+cmake -G "Ninja" .. -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC
+ninja && ninja install
 rm -fr /Volumes/RamDisk/compile/*
 
 #_ pkg-config
@@ -250,8 +261,8 @@ cd openssl-*/
 make -j "$THREADS" depend && make install_sw
 rm -fr /Volumes/RamDisk/compile/*
 
-#_ str ( Require openssl )
-tput bold ; echo ; echo '📍 ' str git ; tput sgr0 ; sleep 2
+#_ srt ( Require openssl )
+tput bold ; echo ; echo '📍 ' srt git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone --depth 1 https://github.com/Haivision/srt.git
 cd srt/
@@ -279,7 +290,7 @@ tput bold ; echo ; echo '📍 ' openal-soft git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://github.com/kcat/openal-soft
 cd openal-soft*/
-cmake -G "Ninja" -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC .
+cmake -G "Ninja" -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC -DALSOFT_BACKEND_PORTAUDIO=OFF -DALSOFT_BACKEND_PULSEAUDIO=OFF -DALSOFT_EXAMPLES=OFF -DALSOFT_MIDI_FLUIDSYNTH=OFF
 ninja && ninja install
 rm -fr /Volumes/RamDisk/compile/*
 
@@ -287,7 +298,7 @@ rm -fr /Volumes/RamDisk/compile/*
 tput bold ; echo ; echo '📍 ' opencore-amr ; tput sgr0 ; sleep 2
 cd ${CMPL}
 curl -O http://freefr.dl.sourceforge.net/project/opencore-amr/opencore-amr/opencore-amr-0.1.5.tar.gz
-tar -zxvf /Volumes/RamDisk/compile/opencore-amr-0.1.5.tar.gz
+tar -zxvf opencore-amr-0.1.5.tar.gz
 cd opencore-amr-0.1.5
 ./configure --prefix=${TARGET} --disable-shared --enable-static
 make -j "$THREADS" && make install
@@ -419,16 +430,6 @@ cd libvp*/
 make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
 
-#_ openjpeg
-tput bold ; echo ; echo '📍 ' openjpeg git ; tput sgr0 ; sleep 2
-cd ${CMPL}
-git clone https://github.com/uclouvain/openjpeg.git
-cd openjpeg
-mkdir build && cd build
-cmake -G "Ninja" .. -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC
-ninja && ninja install
-rm -fr /Volumes/RamDisk/compile/*
-
 #_ webp
 tput bold ; echo ; echo '📍 ' webp git ; tput sgr0 ; sleep 2
 cd ${CMPL}
@@ -464,7 +465,6 @@ cd ${CMPL}
 git clone https://github.com/xiph/rav1e.git
 cd rav1e
 cargo cinstall --release --prefix=${TARGET} --libdir=${TARGET}/lib --includedir=${TARGET}/include
-rm -v ${TARGET}/*/librav1e.so*
 rm -fr /Volumes/RamDisk/compile/*
 
 #_ xvid
@@ -579,7 +579,6 @@ cd ffmpe*/
  --enable-opengl --enable-opencl --enable-openal --enable-libzimg --enable-openssl --enable-librtmp
 
 make -j "$THREADS" && make install
-rm -fr /Volumes/RamDisk/compile/*
 
 #_ Check Static
 tput bold ; echo ; echo '♻️  ' Check Static FFmpeg ; tput sgr0 ; sleep 2
