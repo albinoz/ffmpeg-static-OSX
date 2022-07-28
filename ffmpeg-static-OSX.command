@@ -2,17 +2,17 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #_Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2022-07-24" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2022-07-26" ; tput sgr0
 tput bold ; echo "Download and Build Last Static FFmpeg" ; tput sgr0
 tput bold ; echo "macOS 10.12 < 12.5 Build Compatibility" ; tput sgr0
 echo "macOS $(sw_vers -productVersion) | $(system_profiler SPHardwareDataType | grep Memory | cut -d ':' -f2) | $(system_profiler SPHardwareDataType | grep Cores: | cut -d ':' -f2) Cores | $(system_profiler SPHardwareDataType | grep Speed | cut -d ':' -f2)" ; sleep 2
 
 #_ Check Xcode CLI Install
 tput bold ; echo ; echo '♻️  ' Check Xcode CLI Install ; tput sgr0
-if xcode-select -v | grep version ; then tput sgr0 ; echo "Xcode CLI AllReady Installed" ; else tput bold ; echo "Xcode CLI Install" ; tput sgr0 ; xcode-select --install
+if ls /Library/Developer/CommandLineTools >/dev/null 2>&1 ; then tput bold ; echo "Xcode CLI AllReady Installed" ; else tput bold ; echo "Xcode CLI Install" ; tput sgr0 ; xcode-select --install
 sleep 1
 while pgrep 'Install Command Line Developer Tools' >/dev/null ; do sleep 5 ; done
-if xcode-select -v | grep version ; then tput sgr0 ; echo "Xcode CLI Was SucessFully Installed" ; else tput bold ; echo "Xcode CLI Was NOT Installed" ; tput sgr0 ; exit ; fi ; fi
+if ls /Library/Developer/CommandLineTools >/dev/null 2>&1 ; then tput bold ; echo "Xcode CLI Was SucessFully Installed" ; else tput bold ; echo "Xcode CLI Was NOT Installed" ; tput sgr0 ; exit ; fi ; fi
 
 #_ Check Homebrew Install
 tput bold ; echo ; echo '♻️  ' Check Homebrew Install ; tput sgr0 ; sleep 2
@@ -25,15 +25,16 @@ brew cleanup ; brew doctor ; brew update ; brew upgrade
 #_ Java Install - Fix PopUp
 tput bold ; echo ; echo '♻️  ' Check Java Install ; tput sgr0 ; sleep 2
 if java -version ; then tput sgr0 ; echo "Java AllReady Installed"
-else tput bold ; echo "Java Install" ; tput sgr0 ; sleep 2
+else tput bold ; echo "Java Install" ; tput sgr0
 brew reinstall java
+echo '🔒 Please Enter Your Password :'
 sudo ln -sfn /usr/local/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
 fi
 
 #_ Check Homebrew Config
 tput bold ; echo ; echo '♻️  ' Check Homebrew Config ; tput sgr0 ; sleep 2
 #brew uninstall ffmpeg
-brew install git wget cmake autoconf automake nasm libtool ninja meson pkg-config rtmpdump rust cargo-c
+brew install git wget cmake autoconf automake nasm libtool ninja meson pkg-config rtmpdump rust cargo-c jpeg libtiff mawk python3
 
 #_ Check Miminum Requirement Build Time
 Time="$(echo 'obase=60;'$SECONDS | bc | sed 's/ /:/g' | cut -c 2-)"
@@ -96,17 +97,15 @@ cd libiconv*/
 make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
 
-#_ gettext - Requirement for fontconfig, fribidi
-LastVersion=$(wget --no-check-certificate 'https://ftp.gnu.org/pub/gnu/gettext/' -O- -q | grep -Eo 'gettext-[0-9\.]+\.tar.gz' | tail -1)
-tput bold ; echo ; echo '📍 ' "$LastVersion" Last Last ; tput sgr0 ; sleep 2
+#_ pkg-config
+LastVersion=$(wget --no-check-certificate 'https://pkg-config.freedesktop.org/releases/' -O- -q | grep -Eo 'pkg-config-0.29[0-9\.]+\.tar.gz' | tail -1)
+tput bold ; echo ; echo '📍 ' "$LastVersion" Last ; tput sgr0 ; sleep 2
 cd ${CMPL}
-wget --no-check-certificate 'https://ftp.gnu.org/pub/gnu/gettext/'"$LastVersion"
-tar -zxvf gettex*
-cd gettex*/
-./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules --disable-debug --with-included-gettext --with-included-glib \
- --with-included-libcroco --with-included-libunistring --with-included-libxml --with-emacs --disable-java --disable-csharp \
- --disable-shared --enable-static --without-git --without-cvs --disable-docs --disable-examples
-make -j "$THREADS" && make install
+wget --no-check-certificate 'https://pkg-config.freedesktop.org/releases/'"$LastVersion"
+tar -zxvf pkg-config-*
+cd pkg-config-*/
+./configure --prefix=${TARGET} --disable-shared --enable-static --disable-debug --disable-host-tool --with-internal-glib
+make -j "$THREADS" && make check && make install
 rm -fr /Volumes/RamDisk/compile/*
 
 #_ libpng * Required from freetype & webp
@@ -115,7 +114,7 @@ cd ${CMPL}
 wget --no-check-certificate https://downloads.sourceforge.net/project/libpng/libpng16/1.6.37/libpng-1.6.37.tar.xz
 tar -xJf libpng-*
 cd libpng*/
-./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules
+./configure --prefix=${TARGET} --enable-static --disable-dependency-tracking --disable-silent-rules
 make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
 
@@ -129,15 +128,17 @@ cmake -G "Ninja" .. -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC
 ninja && ninja install
 rm -fr /Volumes/RamDisk/compile/*
 
-#_ pkg-config
-LastVersion=$(wget --no-check-certificate 'https://pkg-config.freedesktop.org/releases/' -O- -q | grep -Eo 'pkg-config-0.29[0-9\.]+\.tar.gz' | tail -1)
-tput bold ; echo ; echo '📍 ' "$LastVersion" Last ; tput sgr0 ; sleep 2
+#_ gettext - Requirement for fontconfig, fribidi
+LastVersion=$(wget --no-check-certificate 'https://ftp.gnu.org/pub/gnu/gettext/' -O- -q | grep -Eo 'gettext-[0-9\.]+\.tar.gz' | tail -1)
+tput bold ; echo ; echo '📍 ' "$LastVersion" Last Last ; tput sgr0 ; sleep 2
 cd ${CMPL}
-wget --no-check-certificate 'https://pkg-config.freedesktop.org/releases/'"$LastVersion"
-tar -zxvf pkg-config-*
-cd pkg-config-*/
-./configure --prefix=${TARGET} --disable-debug --disable-host-tool --with-internal-glib
-make -j "$THREADS" && make check && make install
+wget --no-check-certificate 'https://ftp.gnu.org/pub/gnu/gettext/'"$LastVersion"
+tar -zxvf gettex*
+cd gettex*/
+./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules --disable-debug --with-included-gettext --with-included-glib \
+ --with-included-libcroco --with-included-libunistring --with-included-libxml --with-emacs --disable-java --disable-csharp \
+ --disable-shared --enable-static --without-git --without-cvs --disable-docs --disable-examples
+make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
 
 #_ Yasm
@@ -166,7 +167,7 @@ wget --no-check-certificate 'https://www.libsdl.org/release/'"$LastVersion"
 tar xvf SDL2-*.tar.gz
 cd SDL2*/
 ./autogen.sh
-./configure --prefix=${TARGET} --enable-static --disable-shared --without-x --enable-hidapi
+./configure --prefix=${TARGET} --enable-static --without-x --enable-hidapi
 make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
 
@@ -436,7 +437,7 @@ cd ${CMPL}
 git clone https://chromium.googlesource.com/webm/libwebp
 cd libweb*/
 ./autogen.sh
-./configure --prefix=${TARGET} --disable-dependency-tracking --disable-gif --disable-gl --enable-libwebpdecoder --enable-libwebpdemux --enable-libwebpmux
+./configure --prefix=${TARGET} --disable-dependency-tracking --disable-shared --enable-static --disable-gif --disable-gl --enable-libwebpdecoder --enable-libwebpdemux --enable-libwebpmux
 make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
 
