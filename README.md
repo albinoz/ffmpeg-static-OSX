@@ -1,5 +1,6 @@
 ## FFmpeg Static Builder
-####  macOS 10.12 < 12.5
+####  macOS 10.12 < 12 Intel
+###### This script not work on Apple Silicon for Now
 
 #### Include Last Versions of x264 | x265 | AV1 | FFmpeg…
 
