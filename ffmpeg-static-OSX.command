@@ -2,7 +2,7 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #_Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2022-07-26" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2022-11-26" ; tput sgr0
 tput bold ; echo "Download and Build Last Static FFmpeg" ; tput sgr0
 tput bold ; echo "macOS 10.12 < 12.5 Build Compatibility" ; tput sgr0
 echo "macOS $(sw_vers -productVersion) | $(system_profiler SPHardwareDataType | grep Memory | cut -d ':' -f2) | $(system_profiler SPHardwareDataType | grep Cores: | cut -d ':' -f2) Cores | $(system_profiler SPHardwareDataType | grep Speed | cut -d ':' -f2)" ; sleep 2
@@ -174,7 +174,8 @@ rm -fr /Volumes/RamDisk/compile/*
 #_ libudfread git
 tput bold ; echo ; echo '📍 ' libudfread git ; tput sgr0 ; sleep 2
 cd ${CMPL}
-git clone https://github.com/vlc-mirror/libudfread.git
+#git clone https://github.com/vlc-mirror/libudfread.git
+git clone https://code.videolan.org/videolan/libudfread.git
 cd libud*/
 ./bootstrap
 ./configure --prefix=${TARGET} --disable-shared --enable-static
