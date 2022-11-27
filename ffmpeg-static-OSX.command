@@ -2,9 +2,9 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #_Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2022-11-26" ; tput sgr0
-tput bold ; echo "Download and Build Last Static FFmpeg" ; tput sgr0
-tput bold ; echo "macOS 10.12 < 12.5 Build Compatibility" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2022-11-27" ; tput sgr0
+tput bold ; echo "Download & Build Last Static FFmpeg" ; tput sgr0
+tput bold ; echo "macOS 10.12 < 12 Build Compatibility" ; tput sgr0
 echo "macOS $(sw_vers -productVersion) | $(system_profiler SPHardwareDataType | grep Memory | cut -d ':' -f2) | $(system_profiler SPHardwareDataType | grep Cores: | cut -d ':' -f2) Cores | $(system_profiler SPHardwareDataType | grep Speed | cut -d ':' -f2)" ; sleep 2
 
 #_ Check Xcode CLI Install
@@ -188,10 +188,10 @@ tput bold ; echo ; echo '📍 ' libbluray git ; tput sgr0 ; sleep 2
 cd ${CMPL}
 git clone https://code.videolan.org/videolan/libbluray.git
 cd libblura*/
-cp -r /Volumes/RamDisk/compile/libudfread/src /Volumes/RamDisk/compile/libbluray/contrib/libudfread/src
+#cp -r /Volumes/RamDisk/compile/libudfread/src /Volumes/RamDisk/compile/libbluray/contrib/libudfread/src
 ./bootstrap
-./configure --prefix=${TARGET} --disable-shared --disable-dependency-tracking --build x86_64 --disable-doxygen-dot --without-libxml2 --without-freetype --disable-udf --disable-bdjava-jar
-cp -vpfr /Volumes/RamDisk/compile/libblura*/jni/darwin/jni_md.h /Volumes/RamDisk/compile/libblura*/jni
+./configure --prefix=${TARGET} --disable-shared --disable-dependency-tracking --disable-silent-rules --without-libxml2 --without-freetype --disable-doxygen-doc --disable-bdjava-jar
+#cp -vpfr /Volumes/RamDisk/compile/libblura*/jni/darwin/jni_md.h /Volumes/RamDisk/compile/libblura*/jni
 make -j "$THREADS" && make install
 rm -fr /Volumes/RamDisk/compile/*
 
