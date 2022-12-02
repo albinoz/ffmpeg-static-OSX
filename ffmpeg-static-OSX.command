@@ -2,7 +2,7 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #_Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2022-11-27" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2022-12-01" ; tput sgr0
 tput bold ; echo "Download & Build Last Static FFmpeg" ; tput sgr0
 tput bold ; echo "macOS 10.12 < 12 Build Compatibility" ; tput sgr0
 echo "macOS $(sw_vers -productVersion) | $(system_profiler SPHardwareDataType | grep Memory | cut -d ':' -f2) | $(system_profiler SPHardwareDataType | grep Cores: | cut -d ':' -f2) Cores | $(system_profiler SPHardwareDataType | grep Speed | cut -d ':' -f2)" ; sleep 2
@@ -34,7 +34,7 @@ fi
 #_ Check Homebrew Config
 tput bold ; echo ; echo '♻️  ' Check Homebrew Config ; tput sgr0 ; sleep 2
 #brew uninstall ffmpeg
-brew install git wget cmake autoconf automake nasm libtool ninja meson pkg-config rtmpdump rust cargo-c jpeg libtiff mawk python3
+brew install git wget cmake autoconf automake nasm libtool ninja meson pkg-config rtmpdump rust cargo-c jpeg libtiff gawk python3
 
 #_ Check Miminum Requirement Build Time
 Time="$(echo 'obase=60;'$SECONDS | bc | sed 's/ /:/g' | cut -c 2-)"
