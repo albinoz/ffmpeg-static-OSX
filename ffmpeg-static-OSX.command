@@ -50,7 +50,7 @@ else
 # Minimum RamDisk
 tput bold ; echo ; echo '💾 ' Made 2Go RamDisk ; tput sgr0
 #diskutil erasevolume HFS+ 'RamDisk' $(hdiutil attach -nomount ram://4194304)
-diskutil erasevolume HFS+ 'RamDisk' $(hdiutil attach -nomount ram://400000)
+diskutil erasevolume HFS+ 'RamDisk' $(hdiutil attach -nomount ram://4000000)
 fi
 
 #_ CPU & PATHS & ERROR
