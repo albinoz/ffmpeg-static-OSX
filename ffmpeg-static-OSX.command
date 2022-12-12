@@ -2,7 +2,7 @@
 clear
 ( exec &> >(while read -r line; do echo "$(date +"[%Y-%m-%d %H:%M:%S]") $line"; done;) #_Date to Every Line
 
-tput bold ; echo "adam | 2014 < 2022-12-11" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2022-12-12" ; tput sgr0
 tput bold ; echo "Download & Build Last Static FFmpeg" ; tput sgr0
 tput bold ; echo "macOS 10.12 < 12 Build Compatibility" ; tput sgr0
 echo "macOS $(sw_vers -productVersion) | $(system_profiler SPHardwareDataType | grep Memory | cut -d ':' -f2) | $(system_profiler SPHardwareDataType | grep Cores: | cut -d ':' -f2) Cores | $(system_profiler SPHardwareDataType | grep Speed | cut -d ':' -f2)"
@@ -124,12 +124,14 @@ rm -fr /Volumes/RamDisk/compile/*
 fi
 
 #_ libpng * Required from freetype & webp
-tput bold ; echo ; echo '📍 ' libpng 1.6.37 ; tput sgr0
+#tput bold ; echo ; echo '📍 ' libpng 1.6.37 ; tput sgr0
+tput bold ; echo ; echo '📍 ' libpng git ; tput sgr0
 if find /Volumes/RamDisk/sw/ | grep "libpng" >/dev/null ; then echo Build All Ready Done ; else
 cd ${CMPL} ; sleep 1
-wget --no-check-certificate https://downloads.sourceforge.net/project/libpng/libpng16/1.6.37/libpng-1.6.37.tar.xz
-tar -xJf libpng-*
-cd libpng*/
+#wget --no-check-certificate https://downloads.sourceforge.net/project/libpng/libpng16/1.6.37/libpng-1.6.37.tar.xz
+git clone https://github.com/glennrp/libpng.git
+#tar -xJf libpng-*
+cd libpn*/
 ./configure --prefix=${TARGET} --enable-static --disable-dependency-tracking --disable-silent-rules
 make -j "$THREADS" && make install
 if find /Volumes/RamDisk/sw/ | grep "libpng" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
