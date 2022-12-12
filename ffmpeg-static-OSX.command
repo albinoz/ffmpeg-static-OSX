@@ -49,7 +49,8 @@ echo RamDisk Exist
 else
 # Minimum RamDisk
 tput bold ; echo ; echo '💾 ' Made 2Go RamDisk ; tput sgr0
-diskutil erasevolume HFS+ 'RamDisk' $(hdiutil attach -nomount ram://4194304)
+#diskutil erasevolume HFS+ 'RamDisk' $(hdiutil attach -nomount ram://4194304)
+diskutil erasevolume HFS+ 'RamDisk' $(hdiutil attach -nomount ram://400000)
 fi
 
 #_ CPU & PATHS & ERROR
@@ -271,10 +272,13 @@ rm -fr /Volumes/RamDisk/compile/*
 fi
 
 #_ fontconfig
-tput bold ; echo ; echo '📍 ' fontconfig 2.13.92 ; tput sgr0
+LastVersion=$(wget --no-check-certificate 'https://www.freedesktop.org/software/fontconfig/release/' -O- -q | grep -Eo 'fontconfig-[0-500\.]+.tar.gz' | tail -1)
+#tput bold ; echo ; echo '📍 ' fontconfig 2.13.92 ; tput sgr0
+tput bold ; echo ; echo '📍 ' "$LastVersion" Last ; tput sgr0
 if find /Volumes/RamDisk/sw/ | grep "fontconfig" >/dev/null ; then echo Build All Ready Done ; else
 cd ${CMPL} ; sleep 1
-wget --no-check-certificate https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.92.tar.gz
+#wget --no-check-certificate https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.92.tar.gz
+wget --no-check-certificate 'https://www.freedesktop.org/software/fontconfig/release/'"$LastVersion"
 tar xzpf fontconfig-*
 cd fontconfig-*/
 ./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules --with-add-fonts="/System/Library/Fonts,/Library/Fonts" --disable-shared --enable-static
@@ -317,8 +321,10 @@ cd ${CMPL} ; sleep 1
 wget --no-check-certificate https://www.openssl.org/source/"$LastVersion"
 tar -zxvf openssl*
 cd openssl-*/
-./Configure --prefix=${TARGET} -openssldir=${TARGET}/usr/local/etc/openssl no-ssl3 no-zlib enable-cms darwin64-x86_64-cc shared enable-ec_nistp_64_gcc_128
-make -j "$THREADS" depend && make install_sw
+#./Configure --prefix=${TARGET} -openssldir=${TARGET}/usr/local/etc/openssl no-ssl3 no-zlib enable-cms darwin64-x86_64-cc shared enable-ec_nistp_64_gcc_128
+./Configure --prefix=${TARGET} -openssldir=${TARGET}/usr/local/etc/openssl no-ssl3 no-zlib enable-cms
+make -j "$THREADS" && make install
+#make -j "$THREADS" depend && make install_sw
 if find /Volumes/RamDisk/sw/ | grep "openssl" >/dev/null 2>&1 ; then echo Build OK ; else echo Build Fail ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
@@ -709,9 +715,9 @@ cd ffmpe*/
  --pkg_config='pkg-config --static' --enable-nonfree --enable-gpl --enable-version3 --prefix=${TARGET} \
  --disable-ffplay --disable-ffprobe --disable-debug --disable-doc --enable-avfilter --enable-avisynth --enable-filters \
  --enable-libopus --enable-libvorbis --enable-libtheora --enable-libspeex --enable-libmp3lame --enable-libfdk-aac --enable-encoder=aac \
- --enable-libtwolame --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libopencore_amrwb --enable-libgsm \
+ --enable-libtwolame --enable-libopencore_amrnb --enable-libopencore_amrwb --enable-libgsm \
  --enable-muxer=mp4 --enable-libxvid --enable-libopenh264 --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom --enable-libdav1d --enable-librav1e \
- --enable-fontconfig --enable-libfreetype --enable-libfribidi --enable-libass --enable-libsrt \
+ --enable-libfreetype --enable-libfribidi --enable-libass --enable-libsrt --enable-libfontconfig \
  --enable-libbluray --enable-bzlib --enable-zlib --enable-lzma --enable-libsnappy --enable-libwebp --enable-libopenjpeg \
  --enable-opengl --enable-opencl --enable-openal --enable-libzimg --enable-openssl --enable-librtmp
 
