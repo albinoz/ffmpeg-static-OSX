@@ -1,6 +1,5 @@
 ## FFmpeg Static Builder
-####  macOS 10.12 < 12 Intel
-###### This script not work on Apple Silicon for Now
+####  Last Three OS with Intel Processor
 
 #### Include Last Versions of x264 | x265 | AV1 | FFmpeg…
 
@@ -14,7 +13,7 @@
  --enable-libtwolame --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-libopencore_amrwb --enable-libgsm \
  --enable-muxer=mp4 --enable-libxvid --enable-libopenh264 --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom --enable-libdav1d --enable-librav1e \
  --enable-fontconfig --enable-libfreetype --enable-libfribidi --enable-libass --enable-libsrt \
- --enable-libbluray --enable-bzlib --enable-zlib --enable-lzma --enable-libsnappy --enable-libwebp --enable-libopenjpeg \
+ --enable-libbluray --enable-bzlib --enable-zlib --enable-lzma --enable-libwebp --enable-libopenjpeg \
  --enable-opengl --enable-opencl --enable-openal --enable-libzimg --enable-openssl --enable-librtmp
 ```
 
@@ -30,7 +29,7 @@ chmod 755 ~/Desktop/ffmpeg-static-OSX/ffmpeg-static-OSX.command  && \
 #### Result :
 
 ##### =-> On Successfully Build :
-`ffmpeg static binary must be copied on Desktop`
+`ffmpeg static binary will be copied on Desktop`
 
 ##### x-> On Error Build :
 `Please Report with log to`
