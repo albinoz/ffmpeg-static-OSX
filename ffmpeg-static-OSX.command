@@ -9,7 +9,7 @@ SytemVersion=$(system_profiler SPSoftwareDataType | grep "System Version:" | cut
 OSXMajor=$(sw_vers -productVersion | cut -d'.' -f1)
 
 # About
-tput bold ; echo "adam | 2014 < 2023-04-15" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2023-08-01" ; tput sgr0
 tput bold ; echo "Download & Build Last Static FFmpeg" ; tput sgr0
 
 # Infos
@@ -47,15 +47,6 @@ if ls /*/*/*/brew >/dev/null ; then tput sgr0 ; echo "HomeBrew AllReady Installe
 #_ Check Homebrew Update
 tput bold ; echo ; echo '♻️  ' Check Homebrew Update ; tput sgr0
 /*/*/*/brew cleanup ; /*/*/*/brew doctor ; /*/*/*/brew update ; /*/*/*/brew upgrade
-
-#_ Java Install - Fix PopUp
-#tput bold ; echo ; echo '♻️  ' Check Java Install ; tput sgr0
-#if java -version ; then tput sgr0 ; echo "Java AllReady Installed"
-#else tput bold ; echo "Java Install" ; tput sgr0
-#brew reinstall java
-#echo '🔒 Please Enter Your Password :'
-#sudo ln -sfn /usr/local/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
-#fi
 
 #_ Check Homebrew Config
 tput bold ; echo ; echo '♻️  ' Check Homebrew Config ; tput sgr0
@@ -236,8 +227,6 @@ if find /Volumes/RamDisk/sw/ | grep "fread" >/dev/null ; then echo Build OK ; el
 fi
 
 #_ bluray git
-#JAVAV=$(find /Library/Java/JavaVirtualMachines -iname "*.jdk" | tail -1)
-#export JAVA_HOME="$JAVAV/Contents/Home"
 tput bold ; echo ; echo '📍 ' libbluray git ; tput sgr0
 if find /Volumes/RamDisk/sw/ | grep "libbluray" >/dev/null ; then echo Build All Ready Done ; else
 cd ${CMPL} ; sleep 2
@@ -350,21 +339,17 @@ rm -fr /Volumes/RamDisk/compile/*
 fi
 
 #_ snappy
-#tput bold ; echo ; echo '📍 ' snappy 1.1.9 ; tput sgr0
-#tput bold ; echo ; echo '📍 ' snappy git ; tput sgr0
-#if find /Volumes/RamDisk/sw/ | grep "snappy" >/dev/null 2>&1 ; then echo Build All Ready Done ; else
-#cd ${CMPL} ; sleep 2
-#git clone https://github.com/google/snappy.git
-#wget -O snappy.tar.gz --no-check-certificate https://github.com/google/snappy/archive/1.1.10.tar.gz
-#tar -zxvf snappy.tar.gz
-#cd snappy-*/
-#cd snappy
-#mkdir build && cd build
-#cmake -G "Ninja" ../ -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED="OFF" -DENABLE_C_DEPS="ON" -DSNAPPY_BUILD_TESTS=OFF -DSNAPPY_BUILD_BENCHMARKS=OFF
-#ninja && ninja install
-#if find /Volumes/RamDisk/sw/ | grep "snappy" >/dev/null 2>&1 ; then echo Build OK ; else echo Build Fail ; exit ; fi
-#rm -fr /Volumes/RamDisk/compile/*
-#fi
+tput bold ; echo ; echo '📍 ' snappy git ; tput sgr0
+if find /Volumes/RamDisk/sw/ | grep "snappy" >/dev/null 2>&1 ; then echo Build All Ready Done ; else
+cd ${CMPL} ; sleep 2
+git clone https://github.com/google/snappy.git
+cd snappy
+mkdir build && cd build
+cmake -G "Ninja" ../ -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED="OFF" -DENABLE_C_DEPS="ON" -DSNAPPY_BUILD_TESTS=OFF -DSNAPPY_BUILD_BENCHMARKS=OFF
+ninja && ninja install
+if find /Volumes/RamDisk/sw/ | grep "snappy" >/dev/null 2>&1 ; then echo Build OK ; else echo Build Fail ; exit ; fi
+rm -fr /Volumes/RamDisk/compile/*
+fi
 
 #-> AUDIO
 tput bold ; echo ; echo ; echo '⚙️  ' Audio Builds ; tput sgr0
@@ -690,12 +675,12 @@ rm -fr /Volumes/RamDisk/compile/*
 fi
 
 #_ librtmp
-tput bold ; echo ; echo '📍 ' librtmp 2.4 Copy ; tput sgr0 ; sleep 2
+tput bold ; echo ; echo '📍 ' librtmp Copy ; tput sgr0 ; sleep 2
 if find /Volumes/RamDisk/sw/ | grep "rtmp" >/dev/null 2>&1 ; then echo Build All Ready Done ; else
-cp -v /usr/local/Cellar/rtmpdump/2.4+20151223_1/bin/* /Volumes/RamDisk/sw/bin/
-cp -vr /usr/local/Cellar/rtmpdump/2.4+20151223_1/include/* /Volumes/RamDisk/sw/include/
-cp -v /usr/local/Cellar/rtmpdump/2.4+20151223_1/lib/pkgconfig/librtmp.pc /Volumes/RamDisk/sw/lib/pkgconfig
-cp -v /usr/local/Cellar/rtmpdump/2.4+20151223_1/lib/librtmp* /Volumes/RamDisk/sw/lib
+cp -v /usr/local/Cellar/rtmpdump/*/bin/* /Volumes/RamDisk/sw/bin/
+cp -vr /usr/local/Cellar/rtmpdump/*/include/* /Volumes/RamDisk/sw/include/
+cp -v /usr/local/Cellar/rtmpdump/*/lib/pkgconfig/librtmp.pc /Volumes/RamDisk/sw/lib/pkgconfig
+cp -v /usr/local/Cellar/rtmpdump/*/lib/librtmp* /Volumes/RamDisk/sw/lib
 fi
 
 #-> FFmpeg Check
@@ -725,7 +710,7 @@ cd ffmpe*/
  --enable-libtwolame --enable-libopencore_amrnb --enable-libopencore_amrwb --enable-libgsm \
  --enable-muxer=mp4 --enable-libxvid --enable-libopenh264 --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom --enable-libdav1d --enable-librav1e \
  --enable-libfreetype --enable-libfribidi --enable-libass --enable-libsrt --enable-libfontconfig \
- --enable-libbluray --enable-bzlib --enable-zlib --enable-lzma --enable-libwebp --enable-libopenjpeg \
+ --enable-libbluray --enable-bzlib --enable-zlib --enable-lzma --enable-libsnappy --enable-libwebp --enable-libopenjpeg \
  --enable-opengl --enable-opencl --enable-openal --enable-libzimg --enable-openssl --enable-librtmp
 
 make -j "$THREADS" && make install
