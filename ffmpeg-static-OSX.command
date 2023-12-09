@@ -9,7 +9,7 @@ SytemVersion=$(system_profiler SPSoftwareDataType | grep "System Version:" | cut
 OSXMajor=$(sw_vers -productVersion | cut -d'.' -f1)
 
 # About
-tput bold ; echo "adam | 2014 < 2023-08-01" ; tput sgr0
+tput bold ; echo "adam | 2014 < 2023-12-02" ; tput sgr0
 tput bold ; echo "Download & Build Last Static FFmpeg" ; tput sgr0
 
 # Infos
@@ -89,7 +89,7 @@ cd xz
 ./autogen.sh
 ./configure --prefix=${TARGET} --enable-static --disable-shared --disable-docs --disable-examples
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "xz" >/dev/null 2>&1 ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "xz" >/dev/null 2>&1 ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -102,7 +102,7 @@ cd libexpat/expat
 ./buildconf.sh
 ./configure --prefix=${TARGET} CPPFLAGS=-DXML_LARGE_SIZE --enable-static
 make -j "$THREADS" && make install DESTDIR=/
-if find /Volumes/RamDisk/sw/ | grep "expat" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "expat" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -116,7 +116,7 @@ tar -zxvf libiconv*
 cd libiconv*/
 ./configure --prefix=${TARGET} --with-iconv=${TARGET} --enable-static --enable-extra-encodings
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "iconv" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "iconv" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -130,7 +130,7 @@ tar -zxvf pkg-config-*
 cd pkg-config-*/
 ./configure --prefix=${TARGET} --disable-shared --enable-static --disable-debug --disable-host-tool --with-internal-glib
 make -j "$THREADS" && make check && make install
-if find /Volumes/RamDisk/sw/ | grep "pkg-config" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "pkg-config" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -142,7 +142,7 @@ git clone https://github.com/glennrp/libpng.git
 cd libpn*/
 ./configure --prefix=${TARGET} --enable-static --disable-dependency-tracking --disable-silent-rules
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "libpng" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "libpng" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -155,7 +155,7 @@ cd openjpeg
 mkdir build && cd build
 cmake -G "Ninja" .. -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC
 ninja && ninja install
-if find /Volumes/RamDisk/sw/ | grep "openjpeg" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "openjpeg" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -171,7 +171,7 @@ cd gettext-*/
  --with-included-libcroco --with-included-libunistring --with-included-libxml --with-emacs --disable-java --disable-csharp \
  --disable-shared --enable-static --without-git --without-cvs --without-xz --with-included-gettext
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "gettext" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "gettext" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -184,7 +184,7 @@ wget --no-check-certificate 'https://www.tortall.net/projects/yasm/releases/'"$L
 tar -zxvf /Volumes/RamDisk/compile/yasm-*
 cd yasm-*/
 ./configure --prefix=${TARGET} && make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "yasm" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "yasm" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -195,7 +195,7 @@ cd ${CMPL} ; sleep 2
 git clone git://sourceware.org/git/bzip2.git bzip2
 cd bzip2
 make -j "$THREADS" && make install PREFIX=${TARGET}
-if find /Volumes/RamDisk/sw/ | grep "bzip" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "bzip" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -210,7 +210,7 @@ cd SDL2*/
 ./autogen.sh
 ./configure --prefix=${TARGET} --enable-static --without-x --enable-hidapi
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "SDL2" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "SDL2" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -223,7 +223,7 @@ cd libud*/
 ./bootstrap
 ./configure --prefix=${TARGET} --disable-shared --enable-static
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "fread" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "fread" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 fi
 
 #_ bluray git
@@ -235,7 +235,7 @@ cd libblura*/
 ./bootstrap
 ./configure --prefix=${TARGET} --disable-shared --disable-dependency-tracking --disable-silent-rules --without-libxml2 --without-freetype --disable-doxygen-doc --disable-bdjava-jar
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "libbluray" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "libbluray" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -254,20 +254,20 @@ cd freetype-*/
 pip3 install docwriter
 ./configure --prefix=${TARGET} --disable-shared --enable-static --enable-freetype-config
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "freetype" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "freetype" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
 #_ fribidi
-tput bold ; echo ; echo '📍 ' fribidi 1.0.12 ; tput sgr0
+tput bold ; echo ; echo '📍 ' fribidi 1.0.13 ; tput sgr0
 if find /Volumes/RamDisk/sw/ | grep "fribidi" >/dev/null ; then echo Build All Ready Done ; else
 cd ${CMPL} ; sleep 2
-wget --no-check-certificate https://github.com/fribidi/fribidi/releases/download/v1.0.12/fribidi-1.0.12.tar.xz
+wget --no-check-certificate https://github.com/fribidi/fribidi/releases/download/v1.0.13/fribidi-1.0.13.tar.xz
 tar -xJf fribid*
 cd fribid*/
 ./configure --prefix=${TARGET} --disable-shared --enable-static --disable-silent-rules --disable-debug --disable-dependency-tracking
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "fribidi" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "fribidi" >/dev/null ; then  tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -281,7 +281,7 @@ tar xzpf fontconfig-*
 cd fontconfig-*/
 ./configure --prefix=${TARGET} --disable-dependency-tracking --disable-silent-rules --with-add-fonts="/System/Library/Fonts,/Library/Fonts" --disable-shared --enable-static
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "fontconfig" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "fontconfig" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -294,7 +294,7 @@ cd harfbuzz
 ./autogen.sh
 ./configure --prefix=${TARGET} --disable-shared --enable-static
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "harfbuzz" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "harfbuzz" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -307,7 +307,7 @@ cd libas*/
 ./autogen.sh
 ./configure --prefix=${TARGET} --disable-shared --enable-static
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "libass" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "libass" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -321,7 +321,7 @@ tar -zxvf openssl*
 cd openssl-*/
 ./Configure --prefix=${TARGET} -openssldir=${TARGET}/usr/local/etc/openssl no-ssl3 no-zlib enable-cms
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/bin | grep "openssl" >/dev/null 2>&1 ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/bin | grep "openssl" >/dev/null 2>&1 ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -334,7 +334,7 @@ cd srt/
 mkdir build && cd build
 cmake -G "Ninja" .. -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_C_DEPS=ON -DENABLE_SHARED=OFF -DENABLE_STATIC=ON
 ninja && ninja install
-if find /Volumes/RamDisk/sw/ | grep "srt-ffplay" >/dev/null 2>&1 ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "srt-ffplay" >/dev/null 2>&1 ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -347,7 +347,7 @@ cd snappy
 mkdir build && cd build
 cmake -G "Ninja" ../ -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DENABLE_SHARED="OFF" -DENABLE_C_DEPS="ON" -DSNAPPY_BUILD_TESTS=OFF -DSNAPPY_BUILD_BENCHMARKS=OFF
 ninja && ninja install
-if find /Volumes/RamDisk/sw/ | grep "snappy" >/dev/null 2>&1 ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "snappy" >/dev/null 2>&1 ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -362,7 +362,7 @@ git clone https://github.com/kcat/openal-soft
 cd openal-soft*/
 cmake -G "Ninja" -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC -DALSOFT_BACKEND_PORTAUDIO=OFF -DALSOFT_BACKEND_PULSEAUDIO=OFF -DALSOFT_EXAMPLES=OFF -DALSOFT_MIDI_FLUIDSYNTH=OFF
 ninja && ninja install
-if find /Volumes/RamDisk/sw/ | grep "openal" >/dev/null 2>&1 ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "openal" >/dev/null 2>&1 ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -375,7 +375,7 @@ tar -zxvf opencore-amr-*.tar.gz
 cd opencore-amr-*/
 ./configure --prefix=${TARGET} --disable-shared --enable-static
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "amr" >/dev/null 2>&1 ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "amr" >/dev/null 2>&1 ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -389,7 +389,7 @@ tar -zxvf opus-*
 cd opus-*/
 ./configure --prefix=${TARGET} --disable-shared --enable-static
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "opus" >/dev/null 2>&1 ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "opus" >/dev/null 2>&1 ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -403,7 +403,7 @@ tar -zxvf libogg-*
 cd libogg-*/
 ./configure --prefix=${TARGET} --disable-shared --enable-static --disable-dependency-tracking
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "ogg.pc" >/dev/null 2>&1 ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "ogg.pc" >/dev/null 2>&1 ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -416,7 +416,7 @@ cd theora
 ./autogen.sh
 ./configure --prefix=${TARGET} --with-ogg-libraries=${TARGET}/lib --with-ogg-includes=${TARGET}/include/ --with-vorbis-libraries=${TARGET}/lib --with-vorbis-includes=${TARGET}/include/ --enable-static --disable-shared
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "theora" >/dev/null 2>&1 ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "theora" >/dev/null 2>&1 ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -428,9 +428,13 @@ cd ${CMPL} ; sleep 2
 wget --no-check-certificate https://ftp.osuosl.org/pub/xiph/releases/vorbis/"$LastVersion"
 tar -zxvf libvorbis-*
 cd libvorbis-*/
-./configure --prefix=${TARGET} --with-ogg-libraries=${TARGET}/lib --with-ogg-includes=/Volumes/RamDisk/sw/include/ --enable-static --disable-shared
+# Patch
+sed 's/-force_cpusubtype_ALL//g' configure.ac > configure.ac2
+rm configure.ac ; mv configure.ac2 configure.ac
+./autogen.sh
+./configure --prefix=${TARGET} --disable-dependency-tracking --with-ogg-libraries=${TARGET}/lib --with-ogg-includes=/Volumes/RamDisk/sw/include/ --enable-static --disable-shared
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "vorbisfile.pc" >/dev/null 2>&1 ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "vorbisfile.pc" >/dev/null 2>&1 ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -442,7 +446,7 @@ git clone https://github.com/rbrito/lame.git
 cd lam*/
 ./configure --prefix=${TARGET} --disable-shared --enable-static
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "lame" >/dev/null 2>&1 ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "lame" >/dev/null 2>&1 ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -456,7 +460,7 @@ tar -zxvf twolame-*
 cd twolame-*/
 ./configure --prefix=${TARGET} --enable-static --enable-shared=no
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "twolame" >/dev/null 2>&1 ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "twolame" >/dev/null 2>&1 ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -469,7 +473,7 @@ cd fdk*/
 ./autogen.sh
 ./configure --disable-dependency-tracking --prefix=${TARGET} --enable-static --enable-shared=no
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "fdk-aac" >/dev/null 2>&1 ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "fdk-aac" >/dev/null 2>&1 ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -489,7 +493,7 @@ perl -p -i -e "s#_ROOT\)/inc#_ROOT\)/include#g" Makefile
 sed "/GSM_INSTALL_INC/s/include/include\/gsm/g" Makefile > Makefile.new
 mv Makefile.new Makefile
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "gsm" >/dev/null 2>&1 ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "gsm" >/dev/null 2>&1 ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -503,7 +507,7 @@ tar xvf speex-*.tar.gz
 cd speex-*/
 ./configure --prefix=${TARGET} --enable-static --enable-shared=no
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "speex" >/dev/null 2>&1 ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "speex" >/dev/null 2>&1 ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -512,16 +516,16 @@ fi
 tput bold ; echo ; echo ; echo '⚙️  ' Video Builds ; tput sgr0
 
 #_ libzimg
-tput bold ; echo ; echo '📍 ' libzimg 3.0.4 ; tput sgr0
+tput bold ; echo ; echo '📍 ' libzimg 3.0.5 ; tput sgr0
 if find /Volumes/RamDisk/sw/ | grep "zimg.pc" >/dev/null 2>&1 ; then echo Build All Ready Done ; else
 cd ${CMPL} ; sleep 2
-wget --no-check-certificate https://github.com/sekrit-twc/zimg/archive/refs/tags/release-3.0.4.tar.gz
+wget --no-check-certificate https://github.com/sekrit-twc/zimg/archive/refs/tags/release-3.0.5.tar.gz
 tar xvf release-*.tar.gz
 cd zimg-*/
 ./autogen.sh
 ./Configure --prefix=${TARGET} --disable-shared --enable-static
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "zimg.pc" >/dev/null 2>&1 ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "zimg.pc" >/dev/null 2>&1 ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -533,7 +537,7 @@ git clone https://github.com/webmproject/libvpx.git
 cd libvp*/
 ./configure --prefix=${TARGET} --enable-vp8 --enable-postproc --enable-vp9-postproc --enable-vp9-highbitdepth --disable-examples --disable-docs --enable-multi-res-encoding --disable-unit-tests --enable-pic --disable-shared
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "vpx" >/dev/null 2>&1 ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "vpx" >/dev/null 2>&1 ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -546,12 +550,12 @@ cd libweb*/
 ./autogen.sh
 ./configure --prefix=${TARGET} --disable-dependency-tracking --disable-shared --enable-static --disable-gif --disable-gl --enable-libwebpdecoder --enable-libwebpdemux --enable-libwebpmux
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "webp" >/dev/null 2>&1 ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "webp" >/dev/null 2>&1 ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
-#_ av1 git
-tput bold ; echo ; echo '📍 ' av1 git ; tput sgr0
+#_ aom-av1 git
+tput bold ; echo ; echo '📍 ' aom-av1 git ; tput sgr0
 if find /Volumes/RamDisk/sw/ | grep "aom" >/dev/null 2>&1 ; then echo Build All Ready Done ; else
 cd ${CMPL} ; sleep 2
 git clone https://aomedia.googlesource.com/aom
@@ -559,9 +563,21 @@ cd aom
 mkdir aom_build && cd aom_build
 cmake -G "Ninja" /Volumes/RamDisk/compile/aom -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DLIBTYPE=STATIC
 ninja && ninja install
-if find /Volumes/RamDisk/sw/ | grep "aom" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "aom" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
+
+#_ svt-av1 git
+#tput bold ; echo ; echo '📍 ' svt-av1 git ; tput sgr0
+#if find /Volumes/RamDisk/sw/ | grep "SvtAv1" >/dev/null 2>&1 ; then echo Build All Ready Done ; else
+#cd ${CMPL} ; sleep 2
+#git clone --depth=1 https://gitlab.com/AOMediaCodec/SVT-AV1.git
+#cd SVT-AV1/Build/
+#cmake .. -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX:PATH=${TARGET}
+#make -j "$THREADS" && make install
+#if find /Volumes/RamDisk/sw/ | grep "SvtAv1" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
+#rm -fr /Volumes/RamDisk/compile/*
+#fi
 
 #_ dav1d git - Require ninja, meson
 tput bold ; echo ; echo '📍 ' dav1d git ; tput sgr0
@@ -571,7 +587,7 @@ git clone https://code.videolan.org/videolan/dav1d.git
 cd dav1*/
 meson --prefix=${TARGET} build --buildtype release --default-library static
 ninja install -C build
-if find /Volumes/RamDisk/sw/ | grep "dav1d" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "dav1d" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -582,7 +598,7 @@ cd ${CMPL} ; sleep 2
 git clone https://github.com/xiph/rav1e.git
 cd rav1e
 cargo cinstall --release --prefix=${TARGET} --libdir=${TARGET}/lib --includedir=${TARGET}/include
-if find /Volumes/RamDisk/sw/ | grep "rav1e" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "rav1e" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -597,7 +613,7 @@ cd xvidcore/build/generic/
 ./bootstrap.sh
 ./configure --prefix=${TARGET} --disable-assembly --enable-macosx_module
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "xvid" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "xvid" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -608,7 +624,7 @@ cd ${CMPL} ; sleep 2
 git clone https://github.com/cisco/openh264.git
 cd openh264/
 make -j "$THREADS" install-static PREFIX=${TARGET}
-if find /Volumes/RamDisk/sw/ | grep "openh264" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "openh264" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -620,7 +636,7 @@ git clone https://code.videolan.org/videolan/x264.git
 cd x264/
 ./configure --prefix=${TARGET} --enable-static --bit-depth=all --chroma-format=all
 make -j "$THREADS" && make install
-if find /Volumes/RamDisk/sw/ | grep "x264" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "x264" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -658,7 +674,7 @@ mv libx265.a libx265_main.a
 libtool -static -o libx265.a libx265_main.a libx265_main10.a libx265_main12.a
 ninja install
 rm -fr /Volumes/RamDisk/compile/*
-if find /Volumes/RamDisk/sw/ | grep "x265" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "x265" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 fi
 
 #_ AviSynth+
@@ -670,7 +686,7 @@ cd AviSynthPlus
 mkdir avisynth-build && cd avisynth-build
 cmake ../ -DCMAKE_INSTALL_PREFIX:PATH=${TARGET} -DHEADERS_ONLY:bool=on
 make VersionGen install
-if find /Volumes/RamDisk/sw/ | grep "avisynth" >/dev/null ; then echo Build OK ; else echo Build Fail ; exit ; fi
+if find /Volumes/RamDisk/sw/ | grep "avisynth" >/dev/null ; then tput bold ; echo Build OK ; else echo Build Fail ; tput sgr0 ; exit ; fi
 rm -fr /Volumes/RamDisk/compile/*
 fi
 
@@ -706,12 +722,12 @@ cd ffmpe*/
  --enable-pthreads --enable-postproc --enable-runtime-cpudetect \
  --pkg_config='pkg-config --static' --enable-nonfree --enable-gpl --enable-version3 --prefix=${TARGET} \
  --disable-ffplay --disable-ffprobe --disable-debug --disable-doc --enable-avfilter --enable-avisynth --enable-filters \
- --enable-libopus --enable-libvorbis --enable-libtheora --enable-libspeex --enable-libmp3lame --enable-libfdk-aac --enable-encoder=aac \
+ --enable-libopus --enable-libtheora --enable-libvorbis --enable-libspeex --enable-libmp3lame --enable-libfdk-aac --enable-encoder=aac \
  --enable-libtwolame --enable-libopencore_amrnb --enable-libopencore_amrwb --enable-libgsm \
- --enable-muxer=mp4 --enable-libxvid --enable-libopenh264 --enable-libx264 --enable-libx265 --enable-libvpx --enable-libaom --enable-libdav1d --enable-librav1e \
+ --enable-libxvid --enable-libopenh264 --enable-libx264 --enable-libx265 --enable-libvpx  --enable-libaom --enable-libdav1d --enable-librav1e \
  --enable-libfreetype --enable-libfribidi --enable-libass --enable-libsrt --enable-libfontconfig \
- --enable-libbluray --enable-bzlib --enable-zlib --enable-lzma --enable-libsnappy --enable-libwebp --enable-libopenjpeg \
- --enable-opengl --enable-opencl --enable-openal --enable-libzimg --enable-openssl --enable-librtmp
+ --enable-libbluray --enable-bzlib --enable-zlib --enable-lzma --enable-libsnappy --enable-libopenjpeg --enable-libwebp \
+ --enable-opengl --enable-opencl --enable-openal --enable-libzimg --enable-openssl --enable-librtmp  --enable-muxer=mp4
 
 make -j "$THREADS" && make install
 
